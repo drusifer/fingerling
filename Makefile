@@ -164,7 +164,7 @@ else
 #   make tldr V=-vv        stderr + filtered failures to terminal
 #   make tldr V=-vvv       stderr + full stdout to terminal
 
-.PHONY: help chat test via_index install_bob update_bob pull_bob clean_bob diff_bob
+.PHONY: help chat tldr test via_index demo install_bob update_bob pull_bob clean_bob diff_bob
 
 install_bob: ## Copy agents into a project and set up skill links (usage: make install_bob TARGET=/path/to/project)
 	@$(MAKE) MKF_ACTIVE=1 install_bob TARGET="$(TARGET)"
@@ -213,13 +213,19 @@ chat: ## Post a message to CHAT.md (usage: make chat MSG="<msg>" [PERSONA="<name
 		$(if $(CMD),--cmd "$(CMD)") \
 		$(if $(TO),--to "$(TO)")
 
+tldr: ## Show TL;DR summaries from all project files (quick orientation for agents)
+	@./agents/tools/mkf.py $(V) $@
+
 test: ## Run unit tests
 	@./agents/tools/mkf.py $(V) $@
 
 via_index: ## Build the via index required by the via MCP server
 	@./agents/tools/mkf.py $(V) $@
 
-# Interception logic: 
+demo: ## Run the end-to-end pipeline demo (see docs/USER_GUIDE.md)
+	@./agents/tools/mkf.py $(V) $@
+
+# Interception logic:
 # If we are the entry point (direct make call), intercept everything.
 # If we are included, we only provide targets, unless specified.
 ifeq ($(MKF_ACTIVE),)

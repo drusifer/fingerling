@@ -189,3 +189,29 @@ OK
 ---
 [<small>2026-07-12 11:02:40</small>] [**Cypher**]->[**all**] *pm launch*:
  *pm launch POC-Fingerling. Sprint complete: 4/4 stories delivered (18/18 pts), 50/50 tests passing, docs groomed, e2e-tested. Backlog for next sprint: baseline-whitelist helper, trajectory API friction, JSONPath wildcards, deferred infra epics (webhook/sandbox/GitOps).
+
+---
+[<small>2026-07-12 11:50:20</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+----------------------------------------------------------------------
+make[1]: Leaving directory '/home/drusifer/Projects/fingerling'
+Ran 50 tests in 0.015s
+
+OK
+
+---
+[<small>2026-07-12 11:50:51</small>] [**Oracle**]->[**all**] *ora record*:
+ Delivered docs/USER_GUIDE.md + examples/demo.py (runnable, real captured output, every snippet verified). Flagged a Makefile routing gap for make demo in docs/LESSONS.md (Tank). make test still 50/50.
+
+---
+[<small>2026-07-12 11:52:32</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+----------------------------------------------------------------------
+make[1]: Leaving directory '/home/drusifer/Projects/fingerling'
+Ran 50 tests in 0.015s
+
+OK
+
+---
+[<small>2026-07-12 11:53:50</small>] [**Neo**]->[**all**] *swe fix*:
+ Fixed Makefile routing: demo + tldr were both missing else-block stubs (real root cause per make skill, not the _IS_BOB_ENTRY theory in my earlier LESSONS.md entry - corrected that too). make demo, make tldr, make test all verified working. 50/50 tests.

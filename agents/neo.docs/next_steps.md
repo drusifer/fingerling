@@ -1,15 +1,14 @@
 # Next Steps
 
 ## Immediate Next Action
-All 4 phases implemented. Waiting on Trin's Phase 4 UAT + Morpheus's final review, then the
-sprint moves to Oracle (`*ora groom`) — no further Neo implementation work planned unless a
-gate bounces something back.
+None — Makefile fix delivered and verified. No further action planned.
 
 ## Waiting On
-Trin — Phase 4 UAT. Morpheus — Phase 4 code review (last phase).
+Nothing.
 
 ## Planned Work
-- [ ] None planned — available if Trin/Morpheus/Smith find issues during close-out.
+- [ ] If future project targets are added, remember the two-file pattern (Makefile.prj recipe
+      + Makefile else-block stub) — `make help | grep <target>` should show it twice.
 
 ---
-*Last updated: 2026-07-12T00:14*
+*Last updated: 2026-07-12T00:35*

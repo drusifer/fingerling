@@ -16,5 +16,13 @@
   profile-load validation step added — no persistent "engine" object exists to validate at
   load time for a stateless functional module, so validating at first use is equivalent).
 
+## 2026-07-12: Makefile fix
+- Every `make` target needs TWO stubs: the real recipe in `Makefile.prj`, and a public stub in
+  `Makefile`'s `else` block (`.PHONY` entry + `@./agents/tools/mkf.py $(V) $@`). Missing the
+  second one produces "No rule to make target" on plain invocation even though `make help`
+  shows the target correctly (help reads `Makefile.prj` directly). Fixed `demo` (my own
+  incomplete addition) and `tldr` (pre-existing gap, not introduced this sprint) — see
+  `docs/LESSONS.md` for the full writeup.
+
 ---
-*Last updated: 2026-07-12T00:03*
+*Last updated: 2026-07-12T00:35*

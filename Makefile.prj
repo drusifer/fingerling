@@ -1,0 +1,7 @@
+# Project-specific targets for Project Fingerling.
+# Included automatically by the bob-protocol Makefile (see Makefile's -include Makefile.prj).
+
+.PHONY: demo
+
+demo: ## Run the end-to-end pipeline demo (see docs/USER_GUIDE.md)
+	@python3 -m examples.demo
