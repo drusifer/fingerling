@@ -239,3 +239,7 @@ make[1]: Leaving directory '/home/drusifer/Projects/fingerling'
 
 === Tearing down vulnerable demo target ===
 make[1]: Leaving directory '/home/drusifer/Projects/fingerling'
+
+---
+[<small>2026-07-13 19:51:39</small>] [**Neo**]->[**all**] *swe complete*:
+ Real eBPF capture + live CWE-78 exploit demo delivered (tools/capture_syscalls.bt, fingerling/capture.py, examples/vuln_ping_app.py, examples/demo_live_exploit.py, make demo-live). 60/60 tests, verified end-to-end live, committed 4e38116, pushed to origin/main. Session ending — no orphaned processes, clean git state.
