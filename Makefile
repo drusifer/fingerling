@@ -164,7 +164,7 @@ else
 #   make tldr V=-vv        stderr + filtered failures to terminal
 #   make tldr V=-vvv       stderr + full stdout to terminal
 
-.PHONY: help chat tldr test via_index demo install_bob update_bob pull_bob clean_bob diff_bob
+.PHONY: help chat tldr test via_index demo demo-live install_bob update_bob pull_bob clean_bob diff_bob
 
 install_bob: ## Copy agents into a project and set up skill links (usage: make install_bob TARGET=/path/to/project)
 	@$(MAKE) MKF_ACTIVE=1 install_bob TARGET="$(TARGET)"
@@ -223,6 +223,9 @@ via_index: ## Build the via index required by the via MCP server
 	@./agents/tools/mkf.py $(V) $@
 
 demo: ## Run the end-to-end pipeline demo (see docs/USER_GUIDE.md)
+	@./agents/tools/mkf.py $(V) $@
+
+demo-live: ## Run the real eBPF capture + live exploit demo (needs Linux, root, bpftrace; see docs/USER_GUIDE.md)
 	@./agents/tools/mkf.py $(V) $@
 
 # Interception logic:

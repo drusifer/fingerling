@@ -18,8 +18,9 @@ message). Everything below runs offline, no infrastructure required.
    - [`fingerling.ringbuffer`](#fingerlingringbuffer)
    - [`fingerling.policy`](#fingerlingpolicy)
 4. [End-to-End Demo](#end-to-end-demo)
-5. [Known Gaps](#known-gaps-see-backlog)
-6. [Troubleshooting / FAQ](#troubleshooting--faq)
+5. [Live Capture (Real eBPF)](#live-capture-real-ebpf)
+6. [Known Gaps](#known-gaps-see-backlog)
+7. [Troubleshooting / FAQ](#troubleshooting--faq)
 
 ## Install
 
@@ -30,7 +31,7 @@ pip install -r requirements.txt   # PyYAML is the only dependency
 Run the test suite to confirm your environment is set up correctly:
 
 ```sh
-make test    # 50/50 tests, fully offline
+make test    # 60/60 tests, fully offline
 ```
 
 ## The Pipeline at a Glance
@@ -208,6 +209,51 @@ The exact same flow, asserted rather than printed, lives in `tests/test_e2e.py` 
 runs in `make test` on every change, so this demo can't silently drift out of sync with the
 real API.
 
+## Live Capture (Real eBPF)
+
+`examples/demo.py` above uses hand-authored JSONL. `examples/demo_live_exploit.py` runs the same
+three-stage pipeline against **real syscalls captured from a real running process** via
+[bpftrace](https://github.com/bpftrace/bpftrace), instead of synthetic fixtures.
+
+**Prerequisites** (unlike everything else in this guide, this is not OS-agnostic or offline):
+- Linux with kernel eBPF/tracepoint support.
+- `bpftrace` installed (`apt install bpftrace` on Debian/Ubuntu/Raspberry Pi OS).
+- Root — bpftrace needs root to attach kernel probes. Run with `sudo`.
+- `flask` installed (`pip install flask`) — used only by the vulnerable demo target, not by the
+  core `fingerling` library.
+
+**Safety note:** the demo target (`examples/vuln_ping_app.py`) is a real, deliberately
+vulnerable local web app (OS command injection, CWE-78). It binds to `127.0.0.1` only, the
+"attack" is a single non-networked `curl` request, and the only side effect is a throwaway file
+at `/tmp/pwned_poc` that the demo script removes itself. Do not expose this app beyond loopback.
+
+```sh
+sudo make demo-live                       # preferred — routes through mkf
+sudo python3 -m examples.demo_live_exploit  # equivalent, direct
+```
+
+**What it does:**
+1. Starts `examples/vuln_ping_app.py`, a Flask app with one intentionally vulnerable route:
+   `/diagnostics?host=<x>` runs `os.system(f"ping -c 1 -W1 {x}")` — unsanitized shell
+   interpolation.
+2. Traces that process (and everything it forks) with `tools/capture_syscalls.bt`, a bpftrace
+   script that follows the whole process subtree — necessary because each request forks a shell,
+   which forks `ping` — and emits real `execve()` events as Tetragon-shaped JSONL via
+   `fingerling.capture`.
+3. Sends 3 clean baseline requests, builds a whitelist from the real captured `sh`/`ping` execve
+   pattern.
+4. Sends one attack request — `host=127.0.0.1; /bin/sh -c 'id > /tmp/pwned_poc'` — a real OS
+   command injection that spawns a genuinely unexpected `execve(/bin/id)`.
+5. Scores the real captured attack trajectory against the real captured baseline whitelist, and
+   compiles a `KubeArmorPolicy` for the anomalous fingerprint — same `compile_policy()` call as
+   the synthetic demo, just fed real data.
+
+This demo's `MASK_PROFILE` tokenizes the execve target binary (`exec_target`), not a destination
+port like `examples/demo.py` does — see Known Gaps below for why, and see
+`fingerling/capture.py`/`tools/capture_syscalls.bt` for how the capture itself works (the pure
+parsing logic in `capture.py` is unit tested in `tests/test_capture.py`; the bpftrace subprocess
+plumbing is integration-only, exercised by this demo).
+
 ## Known Gaps (see backlog)
 
 These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_STORIES.md` and
@@ -218,8 +264,16 @@ These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_S
   turns "here's a batch of clean telemetry" into "here's a compiled whitelist."
 - **`compile_policy(anomalous_trajectory: str)`** expects a string; if your anomalous IDs come
   from the ring buffer as a tuple, join them yourself (`",".join(ids)`) as the demo does.
-- **No webhook ingestion, sandbox provisioning, live exploit execution, or GitOps commit/PR
-  automation** — those remain architecture-documented in `docs/SOURCE_SPEC.md` but unimplemented.
+- **No real destination-port capture.** `tools/capture_syscalls.bt` traces `execve()` only, not
+  `connect()`. This Pi's kernel has no BTF (`/sys/kernel/btf/vmlinux` absent), so bpftrace can't
+  resolve named struct casts (`struct sockaddr_in`) to pull a real `dport` out of `connect()`'s
+  sockaddr argument — raw pointer arithmetic on the user pointer was tested and reads back 0.
+  Fixable later via `buf()` + Python-side byte parsing of the sockaddr layout, or by rebuilding
+  the kernel with `CONFIG_DEBUG_INFO_BTF=y` (a multi-hour undertaking on a Pi, not attempted).
+  Not a blocker: `examples/demo_live_exploit.py`'s anomaly signal is entirely execve-based.
+- **No webhook ingestion, sandbox provisioning, or GitOps commit/PR automation** — those remain
+  architecture-documented in `docs/SOURCE_SPEC.md` but unimplemented. Live exploit execution
+  against a local target now exists, though — see [Live Capture](#live-capture-real-ebpf).
 
 ## Troubleshooting / FAQ
 

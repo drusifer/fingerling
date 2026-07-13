@@ -1,0 +1,68 @@
+#!/usr/bin/env bpftrace
+/*
+ * Process-subtree execve() tracer for Project Fingerling's live capture.
+ *
+ * Usage: sudo bpftrace tools/capture_syscalls.bt <root_pid>
+ *
+ * Traces the given root pid AND every descendant it forks (subtree), since
+ * a traced process (e.g. a Flask app) commonly forks a shell, which forks
+ * further children (ping, an injected command, etc.) under new pids. Only
+ * execve is traced in v1 -- the anomaly signal this capture tool feeds into
+ * Fingerling's pipeline is entirely execve-based (see docs/USER_GUIDE.md's
+ * "Live Capture" section); connect/read/write/close are documented backlog.
+ *
+ * Output is tab-delimited on stdout:
+ *   READY
+ *   ENTER\texecve\t<pid>\t<comm>\t<nsecs>\t<filename>
+ *   EXIT\texecve\t<pid>\t<comm>\t<nsecs>\t<ret>
+ *
+ * The READY line is a synchronization signal: bpftrace takes ~1-2s to
+ * JIT-compile and attach probes, so callers must block on reading it before
+ * generating any traffic against the traced process, or early events will
+ * be silently missed.
+ */
+
+BEGIN
+{
+	@target[$1] = 1;
+	printf("READY\n");
+}
+
+tracepoint:sched:sched_process_fork
+/@target[args->parent_pid]/
+{
+	@target[args->child_pid] = 1;
+}
+
+tracepoint:syscalls:sys_enter_execve
+/@target[pid]/
+{
+	printf("ENTER\texecve\t%d\t%s\t%llu\t%s\n", pid, comm, nsecs, str(args->filename));
+}
+
+tracepoint:syscalls:sys_exit_execve
+/@target[pid]/
+{
+	printf("EXIT\texecve\t%d\t%s\t%llu\t%d\n", pid, comm, nsecs, args->ret);
+}
+
+tracepoint:sched:sched_process_exit
+/@target[pid] && pid == tid/
+{
+	/* pid == tid guards against a *thread* exit wrongly deleting a still-
+	 * live process's tracking entry: sched_process_exit fires per-task, and
+	 * a multi-threaded traced process (e.g. Werkzeug's dev server, which
+	 * spawns a helper thread) shares its tgid (pid) across all threads, so
+	 * an ordinary thread exit would otherwise look identical to the whole
+	 * process exiting. Only the thread-group leader has pid == tid. */
+	delete(@target[pid]);
+}
+
+END
+{
+	/* Suppress bpftrace's default exit-time map dump -- the root pid's
+	 * entry is never deleted by sched_process_exit (it's still alive when
+	 * we stop tracing), and an unsuppressed dump prints a non-tab-delimited
+	 * "@target[<pid>]: 1" line that would otherwise reach the Python parser. */
+	clear(@target);
+}
