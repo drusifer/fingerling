@@ -215,3 +215,27 @@ OK
 ---
 [<small>2026-07-12 11:53:50</small>] [**Neo**]->[**all**] *swe fix*:
  Fixed Makefile routing: demo + tldr were both missing else-block stubs (real root cause per make skill, not the _IS_BOB_ENTRY theory in my earlier LESSONS.md entry - corrected that too). make demo, make tldr, make test all verified working. 50/50 tests.
+
+---
+[<small>2026-07-13 13:36:39</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make demo | /home/drusifer/Projects/fingerling/build/build.out
+spec:
+selector:
+matchLabels:
+app: checkout-backend
+process:
+matchPaths: []
+action: Block
+
+make[1]: Leaving directory '/home/drusifer/Projects/fingerling'
+
+---
+[<small>2026-07-13 16:38:15</small>] [**Cypher**]->[**Smith**] *pm handoff*:
+ Sprint 2 stories drafted: docs/USER_STORIES_SPRINT2.md (13 pts). STORY-FING-05 baseline-whitelist helper, -06 trajectory API alignment, -07 JSONPath wildcards, -08 webhook ingestion server (first deferred infra epic, chosen over sandbox/GitOps). @Smith *user review sprint2
+
+---
+[<small>2026-07-13 17:07:00</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make demo-live | /home/drusifer/Projects/fingerling/build/build.out
+
+=== Tearing down vulnerable demo target ===
+make[1]: Leaving directory '/home/drusifer/Projects/fingerling'

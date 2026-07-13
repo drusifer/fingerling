@@ -1,17 +1,18 @@
 # Next Steps
 
 ## Immediate Next Action
-None — sprint closed. Next sprint's planning should pull from the 4-item backlog in
-`current_task.md` (baseline-whitelist helper, trajectory API friction, JSONPath wildcards,
-deferred infra epics).
+Waiting on Smith Gate 1 (`*user review`) for `docs/USER_STORIES_SPRINT2.md`. Per the sprint
+skill this gate requires explicit `*user approve` before Morpheus architecture can start — do
+not auto-proceed.
 
 ## Waiting On
-Nothing.
+Smith (Gate 1) — user story review of Sprint 2 stories.
 
 ## Planned Work
-- [ ] Next sprint kickoff: `*pm plan sprint` against the backlog above, prioritizing which
-      deferred infra epic (webhook ingestion vs. sandbox provisioning vs. GitOps automation)
-      goes first.
+- [ ] On Smith approval: hand off to Morpheus (`*lead arch sprint`) for Sprint 2 architecture,
+      especially formalizing STORY-FING-07's wildcard-match token semantics and STORY-FING-08's
+      HTTP server design.
+- [ ] On Smith rejection: revise `docs/USER_STORIES_SPRINT2.md` per feedback and re-submit.
 
 ---
-*Last updated: 2026-07-12T00:22*
+*Last updated: 2026-07-13T00:00*

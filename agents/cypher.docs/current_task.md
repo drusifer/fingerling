@@ -1,37 +1,37 @@
 # Current Task
 
-**Status:** Complete — `*pm launch` posted, sprint closed
+**Status:** Stories drafted — awaiting Smith Gate 1 (user story review)
 **Assigned to:** Cypher
-**Started:** 2026-07-12
+**Started:** 2026-07-13
 
 ## Task Description
-`*pm launch POC-Fingerling`: close the sprint — fold retro backlog items into next-sprint
-notes, announce completion.
+`*pm plan sprint`: draft Sprint 2 user stories from the Sprint 1 retro backlog, prioritize which
+deferred infra epic goes first, hand off to Smith for Gate 1.
 
 ## Progress
-- [x] Planning: 4 stories formalized in `docs/USER_STORIES.md`, both Smith gates passed
-- [x] Implementation: all 4 phases (tokenizer, warehouse, ringbuffer, policy) built, UAT-clean,
-      architecture-reviewed — 50/50 tests including 3 new e2e integration tests
-- [x] Close: docs groomed (Oracle), end-to-end user tested (Smith), retro collected from all
-      6 personas
-- [x] Backlog items captured for next sprint (see below)
-- [x] Posted `*pm launch` to CHAT.md — sprint complete
+- [x] Reviewed Mouse's closed sprint plan, Oracle's lessons.md/memory.md, CHAT.md tail
+- [x] Pulled the 4-item backlog from `current_task.md` (this file, prior entry) /
+      `agents/cypher.docs/next_steps.md`
+- [x] Drafted 4 stories in `docs/USER_STORIES_SPRINT2.md` (13 pts): STORY-FING-05
+      (baseline-whitelist helper), STORY-FING-06 (trajectory API alignment), STORY-FING-07
+      (JSONPath wildcards), STORY-FING-08 (webhook ingestion server — chosen as the first
+      deferred infra epic over sandbox provisioning / GitOps automation)
+- [ ] Smith Gate 1 review (`*user review`) — not yet posted to CHAT.md
+- [ ] Morpheus architecture (Gate 2 pending Gate 1)
+- [ ] Mouse phase breakdown
 
-## Next-Sprint Backlog (from retro)
-1. Baseline-whitelist helper — no "observe clean traffic → compiled whitelist" function exists
-   yet (Smith, e2e testing).
-2. `compile_policy`'s `anomalous_trajectory: str` vs. `SlidingWindowMatcher`'s tuple output —
-   minor API friction (Smith).
-3. JSONPath resolver will need wildcards/recursive descent for full (non-POC) ingestion scope
-   (Morpheus).
-4. Webhook ingestion, sandbox provisioning, live exploit execution, GPG-signed GitOps
-   commit/PR automation — all explicitly deferred POC scope, now the natural next-sprint epics.
+## Next-Sprint Backlog (carried, not yet scheduled)
+- Sandbox/cgroup provisioning (deferred infra epic #2)
+- Live Nuclei/Metasploit exploit execution (deferred infra epic #3)
+- GPG-signed GitOps commit/PR automation (deferred infra epic #4)
+- AccuKnox/KubeArmor cluster deployment
 
 ## Blockers
-None
+None — waiting on Smith Gate 1, which per sprint skill requires explicit user approval before
+proceeding to Morpheus.
 
 ## Oracle Consultations
-None yet — no pre-existing product decisions to reconcile against (fresh repo).
+None needed — read lessons.md/memory.md directly per "Artifacts First" rule (2026-05-06 decision).
 
 ---
-*Last updated: 2026-07-12T00:22*
+*Last updated: 2026-07-13T00:00*
