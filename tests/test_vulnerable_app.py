@@ -56,6 +56,43 @@ class VulnerableAppTests(unittest.TestCase):
             urllib.request.urlopen(url)
         self.assertEqual(ctx.exception.code, 400)
 
+    def test_ping_endpoint_blocked_by_policy(self) -> None:
+        import tempfile
+        import os
+        import hashlib
+        fid_echo = hashlib.md5(b"hook_syscall:echo").hexdigest()
+        with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as tf:
+            tf.write(
+                f"metadata:\n  annotations:\n    fingerling.io/anomalous-trajectory: 'ping,{fid_echo}'\n".encode("utf-8")
+            )
+            policy_path = tf.name
+
+        try:
+            port = get_free_port()
+            server = run_app(port, policy_path)
+            t = threading.Thread(target=server.serve_forever)
+            t.daemon = True
+            t.start()
+
+            url = f"http://127.0.0.1:{port}/ping?host=127.0.0.1;echo%20boo"
+            with self.assertRaises(urllib.error.HTTPError) as ctx:
+                urllib.request.urlopen(url)
+            self.assertEqual(ctx.exception.code, 403)
+            body = ctx.exception.read().decode("utf-8")
+            self.assertIn("Blocked by KubeArmorPolicy", body)
+
+            # Normal ping without echo should still work
+            url_ok = f"http://127.0.0.1:{port}/ping?host=127.0.0.1"
+            with urllib.request.urlopen(url_ok) as resp:
+                self.assertEqual(resp.status, 200)
+
+            server.shutdown()
+            server.server_close()
+            t.join()
+        finally:
+            if os.path.exists(policy_path):
+                os.remove(policy_path)
+
 
 if __name__ == "__main__":
     unittest.main()

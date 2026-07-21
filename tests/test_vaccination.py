@@ -42,9 +42,10 @@ class E2EVaccinationTests(unittest.TestCase):
 
         self.webhook_port = get_free_port()
         self.warehouse = Warehouse()
-        # Seed whitelist with the baseline transition: ('ping', 'ping')
-        # We hash these syscall names like the DEFAULT modifier does
-        self.matcher = SlidingWindowMatcher(n=2, whitelist={("ping", "ping")})
+        # Seed whitelist with the baseline transition: (fid_ping, fid_ping)
+        from fingerling.warehouse import fingerprint_id
+        fid_ping = fingerprint_id({"hook_syscall": "ping"})
+        self.matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
         self.mask_profile = [
             MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")
         ]
@@ -110,6 +111,30 @@ class E2EVaccinationTests(unittest.TestCase):
         self.assertIn("KubeArmorPolicy", yaml_content)
         self.assertIn("vulnerable-target-app", yaml_content)
         self.assertIn("app: vuln-app", yaml_content)
+
+        # Step 3: Deploy the policy (antibody) to the target app environment and retrigger exploit
+        # Shut down the unprotected vulnerable app instance
+        self.app_server.shutdown()
+        self.app_server.server_close()
+        self.app_thread.join()
+
+        # Start a new vulnerable app instance bound to the compiled GitOps policy file
+        self.app_server = run_app(self.app_port, policy_file=policy_file)
+        self.app_thread = threading.Thread(target=self.app_server.serve_forever)
+        self.app_thread.daemon = True
+        self.app_thread.start()
+
+        # Retrigger the exploit request and assert it is blocked by KubeArmor (returning 403)
+        exploit_url = f"http://127.0.0.1:{self.app_port}/ping?host=127.0.0.1;echo%20boo"
+        with self.assertRaises(urllib.error.HTTPError) as ctx:
+            urllib.request.urlopen(exploit_url)
+        self.assertEqual(ctx.exception.code, 403)
+        self.assertIn("Blocked by KubeArmorPolicy", ctx.exception.read().decode("utf-8"))
+
+        # Assert normal traffic (baseline) still succeeds perfectly!
+        base_url = f"http://127.0.0.1:{self.app_port}/ping?host=127.0.0.1"
+        with urllib.request.urlopen(base_url) as resp:
+            self.assertEqual(resp.status, 200)
 
 
 if __name__ == "__main__":
