@@ -1,10 +1,9 @@
 # Smith Context
 
 ## Recent Decisions
-- Sprint 3 Gate 1 & 2: **Approved**.
-- Sprint 3 E2E User Testing: **Approved**.
-  - Verified GitOps status response formats.
-  - Verified local repository scaffolding runs cleanly without globally configured git credentials.
+- Sprint 4 E2E User Testing: **Approved**.
+  - Verified sandbox execution model and cgroup fallback warnings.
+  - Verified benign exploit trigger and policy hotfix delivery to git repo.
 
 ---
-*Last updated: 2026-07-21T16:33:00*
+*Last updated: 2026-07-21T16:56:00*

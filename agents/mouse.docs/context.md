@@ -1,8 +1,8 @@
 # Mouse Context
 
 ## Recent Decisions
-- Sprint 3 ("Automated GitOps Delivery Pipeline") scoped: 4 phases mapping to STORY-FING-09 to STORY-FING-12.
+- Sprint 4 ("Controlled Exposure Sandbox (Vaccination)") scoped: 4 phases mapping to STORY-FING-13 to STORY-FING-16.
 - Single source of truth is root `task.md`.
 
 ---
-*Last updated: 2026-07-21T16:29:00*
+*Last updated: 2026-07-21T16:50:00*

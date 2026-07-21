@@ -10,4 +10,4 @@ Trin (QA) — Phase 4 UAT.
 - [ ] On Phase 4 review pass, wait for Oracle to groom documentation (`*ora groom`).
 
 ---
-*Last updated: 2026-07-21T16:32:00*
+*Last updated: 2026-07-21T16:55:00*

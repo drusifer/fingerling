@@ -273,9 +273,20 @@ Run `run_server` with parameters:
 
 The result is reported back in the HTTP response under `"gitops_status": "success"` (or `"gitops_status": "failed: <reason>"` if GPG keys are invalid or merge conflicts occur).
 
+## Controlled Exposure Sandbox (Vaccination)
+
+Fingerling features a "vaccination" engine to run target exploit simulations within isolated workspaces.
+
+**Modules**:
+- **Sandbox (`fingerling/sandbox.py`)**: Runs commands under a subprocess. If configured, writes process PIDs to `/sys/fs/cgroup/<cgroup_name>/cgroup.procs` for resource limits. If cgroups v2 is unconfigured or permissions are restricted, falls back gracefully to standard process isolation.
+- **Vulnerable Target (`examples/vulnerable_app.py`)**: A standard library HTTP server exposing a command injection vulnerability at `/ping?host=<ip>` (CWE-78).
+- **Vaccine Replay Engine (`fingerling/vaccine.py`)**: Sends baseline requests (`/ping?host=127.0.0.1`) and benign exploit requests (`/ping?host=127.0.0.1;whoami`) to map execution paths and stream telemetry to the Webhook server.
+
+This closes the loop: triggering the exploit creates the anomalous trajectory which triggers policy compilation and GitOps hotfixes automatically.
+
 ## Known Gaps (see backlog)
 
-These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_STORIES_SPRINT3.md` and
+These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_STORIES_SPRINT4.md` and
 `agents/CHAT.md`'s sprint-close message:
 
 - **No real destination-port capture.** `tools/capture_syscalls.bt` traces `execve()` only, not
@@ -285,7 +296,7 @@ These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_S
   Fixable later via `buf()` + Python-side byte parsing of the sockaddr layout, or by rebuilding
   the kernel with `CONFIG_DEBUG_INFO_BTF=y` (a multi-hour undertaking on a Pi, not attempted).
   Not a blocker: `examples/demo_live_exploit.py`'s anomaly signal is entirely execve-based.
-- **No sandbox provisioning** — this remains architecture-documented but unimplemented. Webhook ingestion and GPG-signed GitOps commit/merge pipeline are now fully implemented.
+- **Mock/Simulated cgroup limitations** — while cgroup assignments are attempted, full cgroup-level container runtime policies (like namespace restrictions or root filesystem mounts) are deferred.
 
 ## Troubleshooting / FAQ
 

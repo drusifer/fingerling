@@ -78,3 +78,15 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** Automated non-fast-forward branch merging (`git merge --no-ff`).
 **Consequences:** Guarantees that a merge commit is generated for every policy deployment, preserving history trace integrity in the GitOps pipeline. Branch is cleaned up automatically post-merge.
 
+## 2026-07-21 — Sprint 4: Controlled Exposure Sandbox (Vaccination)
+
+**Decision:** Graceful fallback to process-level isolation in `fingerling/sandbox.py`.
+**Consequences:** If writing to `/sys/fs/cgroup` fails due to permissions or read-only filesystem, the sandbox logs a stderr warning and runs the target application via standard subprocess. This guarantees full offline testability on systems lacking cgroups configuration.
+
+**Decision:** stdlib-only Vulnerable Target HTTP App.
+**Consequences:** Avoids introducing Flask or other external frameworks. Keeps dependencies to zero and enables simple in-process server thread lifecycles in the test suite.
+
+**Decision:** Simulated benign exploit payload (`whoami`) for CW-78 verification.
+**Consequences:** Safely verifies that the vaccination engine triggers command injection anomalies, compiles KubeArmor policies, and delivers them via GitOps without any risk of system damage or malware detonation.
+
+
