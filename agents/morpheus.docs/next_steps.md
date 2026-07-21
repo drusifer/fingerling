@@ -1,14 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-All 4 phases reviewed and approved. Nothing pending unless Oracle/Smith/retro surfaces an issue.
+Awaiting Oracle's document grooming (`*ora groom`) and Smith's user testing (`*user test sprint3`).
 
 ## Waiting On
-Nothing.
+Oracle — Grooming.
 
 ## Planned Work
-- [ ] Participate in `*sprint retro` (architecture decisions made, anything to revisit) once
-      Smith's end-to-end user test passes.
+- [ ] Participate in Sprint 3 retrospective (`*sprint retro`).
 
 ---
-*Last updated: 2026-07-12T00:16*
+*Last updated: 2026-07-21T16:33:00*

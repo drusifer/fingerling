@@ -87,6 +87,20 @@ class CompilePolicyTests(unittest.TestCase):
         )
         self.assertEqual(custom_manifest["metadata"]["namespace"], "checkout")
 
+    def test_accepts_tuple_trajectory(self):
+        # Verification Task: anomalous_trajectory accepts tuple and joins with commas
+        manifest_text = compile_policy(
+            workload_name="w",
+            match_labels={"app": "w"},
+            anomalous_trajectory=("fp_a", "fp_b"),
+        )
+        manifest = yaml.safe_load(manifest_text)
+        self.assertEqual(
+            manifest["metadata"]["annotations"]["fingerling.io/anomalous-trajectory"],
+            "fp_a,fp_b",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
+

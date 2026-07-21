@@ -1,14 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Post retro findings (UX issues, HCI gaps this sprint) to Cypher's backlog.
+Participate in Sprint 3 retrospective (`*sprint retro`).
 
 ## Waiting On
-Nothing.
+All personas — Retrospective.
 
 ## Planned Work
-- [ ] `*sprint retro`: retro focus = the 2 backlog findings filed above (baseline-whitelist
-      helper gap, anomalous_trajectory str/tuple friction)
+- [ ] Collate UX insights for Cypher's backlog before Sprint 4.
 
 ---
-*Last updated: 2026-07-12T00:20*
+*Last updated: 2026-07-21T16:33:00*

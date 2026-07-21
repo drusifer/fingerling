@@ -71,7 +71,7 @@ class EndToEndPipelineTests(unittest.TestCase):
         scores = [matcher.push(fid) for fid in fingerprint_ids]
         self.assertEqual(scores, [0.0, 1.0])  # warm-up, then anomalous
 
-        anomalous_trajectory = ",".join(fingerprint_ids)
+        anomalous_trajectory = tuple(fingerprint_ids)
         manifest_text = compile_policy(
             workload_name="checkout-backend",
             match_labels={"app": "checkout-backend"},
@@ -84,7 +84,7 @@ class EndToEndPipelineTests(unittest.TestCase):
         self.assertEqual(manifest["spec"]["action"], "Block")
         self.assertEqual(
             manifest["metadata"]["annotations"]["fingerling.io/anomalous-trajectory"],
-            anomalous_trajectory,
+            ",".join(fingerprint_ids),
         )
 
     def test_repeated_telemetry_reconciles_as_match_not_drift(self):

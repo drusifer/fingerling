@@ -176,5 +176,51 @@ class ParseJsonlTests(unittest.TestCase):
         self.assertEqual(tokens, {"hook_syscall": "sys_connect"})
 
 
+class WildcardAndRecursiveDescentTests(unittest.TestCase):
+    def test_wildcard_array_resolution(self):
+        record = {
+            "process_kprobe": {
+                "args": [
+                    {"sock_arg": {"dport": 6379}},
+                    {"sock_arg": {"dport": 443}},
+                ]
+            }
+        }
+        profile = [
+            MaskEntry("ports", "$.process_kprobe.args[*].sock_arg.dport", "DEFAULT")
+        ]
+        tokens = tokenize(record, profile)
+        # Expected sorted and joined: "443,6379"
+        self.assertEqual(tokens, {"ports": "443,6379"})
+
+    def test_recursive_descent_resolution(self):
+        record = {
+            "process_kprobe": {
+                "args": [
+                    {"sock_arg": {"dport": 6379}},
+                    {"sock_arg": {"dport": 443}},
+                ],
+                "nested": {
+                    "other_port": {"dport": 80}
+                }
+            }
+        }
+        profile = [
+            MaskEntry("all_ports", "$.process_kprobe..dport", "DEFAULT")
+        ]
+        tokens = tokenize(record, profile)
+        # Expected sorted, deduplicated and joined: "443,6379,80" (sorted alphabetically: "443,6379,80" -> wait, str sort: '443', '6379', '80')
+        # Let's verify str sort order: '443' < '6379' < '80' because '6' < '8'. Yes! "443,6379,80"
+        self.assertEqual(tokens, {"all_ports": "443,6379,80"})
+
+    def test_missing_wildcard_resolves_to_null_and_never_raises(self):
+        record = {"process_kprobe": {}}
+        profile = [
+            MaskEntry("ports", "$.process_kprobe.args[*].sock_arg.dport", "DEFAULT")
+        ]
+        tokens = tokenize(record, profile)
+        self.assertEqual(tokens, {"ports": "NULL"})
+
+
 if __name__ == "__main__":
     unittest.main()

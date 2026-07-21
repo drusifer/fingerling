@@ -254,16 +254,30 @@ port like `examples/demo.py` does — see Known Gaps below for why, and see
 parsing logic in `capture.py` is unit tested in `tests/test_capture.py`; the bpftrace subprocess
 plumbing is integration-only, exercised by this demo).
 
+## Automated GitOps Delivery Pipeline
+
+Fingerling supports automated workload-bound GitOps delivery. When an anomaly is detected and a policy is compiled, the webhook server can write the policy and commit/merge it automatically to a target GitOps git repository to trigger git-reconciliation.
+
+**Configuration**:
+Run `run_server` with parameters:
+- `gitops_repo_path`: Absolute path to a local GitOps git repository workspace.
+- `gpg_sign`: Enable/disable cryptographically secure GPG signing for policy commits.
+- `gpg_key_id`: (Optional) Local user GPG key ID used for GPG signed commits.
+
+**Workflow**:
+1. Server initializes/checks out hotfix branch `fingerling-policy-<workload>-<uuid>`.
+2. Policy manifest is written to `policies/fingerling-<workload>.yaml` inside the workspace.
+3. Commits the manifest (optionally signed with GPG user key).
+4. Auto-merges the hotfix branch back to the target branch (e.g. `main`) using non-fast-forward merge (`git merge --no-ff`).
+5. Cleans up/deletes the hotfix branch.
+
+The result is reported back in the HTTP response under `"gitops_status": "success"` (or `"gitops_status": "failed: <reason>"` if GPG keys are invalid or merge conflicts occur).
+
 ## Known Gaps (see backlog)
 
-These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_STORIES.md` and
+These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_STORIES_SPRINT3.md` and
 `agents/CHAT.md`'s sprint-close message:
 
-- **No baseline-whitelist helper.** `examples/demo.py`'s `build_baseline_whitelist()` function
-  is exactly the glue code a real caller has to write today — there's no library function that
-  turns "here's a batch of clean telemetry" into "here's a compiled whitelist."
-- **`compile_policy(anomalous_trajectory: str)`** expects a string; if your anomalous IDs come
-  from the ring buffer as a tuple, join them yourself (`",".join(ids)`) as the demo does.
 - **No real destination-port capture.** `tools/capture_syscalls.bt` traces `execve()` only, not
   `connect()`. This Pi's kernel has no BTF (`/sys/kernel/btf/vmlinux` absent), so bpftrace can't
   resolve named struct casts (`struct sockaddr_in`) to pull a real `dport` out of `connect()`'s
@@ -271,9 +285,7 @@ These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_S
   Fixable later via `buf()` + Python-side byte parsing of the sockaddr layout, or by rebuilding
   the kernel with `CONFIG_DEBUG_INFO_BTF=y` (a multi-hour undertaking on a Pi, not attempted).
   Not a blocker: `examples/demo_live_exploit.py`'s anomaly signal is entirely execve-based.
-- **No webhook ingestion, sandbox provisioning, or GitOps commit/PR automation** — those remain
-  architecture-documented in `docs/SOURCE_SPEC.md` but unimplemented. Live exploit execution
-  against a local target now exists, though — see [Live Capture](#live-capture-real-ebpf).
+- **No sandbox provisioning** — this remains architecture-documented but unimplemented. Webhook ingestion and GPG-signed GitOps commit/merge pipeline are now fully implemented.
 
 ## Troubleshooting / FAQ
 

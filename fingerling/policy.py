@@ -17,7 +17,7 @@ _VALID_ACTIONS = ("Block", "Post")
 def compile_policy(
     workload_name: str,
     match_labels: dict[str, str],
-    anomalous_trajectory: str,
+    anomalous_trajectory: str | tuple[str, ...],
     namespace: str = "default",
     action: Literal["Block", "Post"] = "Block",
 ) -> str:
@@ -31,6 +31,11 @@ def compile_policy(
     if not match_labels:
         raise ValueError("match_labels must not be empty — an empty selector matches everything")
 
+    if isinstance(anomalous_trajectory, tuple):
+        trajectory_str = ",".join(anomalous_trajectory)
+    else:
+        trajectory_str = str(anomalous_trajectory)
+
     policy = {
         "apiVersion": "security.kubearmor.com/v1",
         "kind": "KubeArmorPolicy",
@@ -38,9 +43,10 @@ def compile_policy(
             "name": f"fingerling-{workload_name}",
             "namespace": namespace,
             "annotations": {
-                "fingerling.io/anomalous-trajectory": anomalous_trajectory,
+                "fingerling.io/anomalous-trajectory": trajectory_str,
             },
         },
+
         "spec": {
             "selector": {
                 "matchLabels": dict(match_labels),

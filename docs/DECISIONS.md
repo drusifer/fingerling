@@ -52,3 +52,29 @@ but the original architecture only specified `tokenize(record: dict, ...)`. Trin
 at UAT (tests only exercised pre-parsed dicts); Neo added a 4-line wrapper. Lesson: architecture
 review should trace every AC to a literal function signature, not just a data-flow diagram — see
 `docs/LESSONS.md`.
+
+## 2026-07-21 — Sprint 2: Live Ingestion & Pipeline Polish
+
+**Decision:** Hand-rolled recursive descent and wildcard path resolver in `fingerling/tokenizer.py`.
+**Consequences:** Avoids introducing heavy external libraries like `jsonpath-ng` or `jsonpath-rw`. Code remains stdlib-only.
+
+**Decision:** Sorted, deduplicated, comma-joined token aggregation for wildcard matches.
+**Consequences:** Multiple matches from a wildcard query are tokenized individually and combined deterministically. This prevents array ordering from causing fingerprint drift.
+
+**Decision:** Aligned Policy API accepting tuples.
+**Consequences:** Avoids manual comma-joining glue at call sites, allowing direct handoff of the output from `SlidingWindowMatcher` to `compile_policy`.
+
+**Decision:** stdlib-only `http.server` for Webhook Ingestion.
+**Consequences:** The webhook server requires no external framework dependencies (like FastAPI/Flask) and remains completely offline-testable.
+
+## 2026-07-21 — Sprint 3: Automated GitOps Delivery Pipeline
+
+**Decision:** Self-contained GitOps workspace scaffolding using python subprocess.
+**Consequences:** Avoids third-party Git integration libraries like GitPython. Utilizes standard git CLI directly, which runs offline and requires zero setup.
+
+**Decision:** Optional/Fallback GPG signing execution.
+**Consequences:** Commits are signed if a key is provided, but failure is handled gracefully with clear `RuntimeError` reporting. This makes it easy to write local offline integration tests on systems that may not have GPG key rings initialized.
+
+**Decision:** Automated non-fast-forward branch merging (`git merge --no-ff`).
+**Consequences:** Guarantees that a merge commit is generated for every policy deployment, preserving history trace integrity in the GitOps pipeline. Branch is cleaned up automatically post-merge.
+

@@ -1,17 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-None — user guide + demo delivered. Nothing pending.
+Awaiting Smith's end-to-end user testing (`*user test sprint3`).
 
 ## Waiting On
-Nothing.
+Smith — E2E testing.
 
 ## Planned Work
-- [ ] Next sprint: if the baseline-whitelist helper or a real `tokenize`-accepting-a-tuple
-      fix for `compile_policy` gets built, update `docs/USER_GUIDE.md`'s "Known Gaps" section
-      to remove the now-resolved item.
-- [ ] If Tank fixes the Makefile `_IS_BOB_ENTRY` routing gap, update the guide's FAQ entry and
-      README to recommend `make demo` again.
+- [ ] Participate in Sprint 3 retrospective (`*sprint retro`).
 
 ---
-*Last updated: 2026-07-12T00:30*
+*Last updated: 2026-07-21T16:33:00*

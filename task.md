@@ -1,45 +1,36 @@
-# Task Board — Sprint: POC Fingerling
+# Task Board — Sprint: Fingerling Sprint 3
 
-**Status:** Planning complete, ready for Phase 1 (Neo)
-**Source:** `docs/USER_STORIES.md` + `docs/ARCH.md`
+**Status:** Sprint 3 Complete (Launched)
+**Source:** `docs/USER_STORIES_SPRINT3.md`
 **Sprint Log:** `agents/mouse.docs/sprint_log.md`
 
-## Phase 1 — Scaffolding & Telemetry Tokenizer (STORY-FING-01)
-- [ ] 1.1 Scaffold package: `fingerling/__init__.py`, `tests/__init__.py`, `requirements.txt` (PyYAML)
-- [ ] 1.2 Implement `fingerling/tokenizer.py` (path resolver + modifier registry: `DEFAULT`,
-      `IS_PRESENT`, `IS_NULL`, `IN_RANGE`, `ANY`; missing/null → stable `"FALSE"`/`"NULL"`, never raises)
-      + `tests/test_tokenizer.py` covering AC1-4 and both Verification Tasks.
+## Phase 1 — Local Git Repo Scaffolding (STORY-FING-09)
+- [x] 1.1 Implement `initialize_repo(repo_path, default_branch)` in `fingerling/gitops.py`.
+- [x] 1.2 Add unit tests for repo scaffolding in `tests/test_gitops.py`.
 
 **Owner:** Neo → **UAT:** Trin → **Review:** Morpheus
 
-## Phase 2 — Stateful Upsert Warehouse (STORY-FING-02)
-- [ ] 2.1 Implement `fingerling/warehouse.py` (`fingerprint_id()` alphabetical MD5 fold,
-      `Warehouse.upsert()` match/drift reconciliation, sample ring capped at 3, `load`/`save` YAML)
-      + `tests/test_warehouse.py` covering AC1-3 and both Verification Tasks.
+## Phase 2 — GPG-Signed Branch and Commit (STORY-FING-10)
+- [x] 2.1 Implement `commit_policy(repo_path, policy_yaml, workload_name, branch_name, gpg_sign, gpg_key_id)` in `fingerling/gitops.py`.
+- [x] 2.2 Add unit tests for branch checking out and policy file commits in `tests/test_gitops.py`.
 
 **Owner:** Neo → **UAT:** Trin → **Review:** Morpheus
 
-## Phase 3 — Sliding Window Ring Buffer Matcher (STORY-FING-03)
-- [ ] 3.1 Implement `fingerling/ringbuffer.py` (`SlidingWindowMatcher`: FIFO window, `warm`
-      property, `push()` → 0.0/1.0 whitelist match) + `tests/test_ringbuffer.py` covering AC1-4
-      and both Verification Tasks (N=3 warm-up, off-whitelist anomaly).
+## Phase 3 — Auto-Merge Delivery Pipeline (STORY-FING-11)
+- [x] 3.1 Implement `auto_merge_policy(repo_path, branch_name, target_branch)` in `fingerling/gitops.py`.
+- [x] 3.2 Add unit tests for branch merging and conflict validation in `tests/test_gitops.py`.
 
 **Owner:** Neo → **UAT:** Trin → **Review:** Morpheus
 
-## Phase 4 — KubeArmor Policy Compiler (STORY-FING-04)
-- [ ] 4.1 Implement `fingerling/policy.py` (`compile_policy()`: `matchLabels`, explicit
-      `action: Literal["Block","Post"] = "Block"`) + `tests/test_policy.py` covering AC1-3 and
-      both Verification Tasks (schema shape, matchLabels mapping).
+## Phase 4 — Webhook GitOps Integration (STORY-FING-12)
+- [x] 4.1 Update `create_handler` and `run_server` in `fingerling/server.py` to support GitOps repo parameters and pipeline executions.
+- [x] 4.2 Add integration tests in `tests/test_server.py` validating automated git commits on webhook telemetries.
 
 **Owner:** Neo → **UAT:** Trin → **Review:** Morpheus (last phase → hands to Oracle for `*ora groom`)
 
 ---
 
 ## Definition of Done (per phase)
-- [ ] `make test` passes (full suite, since each phase is additive and cheap for this POC size)
-- [ ] Trin UAT confirms all AC + Verification Tasks for the story
-- [ ] Morpheus confirms architectural alignment with `docs/ARCH.md`
-
-## Out of scope this sprint (tracked, not planned)
-Webhook ingestion server, sandbox/cgroup provisioning, live Nuclei/Metasploit execution, GPG-signed
-Git commit/PR automation, AccuKnox/KubeArmor cluster deployment.
+- [x] `make test` passes (all unit, integration, and E2E tests).
+- [x] Trin UAT confirms all AC + Verification Tasks for the story are met.
+- [x] Morpheus confirms architectural alignment with `docs/USER_STORIES_SPRINT3.md`.

@@ -88,5 +88,29 @@ class PersistenceTests(unittest.TestCase):
         self.assertEqual(restored.samples, original.samples)
 
 
+class BuildWhitelistTests(unittest.TestCase):
+    def test_builds_correct_whitelisted_ngrams(self):
+        from fingerling.tokenizer import MaskEntry
+        from fingerling.warehouse import build_whitelist, fingerprint_id
+        from fingerling.tokenizer import tokenize
+
+        records = [
+            {"process_kprobe": {"function_name": "sys_connect"}},
+            {"process_kprobe": {"function_name": "sys_write"}},
+            {"process_kprobe": {"function_name": "sys_close"}},
+        ]
+        profile = [MaskEntry("sys", "$.process_kprobe.function_name", "DEFAULT")]
+
+        whitelist = build_whitelist(records, profile, n=2)
+
+        fids = [fingerprint_id(tokenize(r, profile)) for r in records]
+        expected = {
+            (fids[0], fids[1]),
+            (fids[1], fids[2]),
+        }
+        self.assertEqual(whitelist, expected)
+
+
 if __name__ == "__main__":
     unittest.main()
+

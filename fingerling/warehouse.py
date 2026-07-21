@@ -89,3 +89,28 @@ class Warehouse:
         with open(path) as f:
             data = yaml.safe_load(f) or {}
         self._records = {fid: FingerprintRecord(**rec) for fid, rec in data.items()}
+
+
+def build_whitelist(
+    records: list[dict],
+    mask_profile: list[MaskEntry],
+    n: int,
+    warehouse: Warehouse | None = None,
+) -> set[tuple[str, ...]]:
+    """Observe a clean baseline telemetry stream and compile a whitelist of N-gram fingerprint trajectories."""
+    from fingerling.tokenizer import tokenize
+
+    if warehouse is None:
+        warehouse = Warehouse()
+    fingerprint_ids = []
+    for r in records:
+        tokens = tokenize(r, mask_profile)
+        fid = warehouse.upsert(tokens, duration_ms=0.0, raw_record=r)
+        fingerprint_ids.append(fid)
+
+    whitelist = set()
+    for i in range(len(fingerprint_ids) - n + 1):
+        whitelist.add(tuple(fingerprint_ids[i : i + n]))
+    return whitelist
+
+

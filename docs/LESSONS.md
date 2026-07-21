@@ -45,3 +45,21 @@ per file, per the skill's own verification instructions), `make demo`, `make tld
 `make test` (50/50, no regressions). **Lesson under the lesson:** when diagnosing a tooling
 failure, check the authoritative skill/doc for the *intended* design before inferring root
 cause from symptoms — the real answer was one skill-read away, not a guess.
+
+## 2026-07-21 — Sprint 2: Live Ingestion & Pipeline Polish
+
+**Lesson:** In-process HTTP server tests must isolate their reference states.
+**What happened:** During the first `make test` pass after implementing `fingerling/server.py`, the `test_post_valid_telemetry_returns_success` test failed because it was sharing the `Warehouse` and `SlidingWindowMatcher` instances with other tests. The state accumulated across tests, causing the matcher to warm up and trigger unexpected policy compilations.
+**Applying it:** Reset shared states (e.g. `self.warehouse._records.clear()` and `self.matcher._window.clear()`) in `setUp()` to keep tests isolated.
+
+**Lesson:** Use dynamic local imports to break circular dependencies in library utility helpers.
+**What happened:** The new `build_whitelist` function in `warehouse.py` needed `tokenize` from `tokenizer.py`, which itself imported classes from other modules. Placing `from fingerling.tokenizer import tokenize` dynamically inside the function resolved the issue cleanly.
+**Applying it:** Keep modularity high by using dynamic imports when a specific utility function needs cross-module capabilities.
+
+## 2026-07-21 — Sprint 3: Automated GitOps Delivery Pipeline
+
+**Lesson:** Fallback GPG signature checks simplify offline developer workflows.
+**What happened:** GPG cryptographic signing requires local keys and a running gpg-agent, which is typically not present on standard test runner environments. Designing the module to raise clear exceptions on key absence and making it configurable allowed mock/offline repo tests to bypass signing while keeping logic verified.
+**Applying it:** Ensure automated environment requirements fail gracefully and provide config toggles for localized test coverage.
+
+

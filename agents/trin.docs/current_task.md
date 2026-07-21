@@ -1,28 +1,19 @@
 # Current Task
 
-**Status:** Phase 4 UAT PASSED (final phase) — handed to Morpheus for code review
+**Status:** Completed Phase 4 UAT
 **Assigned to:** Trin
-**Started:** 2026-07-12
+**Started:** 2026-07-21
 
 ## Task Description
-`*qa uat phase-4`: verify `fingerling/policy.py` against STORY-FING-04's AC1-3 and
-Verification Tasks — last phase of the sprint.
+`*qa uat phase-4`: Verify GitOps integration into Webhook server in `fingerling/server.py`.
 
 ## Progress
-- [x] `make test` — 47/47 passing
-- [x] AC1 (syntactically correct KubeArmorPolicy CRD from anomaly string) — tested via real
-      `yaml.safe_load` round-trip, not just string-matching
-- [x] AC2 (matchLabels injection) — tested with real `app: checkout-backend` fixture from the
-      story's own example
-- [x] AC3 (action defaults, explicit Block/Post) — tested both values + invalid-value guard
-- [x] Both Verification Tasks — literal match (schema shape, matchLabels mapping)
-- [x] Posted PASS handoff to Morpheus — all 4 phases now UAT-clean
+- [x] Verified GitOps status responses and policy delivery to git repo
+- [x] Verified unit and integration tests in `tests/test_server.py`
+- [x] Posted UAT PASS to CHAT.md
 
 ## Blockers
 None
 
-## Oracle Consultations
-None yet
-
 ---
-*Last updated: 2026-07-12T00:15*
+*Last updated: 2026-07-21T16:33:00*

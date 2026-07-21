@@ -14,9 +14,6 @@ from typing import Any, Callable
 _MISSING = object()
 """Sentinel returned by resolve_path when a path segment can't be found."""
 
-_SEGMENT_RE = re.compile(r"^(\w+)((?:\[\d+\])*)$")
-_INDEX_RE = re.compile(r"\[(\d+)\]")
-
 
 @dataclass(frozen=True)
 class MaskEntry:
@@ -27,32 +24,87 @@ class MaskEntry:
     modifier: str
 
 
-def resolve_path(record: dict, path: str) -> Any:
-    """Resolve a dot/bracket-index path (e.g. "$.a.b[0].c") against `record`.
+def resolve_segments(data: Any, segments: list[str]) -> list[Any]:
+    """Recursively resolve JSONPath segments (supporting fixed indices, wildcards, and descent)."""
+    if data is _MISSING:
+        return []
 
-    Returns the `_MISSING` sentinel instead of raising if any segment is
-    absent, so callers never need to catch KeyError/IndexError.
-    """
+    if not segments:
+        return [data]
+
+    if data is None:
+        return []
+
+    seg = segments[0]
+    remaining = segments[1:]
+
+    if seg == "":
+        # Recursive descent ".."
+        results = []
+        results.extend(resolve_segments(data, remaining))
+        if isinstance(data, dict):
+            for val in data.values():
+                results.extend(resolve_segments(val, segments))
+        elif isinstance(data, list):
+            for val in data:
+                results.extend(resolve_segments(val, segments))
+        return results
+
+    # Parse brackets (e.g. "args[*]", "[0]", "args")
+    brackets = re.findall(r"\[([^\]]+)\]", seg)
+    name = re.sub(r"\[[^\]]+\]", "", seg)
+
+    curr_level: list[Any] = []
+    if name:
+        if isinstance(data, dict) and name in data:
+            curr_level = [data[name]]
+        else:
+            return []
+    else:
+        curr_level = [data]
+
+    for br in brackets:
+        next_level: list[Any] = []
+        for item in curr_level:
+            if br == "*":
+                if isinstance(item, list):
+                    next_level.extend(item)
+            else:
+                try:
+                    idx = int(br)
+                    if isinstance(item, list) and 0 <= idx < len(item):
+                        next_level.append(item[idx])
+                except ValueError:
+                    pass
+        curr_level = next_level
+        if not curr_level:
+            break
+
+    final_results: list[Any] = []
+    for item in curr_level:
+        final_results.extend(resolve_segments(item, remaining))
+    return final_results
+
+
+def resolve_path(record: dict, path: str) -> Any:
+    """Resolve a dot/bracket-index path (supporting wildcards [*] and recursive descent ..) against `record`."""
+    if path == "$":
+        return record
     if path.startswith("$."):
         path = path[2:]
     elif path.startswith("$"):
         path = path[1:]
 
-    current: Any = record
-    for segment in path.split("."):
-        match = _SEGMENT_RE.match(segment)
-        if not match:
+    segments = path.split(".")
+    results = resolve_segments(record, segments)
+
+    has_wildcard = "*" in path or ".." in path
+    if has_wildcard:
+        return results
+    else:
+        if not results:
             return _MISSING
-        name, indices = match.group(1), match.group(2)
-        if not isinstance(current, dict) or name not in current:
-            return _MISSING
-        current = current[name]
-        for idx_str in _INDEX_RE.findall(indices):
-            idx = int(idx_str)
-            if not isinstance(current, list) or idx >= len(current):
-                return _MISSING
-            current = current[idx]
-    return current
+        return results[0]
 
 
 def _mod_default(value: Any) -> str:
@@ -92,8 +144,15 @@ _MODIFIERS: dict[str, Callable[..., str]] = {
 }
 
 
-def apply_modifier(value: Any, modifier: str) -> str:
+def apply_modifier(value: Any, modifier: str, has_wildcard: bool = False) -> str:
     """Apply a modifier expression (e.g. "IN_RANGE(-999, 0)") to `value`."""
+    if has_wildcard and isinstance(value, list):
+        if not value:
+            value = _MISSING
+        else:
+            tokens = [apply_modifier(item, modifier, has_wildcard=False) for item in value]
+            return ",".join(sorted(list(set(tokens))))
+
     name, _, rest = modifier.partition("(")
     name = name.strip()
     if name not in _MODIFIERS:
@@ -113,10 +172,12 @@ def apply_modifier(value: Any, modifier: str) -> str:
 
 def tokenize(record: dict, mask_profile: list[MaskEntry]) -> dict[str, str]:
     """Extract + tokenize every `MaskEntry` in `mask_profile` against `record`."""
-    return {
-        entry.key: apply_modifier(resolve_path(record, entry.path), entry.modifier)
-        for entry in mask_profile
-    }
+    result = {}
+    for entry in mask_profile:
+        has_wildcard = "*" in entry.path or ".." in entry.path
+        val = resolve_path(record, entry.path)
+        result[entry.key] = apply_modifier(val, entry.modifier, has_wildcard)
+    return result
 
 
 def parse_jsonl(jsonl_text: str) -> list[dict]:

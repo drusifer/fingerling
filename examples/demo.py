@@ -27,7 +27,7 @@ import json
 from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.tokenizer import MaskEntry, parse_jsonl, tokenize
-from fingerling.warehouse import Warehouse
+from fingerling.warehouse import Warehouse, build_whitelist
 
 WINDOW_N = 2
 
@@ -79,23 +79,10 @@ LIVE_JSONL = "\n".join(
 )
 
 
-def build_baseline_whitelist(warehouse: Warehouse, jsonl_text: str) -> set[tuple[str, ...]]:
-    """Tokenize + upsert every baseline record, then collect every N-gram observed."""
-    records = parse_jsonl(jsonl_text)
-    fingerprint_ids = [
-        warehouse.upsert(tokenize(r, MASK_PROFILE), duration_ms=r["duration_ms"], raw_record=r)
-        for r in records
-    ]
-    return {
-        tuple(fingerprint_ids[i : i + WINDOW_N])
-        for i in range(len(fingerprint_ids) - WINDOW_N + 1)
-    }
-
-
 def main() -> None:
     print("=== Stage 1: Baseline (training) telemetry ===")
     warehouse = Warehouse()
-    whitelist = build_baseline_whitelist(warehouse, BASELINE_JSONL)
+    whitelist = build_whitelist(parse_jsonl(BASELINE_JSONL), MASK_PROFILE, WINDOW_N, warehouse)
     print(f"Warehouse learned {len(warehouse)} distinct fingerprints from the baseline.")
     print(f"Compiled whitelist of {len(whitelist)} whitelisted {WINDOW_N}-grams.")
 
@@ -122,7 +109,7 @@ def main() -> None:
     manifest = compile_policy(
         workload_name="checkout-backend",
         match_labels={"app": "checkout-backend"},
-        anomalous_trajectory=",".join(anomalous_ids),
+        anomalous_trajectory=tuple(anomalous_ids),
     )
     print(manifest)
 
