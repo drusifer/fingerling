@@ -36,7 +36,7 @@ This document combines **User Stories** and **Architecture Design** for Sprint 4
 #### Acceptance Criteria
 1. A runnable application `examples/vulnerable_app.py` implementing a standard library HTTP server.
 2. Exposes an endpoint `/ping?host=<ip>` which executes `ping -c 1 {host}` using shell execution (`shell=True` in subprocess).
-3. If `host` contains shell metacharacters (e.g. `127.0.0.1; whoami`), it executes the command injection.
+3. If `host` contains shell metacharacters (e.g. `127.0.0.1; echo boo`), it executes the command injection.
 4. Accepts a `--port` argument to bind to a specific port.
 
 ---
@@ -53,7 +53,7 @@ This document combines **User Stories** and **Architecture Design** for Sprint 4
 1. Function `fingerling.vaccine.run_vaccination(app_port: int, webhook_url: str) -> dict`:
    - Sends baseline requests (e.g. `host=127.0.0.1`) to the vulnerable application.
    - Streams the resulting telemetry to `webhook_url`.
-   - Sends a benign exploit request (e.g. `host=127.0.0.1;whoami`) to trigger command injection telemetry, streaming it to `webhook_url`.
+   - Sends a benign exploit request (e.g. `host=127.0.0.1;echo boo`) to trigger command injection telemetry, streaming it to `webhook_url`.
    - Returns a status dictionary detailing the baseline and exploit request outcomes.
 
 ---
@@ -71,7 +71,7 @@ This document combines **User Stories** and **Architecture Design** for Sprint 4
    - Starts the Webhook server (linked to a temp GitOps repo).
    - Starts the vulnerable application.
    - Runs `run_vaccination` baseline and exploit sequences.
-   - Asserts that the anomalous `whoami` trajectory is detected.
+   - Asserts that the anomalous `echo` trajectory is detected.
    - Asserts that a KubeArmorPolicy manifest is successfully committed and merged into the GitOps repository.
 
 ---
@@ -88,5 +88,5 @@ This document combines **User Stories** and **Architecture Design** for Sprint 4
         │                                  ▲
         ▼ (Anomaly Detected)               │
  [ GitOps merge ] ─────────────────────────┘
- (KubeArmorPolicy blocks whoami execution)
+ (KubeArmorPolicy blocks echo execution)
 ```

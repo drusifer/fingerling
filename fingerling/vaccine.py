@@ -32,7 +32,7 @@ def run_vaccination(app_port: int, webhook_url: str) -> dict:
         raise RuntimeError(f"Baseline telemetry posting failed: {e}")
 
     # 2. Exploit Request
-    exploit_url = f"http://127.0.0.1:{app_port}/ping?host=127.0.0.1;whoami"
+    exploit_url = f"http://127.0.0.1:{app_port}/ping?host=127.0.0.1;echo%20boo"
     try:
         with urllib.request.urlopen(exploit_url) as resp:
             resp.read()
@@ -41,7 +41,7 @@ def run_vaccination(app_port: int, webhook_url: str) -> dict:
 
     # Forward simulated exploit telemetry to webhook
     exploit_telemetry = (
-        '{"process_kprobe": {"function_name": "whoami"}, "duration_ms": 1.0}'
+        '{"process_kprobe": {"function_name": "echo"}, "duration_ms": 1.0}'
     )
     try:
         req = urllib.request.Request(

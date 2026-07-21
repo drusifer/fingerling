@@ -86,7 +86,7 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** stdlib-only Vulnerable Target HTTP App.
 **Consequences:** Avoids introducing Flask or other external frameworks. Keeps dependencies to zero and enables simple in-process server thread lifecycles in the test suite.
 
-**Decision:** Simulated benign exploit payload (`whoami`) for CW-78 verification.
+**Decision:** Simulated benign exploit payload (`echo`) for CW-78 verification.
 **Consequences:** Safely verifies that the vaccination engine triggers command injection anomalies, compiles KubeArmor policies, and delivers them via GitOps without any risk of system damage or malware detonation.
 
 

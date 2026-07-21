@@ -280,7 +280,7 @@ Fingerling features a "vaccination" engine to run target exploit simulations wit
 **Modules**:
 - **Sandbox (`fingerling/sandbox.py`)**: Runs commands under a subprocess. If configured, writes process PIDs to `/sys/fs/cgroup/<cgroup_name>/cgroup.procs` for resource limits. If cgroups v2 is unconfigured or permissions are restricted, falls back gracefully to standard process isolation.
 - **Vulnerable Target (`examples/vulnerable_app.py`)**: A standard library HTTP server exposing a command injection vulnerability at `/ping?host=<ip>` (CWE-78).
-- **Vaccine Replay Engine (`fingerling/vaccine.py`)**: Sends baseline requests (`/ping?host=127.0.0.1`) and benign exploit requests (`/ping?host=127.0.0.1;whoami`) to map execution paths and stream telemetry to the Webhook server.
+- **Vaccine Replay Engine (`fingerling/vaccine.py`)**: Sends baseline requests (`/ping?host=127.0.0.1`) and benign exploit requests (`/ping?host=127.0.0.1;echo%20boo`) to map execution paths and stream telemetry to the Webhook server.
 
 This closes the loop: triggering the exploit creates the anomalous trajectory which triggers policy compilation and GitOps hotfixes automatically.
 
