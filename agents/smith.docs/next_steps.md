@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Participate in Sprint 4 retrospective (`*sprint retro`).
+Handed off to Cypher to launch release.
 
 ## Waiting On
-All personas — Retrospective.
+Cypher — Release launch.
 
 ## Planned Work
-- [ ] Collate UX insights for Cypher's backlog before Sprint 5.
+Track future sprints backlog.
 
 ---
-*Last updated: 2026-07-21T16:56:00*
+*Last updated: 2026-07-22T14:38:00*

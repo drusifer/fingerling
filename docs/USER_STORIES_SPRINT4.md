@@ -90,3 +90,19 @@ This document combines **User Stories** and **Architecture Design** for Sprint 4
  [ GitOps merge ] ─────────────────────────┘
  (KubeArmorPolicy blocks echo execution)
 ```
+
+---
+
+## 🔧 Refinement: HTTP GET Baseline Verification (C2)
+**Role:** PM & DevSecOps Specialist
+
+### STORY-FING-17: HTTP GET Baseline Requests Refinement
+**As a** Security Engineer,
+**I want** the E2E verification test and demo script to initiate actual HTTP GET requests (with normal query characters) to the target application to warm up the baseline sequence,
+**so that** we verify live app connectivity and avoid mocking the raw baseline telemetry directly.
+
+#### Acceptance Criteria
+1. `examples/vaccination_demo.py` warms up the pipeline by executing two actual HTTP GET requests to `http://127.0.0.1:<app_port>/ping?host=127.0.0.1` and forwarding the corresponding telemetry.
+2. `tests/test_vaccination.py` warms up the telemetry server by making two actual HTTP GET requests to the app server before processing baseline telemetry.
+3. `fingerling/vaccine.py` runs two baseline requests to warm up the target environment under the vaccine replay engine.
+

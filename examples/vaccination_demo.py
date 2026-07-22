@@ -89,12 +89,20 @@ def main() -> None:
     webhook_url = f"http://127.0.0.1:{webhook_port}/telemetry"
 
     # Step 3: Send baseline traffic
-    print("\nStep 3: Simulating normal baseline traffic (ping)...")
+    print("\nStep 3: Simulating normal baseline traffic (ping) via actual GET requests...")
     base_telemetry = (
         '{"process_kprobe": {"function_name": "ping"}, "duration_ms": 10.0}'
     )
     for i in range(2):
-        # Warm up the server's telemetry pipeline
+        # 1. Send the actual GET request to the target app with normal characters
+        base_url = f"http://127.0.0.1:{app_port}/ping?host=127.0.0.1"
+        try:
+            with urllib.request.urlopen(base_url) as resp:
+                resp.read()
+        except Exception as e:
+            raise RuntimeError(f"Baseline HTTP GET request failed: {e}")
+
+        # 2. Warm up the server's telemetry pipeline
         req = urllib.request.Request(
             webhook_url,
             data=base_telemetry.encode("utf-8"),

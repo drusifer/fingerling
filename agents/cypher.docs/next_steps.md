@@ -1,7 +1,7 @@
 # Next Steps
 
 ## Immediate Next Action
-Done. Sprint 4 closed.
+Awaiting next user requests.
 
 ## Waiting On
 User — further requests.
@@ -10,4 +10,4 @@ User — further requests.
 None.
 
 ---
-*Last updated: 2026-07-21T16:57:00*
+*Last updated: 2026-07-22T14:38:00*

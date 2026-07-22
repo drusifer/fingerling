@@ -1,20 +1,20 @@
 # Current Task
 
-**Status:** Completed Sprint 4 documentation grooming
+**Status:** Completed refinement documentation grooming
 **Assigned to:** Oracle
-**Started:** 2026-07-21
+**Started:** 2026-07-22
 
 ## Task Description
-`*ora groom`: Update documentation (User Guide, Decisions, Lessons) to reflect Sprint 4 Vaccination sandbox updates.
+`*ora groom`: Groom decisions, lessons, and guide to cover STORY-FING-17 GET baseline requests.
 
 ## Progress
-- [x] Groomed `docs/USER_GUIDE.md` Controlled Exposure section
-- [x] Appended new decisions to `docs/DECISIONS.md`
-- [x] Appended new lessons to `docs/LESSONS.md`
-- [x] Posted handoff to Smith for Stage 3 E2E testing
+- [x] Appended baseline GET request decisions to `docs/DECISIONS.md`
+- [x] Appended baseline GET request lessons to `docs/LESSONS.md`
+- [x] Verified user guide documentation accuracy
+- [x] Posted handoff to Smith for final verification
 
 ## Blockers
 None
 
 ---
-*Last updated: 2026-07-21T16:56:00*
+*Last updated: 2026-07-22T14:38:00*

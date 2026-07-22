@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Awaiting Morpheus's code review approval for Phase 4 (`*lead review phase-4`).
+Awaiting Morpheus's code review approval for the refinement (`*lead review refinement`).
 
 ## Waiting On
-Morpheus — Phase 4 review.
+Morpheus — Refinement review.
 
 ## Planned Work
-- [ ] On Phase 4 code review approval: wait for Oracle to groom documentation (`*ora groom`).
+Awaiting Oracle documentation update verification.
 
 ---
-*Last updated: 2026-07-21T16:55:00*
+*Last updated: 2026-07-22T14:37:00*

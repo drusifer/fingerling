@@ -1,19 +1,20 @@
 # Current Task
 
-**Status:** Completed Phase 4 implementation (Sprint 4 complete)
+**Status:** Completed refinement implementation
 **Assigned to:** Neo
-**Started:** 2026-07-21
+**Started:** 2026-07-22
 
 ## Task Description
-`*swe impl phase-4`: Implement `tests/test_vaccination.py` orchestrating end-to-end vaccination pipeline.
+`*swe impl refinement`: Refine baseline requests to execute actual HTTP GET requests to target app.
 
 ## Progress
-- [x] Implemented `E2EVaccinationTests` setting up servers and trigger runs
-- [x] Verified full GitOps merge of compiled policy upon exploit triggering
-- [x] Verified `make test` passes (82/82)
+- [x] Refined `examples/vaccination_demo.py` Step 3 warmup GET requests
+- [x] Refined `tests/test_vaccination.py` Step 1 warmup GET requests
+- [x] Refined `fingerling/vaccine.py` to run two actual GET requests for baseline warmup
+- [x] Verified tests pass successfully (83/83)
 
 ## Blockers
 None
 
 ---
-*Last updated: 2026-07-21T16:55:00*
+*Last updated: 2026-07-22T14:37:00*

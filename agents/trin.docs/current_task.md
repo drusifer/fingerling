@@ -1,19 +1,20 @@
 # Current Task
 
-**Status:** Completed Phase 4 UAT
+**Status:** Completed refinement UAT
 **Assigned to:** Trin
-**Started:** 2026-07-21
+**Started:** 2026-07-22
 
 ## Task Description
-`*qa uat phase-4`: Verify E2E closed-loop vaccination pipeline in `tests/test_vaccination.py`.
+`*qa uat refinement`: Verify baseline requests use actual HTTP GET requests to target app.
 
 ## Progress
-- [x] Verified full orchestrations of target servers, baseline/exploit runs, and GitOps deployments
-- [x] Verified unit/integration tests in `tests/test_vaccination.py`
+- [x] Verified `examples/vaccination_demo.py` GET requests run successfully
+- [x] Verified `tests/test_vaccination.py` executes actual GET requests before telemetry
+- [x] Verified test suite has no regression (83 tests pass)
 - [x] Posted UAT PASS to CHAT.md
 
 ## Blockers
 None
 
 ---
-*Last updated: 2026-07-21T16:55:00*
+*Last updated: 2026-07-22T14:37:00*

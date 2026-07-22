@@ -1,10 +1,9 @@
 # Morpheus Context
 
 ## Recent Decisions
-- Approved Phase 1 sandbox execution scaffolding.
-- Approved Phase 2 vulnerable application.
-- Approved Phase 3 Vaccine Replay Engine.
-- Approved Phase 4 E2E Vaccination Verification.
+- Refinement review (STORY-FING-17): **Approved**.
+  - Approved implementing actual HTTP GET requests to target app for baseline warmup.
+  - Confirmed this aligns with the architecture.
 
 ---
-*Last updated: 2026-07-21T16:55:00*
+*Last updated: 2026-07-22T14:37:00*

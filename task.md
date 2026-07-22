@@ -34,3 +34,11 @@
 - [x] `make test` passes (all unit, integration, and E2E tests).
 - [x] Trin UAT confirms all AC + Verification Tasks for the story are met.
 - [x] Morpheus confirms architectural alignment with `docs/USER_STORIES_SPRINT4.md`.
+
+## Refinement Phase — HTTP GET Baseline Verification (STORY-FING-17)
+- [x] R.1 Refine `examples/vaccination_demo.py` to send two actual HTTP GET requests for warmup.
+- [x] R.2 Refine `tests/test_vaccination.py` to warm up using two actual HTTP GET requests.
+- [x] R.3 Refine `fingerling/vaccine.py` to send two baseline GET requests under the vaccine engine.
+
+**Owner:** Neo → **UAT:** Trin → **Review:** Morpheus
+

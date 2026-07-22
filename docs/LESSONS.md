@@ -68,5 +68,9 @@ cause from symptoms — the real answer was one skill-read away, not a guess.
 **What happened:** Writing process PIDs directly to `/sys/fs/cgroup/...` requires superuser access and system-level setup that is unavailable in sandbox container testing environments. Providing a subprocess fallback that logs warnings instead of hard-failing ensures test coverage stays green across all host environments.
 **Applying it:** Fallback gracefully to simulated or process-level isolation when hardware/OS features (cgroups, network layers) are restricted.
 
+**Lesson:** Prefer E2E verification tests that validate actual network loopbacks over pure telemetry mocks.
+**What happened:** Warming up the sliding-window matcher was initially done via simulated direct JSON telemetry POSTs. By updating the tests and demos to execute actual HTTP GET requests (`/ping?host=127.0.0.1`) to the vulnerable application, we verified app server reachability, response codes, and actual HTTP behavior alongside pipeline telemetry.
+**Applying it:** Ensure integration test warmups trace actual application routes whenever possible to uncover network-level failures early.
+
 
 

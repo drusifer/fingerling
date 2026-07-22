@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Awaiting Smith's end-to-end user testing (`*user test sprint4`).
+Awaiting Smith's final user verification pass (`*user test refinement`).
 
 ## Waiting On
-Smith — E2E testing.
+Smith — Verification testing.
 
 ## Planned Work
-- [ ] Participate in Sprint 4 retrospective (`*sprint retro`).
+Participate in closing the refinement sprint cycle.
 
 ---
-*Last updated: 2026-07-21T16:56:00*
+*Last updated: 2026-07-22T14:38:00*

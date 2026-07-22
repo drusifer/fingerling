@@ -89,4 +89,7 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** Simulated benign exploit payload (`echo`) for CW-78 verification.
 **Consequences:** Safely verifies that the vaccination engine triggers command injection anomalies, compiles KubeArmor policies, and delivers them via GitOps without any risk of system damage or malware detonation.
 
+**Decision:** Actual HTTP GET requests for baseline warmup.
+**Consequences:** Rather than mocking baseline telemetry directly via POSTs, the E2E verification test and demo scripts execute two actual GET requests to the vulnerable app with normal query characters (`/ping?host=127.0.0.1`). This exercises target app reachability and validates the clean trajectory pipeline under realistic connectivity.
+
 
