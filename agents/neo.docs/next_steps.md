@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Awaiting Trin's UAT pass on the refinement (`*qa uat refinement`).
+Done. Refinement implementation complete.
 
 ## Waiting On
-Trin (QA) — Refinement UAT.
+User — further requests.
 
 ## Planned Work
-Awaiting Morpheus's review of the refinement code.
+None.
 
 ---
-*Last updated: 2026-07-22T14:37:00*
+*Last updated: 2026-07-22T15:12:00*

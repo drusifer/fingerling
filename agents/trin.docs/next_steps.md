@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Awaiting Morpheus's code review approval for the refinement (`*lead review refinement`).
+Done. Refinement UAT passed.
 
 ## Waiting On
-Morpheus — Refinement review.
+User — further requests.
 
 ## Planned Work
-Awaiting Oracle documentation update verification.
+None.
 
 ---
-*Last updated: 2026-07-22T14:37:00*
+*Last updated: 2026-07-22T15:12:00*
