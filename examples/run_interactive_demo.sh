@@ -32,6 +32,18 @@ echo -e "${BLUE}Allocating ports and provisioning sandbox...${RESET}"
 APP_PORT=$(python3 -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 WEBHOOK_PORT=$(python3 -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
+# Cleanup handler to ensure no orphaned directories or tmux sessions are left behind
+cleanup() {
+    # Silence tmux errors if session is already dead
+    if command -v tmux &> /dev/null && tmux has-session -t fingerling-demo 2>/dev/null; then
+        tmux kill-session -t fingerling-demo 2>/dev/null
+    fi
+    if [ -n "$REPO_PATH" ] && [ -d "$REPO_PATH" ]; then
+        rm -rf "$REPO_PATH"
+    fi
+}
+trap cleanup EXIT INT TERM SIGHUP
+
 # Create temporary GitOps repository directory
 REPO_PATH=$(mktemp -d -t gitops-demo-XXXXXX)
 mkdir -p "$REPO_PATH/policies"
@@ -84,7 +96,3 @@ tmux select-pane -t fingerling-demo:0.0
 # Attach to the tmux session
 tmux attach-session -t fingerling-demo
 
-# Clean up temporary GitOps repository directory on host after session ends
-if [ -d "$REPO_PATH" ]; then
-    rm -rf "$REPO_PATH"
-fi

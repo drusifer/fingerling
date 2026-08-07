@@ -82,6 +82,16 @@ cause from symptoms — the real answer was one skill-read away, not a guess.
 **What happened:** Executing `make demo-interactive` inside the sandboxed shell ran into `open terminal failed: not a terminal` because the runner environment lacks a real TTY for attaching to a `tmux` session.
 **Applying it:** Add dynamic TTY checking (`! tty -s` or standard stream verification) to launcher scripts so they automatically fall back to single-terminal inline execution when running in automated testing pipelines or non-interactive shells.
 
+## 2026-07-22 — Sprint 6: Rich TUI Dashboard UX Epic
+
+**Lesson:** Vertical compounding of rich layout panels requires console Group containers.
+**What happened:** Nesting multiple panels inside a single `rich.layout.Layout` cell via positional arguments (e.g. `Layout(Panel(a), Panel(b))`) raises a `TypeError` because Layout's constructor expects a single renderable. This was resolved by wrapping the panels inside a `rich.console.Group` object before returning it to the layout update function.
+**Applying it:** When grouping multiple separate panel cards inside a layout cell, always collect them under a single `Group` container to preserve rendering flow.
+
+**Lesson:** Temporarily stopping/starting `Live` rendering contexts simplifies stdin read gates in TUIs.
+**What happened:** Running keyboard input prompts inside an active `rich.live.Live` context is prone to rendering jitter and cursor mismatch because standard stream buffering conflicts with curses-like terminal takeovers. Stopping the live context (`live.stop()`) before calling `input()` and restarting it immediately after (`live.start()`) provides an extremely simple and robust input gateway that works on any terminal without requiring complex low-level keyboard hook libraries.
+
+
 
 
 

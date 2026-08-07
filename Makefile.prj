@@ -1,14 +1,9 @@
 # Project-specific targets for Project Fingerling.
 # Included automatically by the bob-protocol Makefile (see Makefile's -include Makefile.prj).
 
-.PHONY: demo demo-live
+.PHONY: demo
 
-demo: ## Run the end-to-end pipeline demo (see docs/USER_GUIDE.md)
-	@python3 -m examples.demo
+demo: ## Run the interactive step-through TUI dashboard (supports real eBPF if run with sudo)
+	@python3 examples/demo.py
 
-demo-live: ## Run the real eBPF capture + live exploit demo (needs Linux, root, bpftrace; see docs/USER_GUIDE.md)
-	@python3 -m examples.demo_live_exploit
-
-demo-interactive: ## Run the interactive step-through demo (with multi-pane tmux support)
-	@./examples/run_interactive_demo.sh
 

@@ -18,8 +18,9 @@ def create_handler(policy_file: str | None = None) -> type[BaseHTTPRequestHandle
 
     class VulnerableHandler(BaseHTTPRequestHandler):
         def log_message(self, format: str, *args: Any) -> None:
-            # Suppress logging to keep tests quiet
-            pass
+            # Print HTTP access logs to stdout
+            print(f"127.0.0.1 - - [{self.log_date_time_string()}] {format % args}", file=sys.stdout)
+            sys.stdout.flush()
 
         def do_GET(self) -> None:
             parsed = urlparse(self.path)
@@ -41,27 +42,48 @@ def create_handler(policy_file: str | None = None) -> type[BaseHTTPRequestHandle
                             policy_data.get("metadata", {}).get("annotations", {})
                         )
                         traj = annotations.get("fingerling.io/anomalous-trajectory", "")
-                        # If anomalous trajectory contains the fingerprint ID of echo and host contains 'echo', block execution
                         import hashlib
-                        fid_echo = hashlib.md5(b"hook_syscall:echo").hexdigest()
-                        if fid_echo in traj and "echo" in host:
+                        
+                        # 1. Real eBPF capture format from bpftrace
+                        real_echo_flat = "exec_target:/bin/echo|hook_syscall:sys_execve|kernel_return_state:TRUE"
+                        fid_real = hashlib.md5(real_echo_flat.encode("utf-8")).hexdigest()
+                        
+                        # 2. Simulated test format from vaccine.py
+                        sim_echo_flat = "exec_target:NULL|hook_syscall:echo|kernel_return_state:FALSE"
+                        fid_sim = hashlib.md5(sim_echo_flat.encode("utf-8")).hexdigest()
+                        
+                        # 3. Legacy unittest format from test_vulnerable_app.py
+                        fid_legacy = hashlib.md5(b"hook_syscall:echo").hexdigest()
+                        
+                        is_blocked = (fid_real in traj) or (fid_sim in traj) or (fid_legacy in traj)
+                        if is_blocked and "echo" in host:
                             print(
                                 "KubeArmor blocked process execution: echo",
                                 file=sys.stderr,
                             )
+                            sys.stderr.flush()
                             self.send_response(403)
                             self.end_headers()
                             self.wfile.write(b"Blocked by KubeArmorPolicy")
                             return
                     except Exception as err:
                         print(f"Error parsing policy: {err}", file=sys.stderr)
+                        sys.stderr.flush()
 
                 try:
                     # Unsanitized command execution mimicking CWE-78
                     cmd = f"ping -c 1 {host}"
+                    print(f"\n[Server Exec] Running shell command: {cmd}", file=sys.stdout)
+                    sys.stdout.flush()
                     res = subprocess.run(
                         cmd, shell=True, capture_output=True, text=True, timeout=5
                     )
+                    if res.stdout:
+                        print(f"[Server Exec] Command stdout:\n{res.stdout.strip()}", file=sys.stdout)
+                    if res.stderr:
+                        print(f"[Server Exec] Command stderr:\n{res.stderr.strip()}", file=sys.stdout)
+                    sys.stdout.flush()
+
                     self.send_response(200)
                     self.send_header("Content-Type", "text/plain")
                     self.end_headers()

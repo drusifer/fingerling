@@ -209,50 +209,27 @@ The exact same flow, asserted rather than printed, lives in `tests/test_e2e.py` 
 runs in `make test` on every change, so this demo can't silently drift out of sync with the
 real API.
 
-## Live Capture (Real eBPF)
+## Interactive Closed-Loop Vaccination TUI Demo
 
-`examples/demo.py` above uses hand-authored JSONL. `examples/demo_live_exploit.py` runs the same
-three-stage pipeline against **real syscalls captured from a real running process** via
-[bpftrace](https://github.com/bpftrace/bpftrace), instead of synthetic fixtures.
+Project Fingerling provides a single, unified, flagship interactive TUI dashboard. It guides the user step-by-step through a full E2E trace vaccination cycle, displaying source code snippets, live telemetry transition maps, scrolling server stdout/stderr output logs, and detailed narrative guides inside a single terminal screen.
 
-**Prerequisites** (unlike everything else in this guide, this is not OS-agnostic or offline):
-- Linux with kernel eBPF/tracepoint support.
-- `bpftrace` installed (`apt install bpftrace` on Debian/Ubuntu/Raspberry Pi OS).
-- Root — bpftrace needs root to attach kernel probes. Run with `sudo`.
-- `flask` installed (`pip install flask`) — used only by the vulnerable demo target, not by the
-  core `fingerling` library.
-
-**Safety note:** the demo target (`examples/vuln_ping_app.py`) is a real, deliberately
-vulnerable local web app (OS command injection, CWE-78). It binds to `127.0.0.1` only, the
-"attack" is a single non-networked `curl` request, and the only side effect is a throwaway file
-at `/tmp/pwned_poc` that the demo script removes itself. Do not expose this app beyond loopback.
-
+**Run Command (Requires Linux, root, & bpftrace)**:
 ```sh
-sudo make demo-live                       # preferred — routes through mkf
-sudo python3 -m examples.demo_live_exploit  # equivalent, direct
+sudo make demo
 ```
 
-**What it does:**
-1. Starts `examples/vuln_ping_app.py`, a Flask app with one intentionally vulnerable route:
-   `/diagnostics?host=<x>` runs `os.system(f"ping -c 1 -W1 {x}")` — unsanitized shell
-   interpolation.
-2. Traces that process (and everything it forks) with `tools/capture_syscalls.bt`, a bpftrace
-   script that follows the whole process subtree — necessary because each request forks a shell,
-   which forks `ping` — and emits real `execve()` events as Tetragon-shaped JSONL via
-   `fingerling.capture`.
-3. Sends 3 clean baseline requests, builds a whitelist from the real captured `sh`/`ping` execve
-   pattern.
-4. Sends one attack request — `host=127.0.0.1; /bin/sh -c 'id > /tmp/pwned_poc'` — a real OS
-   command injection that spawns a genuinely unexpected `execve(/bin/id)`.
-5. Scores the real captured attack trajectory against the real captured baseline whitelist, and
-   compiles a `KubeArmorPolicy` for the anomalous fingerprint — same `compile_policy()` call as
-   the synthetic demo, just fed real data.
+**Features & Layout**:
+- **Target App Source Code**: Displays the vulnerable Python function and highlights the CWE-78 command execution bug line.
+- **Narrative Guide & Pipeline Progress**: Rich, step-by-step narrative text guiding you through the vaccination sequence (Legitimate warmup, exploit detonation, anomaly scoring, GitOps policy commit, baseline traffic validation, and hot-patch enforcement).
+- **eBPF Telemetry & Call Stack Fingerprints**: Visualizes captured process transitions, whitelist mappings, highlights anomalies in red, and renders the compiled KubeArmorPolicy manifest inline.
+- **Raw Ingested Trace Feed**: Real-time scrolling JSON feed showing raw eBPF process execution events paired from the kernel.
+- **Live Logs Pane**: Displays real-time stderr/stdout request logs piped directly from the background target application and webhook server.
+- **Hot-Patch Proof**: Demonstrates policy enforcement while visually proving the server PID remains unchanged (hot-patched on-the-fly, zero downtime).
 
-This demo's `MASK_PROFILE` tokenizes the execve target binary (`exec_target`), not a destination
-port like `examples/demo.py` does — see Known Gaps below for why, and see
-`fingerling/capture.py`/`tools/capture_syscalls.bt` for how the capture itself works (the pure
-parsing logic in `capture.py` is unit tested in `tests/test_capture.py`; the bpftrace subprocess
-plumbing is integration-only, exercised by this demo).
+**Strict eBPF Tracing Requirement**:
+Fingerling requires standard Linux eBPF kprobes capabilities to monitor workloads:
+- **Root Privileges:** The demo must be executed using `sudo` to JIT-compile and load eBPF tracing programs into the kernel space.
+- **`bpftrace` Utility:** The JIT compilation of system call hooks (`tracepoint:syscalls:sys_enter_execve` / `tracepoint:syscalls:sys_exit_execve`) is handled via `bpftrace`. This tool must be installed and visible in the search path of the running root shell environment.
 
 ## Automated GitOps Delivery Pipeline
 
@@ -285,23 +262,6 @@ Fingerling features a "vaccination" engine to run target exploit simulations wit
 
 This closes the loop: triggering the exploit creates the anomalous trajectory which triggers policy compilation and GitOps hotfixes automatically.
 
-## Interactive Split-Pane Terminal UX Demo
-
-Fingerling includes a highly visual, interactive step-by-step CLI demo that utilizes `tmux` to split the console into 4 distinct frames, showing all aspects of the closed-loop vaccination pipeline in real-time.
-
-**Run Command**:
-```sh
-make demo-interactive
-```
-
-**Layout**:
-- **Top-Left Pane**: The main interactive controller. Explains each step of the pipeline with color formatting and emojis, prompting the user with `[Press Enter to continue...]` to advance.
-- **Bottom-Left Pane**: Live standard output and error logs from the running target application.
-- **Top-Right Pane**: Live logs from the Telemetry Webhook server.
-- **Bottom-Right Pane**: A continuous watch loop displaying the GitOps repository file hierarchy and git commit history tree.
-
-**Standalone Fallback Mode**:
-If `tmux` is not installed on the host system, or if the demo is executed in a non-interactive shell (such as an automated pipeline or standard input pipe), the launcher automatically falls back to single-terminal inline execution. It spawns the servers in background threads (writing logs to a temp file) while maintaining the interactive step-through explanation gates in the active terminal window.
 
 ## Known Gaps (see backlog)
 

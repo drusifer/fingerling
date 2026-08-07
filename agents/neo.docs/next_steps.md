@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Awaiting Trin to complete UAT verification for Sprint 5 Phase 2.
+Awaiting user request alignment on the recovered and refactored TUI.
 
 ## Waiting On
-Trin — Phase 2 UAT.
+User — verification of the split eBPF and daemon logging panels.
 
 ## Planned Work
-Track any QA findings or UX bugs filed.
+Provide further optimization or additional demo stages as requested.
 
 ---
-*Last updated: 2026-07-22T15:30:00*
+*Last updated: 2026-07-23T20:49:00*

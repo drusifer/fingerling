@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Awaiting Morpheus to complete code review for Phase 2 (final phase).
+Awaiting Morpheus to complete code review for Sprint 6.
 
 ## Waiting On
-Morpheus — Phase 2 code review.
+Morpheus — Code review.
 
 ## Planned Work
-Verify sprint closing and documentation grooming updates.
+Verify documentation updates and final release checklist.
 
 ---
-*Last updated: 2026-07-22T15:31:00*
+*Last updated: 2026-07-22T16:31:00*

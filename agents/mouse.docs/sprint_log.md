@@ -1,5 +1,16 @@
 # Sprint Log
 
+## Sprint: Fingerling Sprint 6 — 2026-07-22
+
+- **Planning:** Combined drafting (Cypher/Morpheus) → Combined review (Smith) → Mouse plan.
+- **Velocity target:** 8 story points (4+4) across 2 stories.
+- **Phase breakdown:** 2 phases:
+  - Phase 1: STORY-FING-20 (Rich TUI Dashboard Layout and Widgets)
+  - Phase 2: STORY-FING-21 (Unified TUI Live Run Engine and Pipes)
+- **Board:** `task.md` (root) is single source of truth.
+
+---
+
 ## Sprint: Fingerling Sprint 5 — 2026-07-22
 
 - **Planning:** Combined drafting (Cypher/Morpheus) → Combined review (Smith/Mouse) → Mouse plan.

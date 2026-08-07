@@ -26,13 +26,14 @@ def create_handler(
     gitops_repo_path: str | None = None,
     gpg_sign: bool = False,
     gpg_key_id: str | None = None,
+    log_writer: Any = None,
 ) -> type[BaseHTTPRequestHandler]:
     """Factory to create a TelemetryHandler bound to in-memory pipeline state."""
 
     class TelemetryHandler(BaseHTTPRequestHandler):
         def log_message(self, format: str, *args: Any) -> None:
-            # Suppress default HTTP logging to keep stdout clean during tests
-            pass
+            if log_writer:
+                log_writer.write(f"[Server webhook.log] 127.0.0.1 - - [{self.log_date_time_string()}] {format % args}\n")
 
         def do_POST(self) -> None:
             if self.path != "/telemetry":
@@ -126,6 +127,7 @@ def run_server(
     gitops_repo_path: str | None = None,
     gpg_sign: bool = False,
     gpg_key_id: str | None = None,
+    log_writer: Any = None,
 ) -> HTTPServer:
     """Initialize and return a running HTTP server instance."""
     handler_class = create_handler(
@@ -137,6 +139,7 @@ def run_server(
         gitops_repo_path,
         gpg_sign,
         gpg_key_id,
+        log_writer,
     )
     server = HTTPServer(("127.0.0.1", port), handler_class)
     return server

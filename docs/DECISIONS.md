@@ -100,5 +100,152 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** Standard library-only CLI helper runners.
 **Consequences:** Added `examples/run_webhook_server.py` to allow the Webhook server to run as a separate command-line process in a dedicated tmux pane. This keeps the workspace free of third-party frameworks while meeting the multi-process layout requirement.
 
+## 2026-07-22 — Sprint 6: Rich TUI Dashboard UX Epic
+
+**Decision:** Unified single-process python `rich` layout dashboard.
+**Consequences:** Replaces the multi-pane tmux shell launcher script and legacy scripts with a consolidated flagship `examples/demo.py` dashboard utilizing Python's `rich` layout and live rendering engine. This provides a much richer and more integrated visual user experience (including syntax-highlighted code viewers, eBPF telemetry transition tables, scrolling logs, and step narratives) while running natively in a single terminal process with no external dependencies (like tmux or textual).
+
+**Decision:** Thread-safe `LogPipe` print redirection.
+**Consequences:** Rather than writing logs to temporary files and running loop pollers, we replace `sys.stdout` and `sys.stderr` inside the execution context with a custom string stream that appends prints to a shared thread-safe queue. This allows TUI widgets to render background server output logs in real-time.
+
+**Decision:** Direct execution of interactive demo targets bypassing `mkf.py`.
+**Consequences:** The target `demo` is designed for live user stdout rendering and active stdin (`get_key()`) interactions. Routing it through the `mkf.py` build filter redirects outputs to log files and blocks terminal stream interactions. Bypassing `mkf.py` allows the target to run directly in the foreground console with live I/O.
+
+**Decision:** Persistent Live Rendering context with raw termios raw keypress reads.
+**Consequences:** To eliminate terminal flicker, the step-advancement loop stays entirely inside a single `with Live(..., screen=True)` block. Instead of halting live rendering (which toggles the screen buffer and causes flicker) to read lines via `input()`, a raw `get_key()` reader queries standard input character-by-character on Unix (using `termios` and `tty`), falling back to stream reads in non-TTY piped environments.
+
+**Decision:** Condensed layout panel sizes and compact table padding.
+**Consequences:** To ensure the interactive TUI fits completely inside standard 24-line or 30-line terminal windows, the target app code snippet was shortened to a high-level 10-line view, nested panel borders in telemetry widgets were grouped into a single layout cell, table padding was minimized, and log pipe deques were capped at 6 lines. This completely eliminates CPU lag, layout clipping, and text overlapping.
+
+**Decision:** Bounding TUI Console rendering specifically to `sys.__stdout__`.
+**Consequences:** Globally reassigning `sys.stdout` to capture background server prints hijacks `rich.live.Live` updates, writing binary terminal drawing escape codes directly into the log buffers instead of rendering them to the screen. To prevent TUI screen freezes/garbling, the `Console` instance is explicitly bound to the Python interpreter's original standard output stream `sys.__stdout__`, rendering TUI graphics perfectly while cleanly trapping print statements.
+
+**Decision:** Cbreak-equivalent termios configuration and manual rendering refreshes.
+**Consequences:** Using `tty.setraw` disables output post-processing (`OPOST`) on the terminal descriptor. When the background rendering thread prints `\n` to draw layout boxes while raw mode is active, the cursor does not return to the first column, causing panels to cascade diagonally and become completely garbled. This was resolved by implementing a custom `termios` setup that only disables canonical input (`ICANON`) and echo (`ECHO`) on stdin. Additionally, setting `auto_refresh=False` and manually calling `live.refresh()` at step transitions completely eliminates background redrawing loops, guaranteeing zero CPU overhead and zero screen flickering.
+
+**Decision:** Full-width stacked layout structure for logs and narratives.
+**Consequences:** Splitting all panels into two narrow columns (Left and Right) forces text lines (such as 80+ char server logs and paragraphs of instructions) to wrap heavily, making them illegible. To resolve this, a hybrid vertical grid layout was adopted: the narrow code snippet and telemetry tables are split horizontally in the top row, while the narrative guide and server output logs get full-width rows. This maximizes scanning readability and provides clean formatting.
+
+**Decision:** Adaptive step-based layout panel splitting.
+**Consequences:** Showing the code viewer, telemetry transition tables, narratives, and scrolling logs simultaneously on a standard terminal screen height results in heavy layout clipping, rendering errors, and overlapping. To resolve this, we implemented an adaptive layout structure that dynamically splits and populates only the active panels for the current E2E vaccination step. This saves significant height space and ensures all visible widgets fit perfectly on any standard screen size.
+
+**Decision:** Dual eBPF / Simulated fallback capture mechanism in TUI dashboard.
+**Consequences:** To verify technology credibility under real-world conditions while preserving portable, zero-dependency executions, the TUI dashboard probes for `sudo bpftrace` at startup. If root privileges and kernel probing tools are present, the TUI spawns the target app as an isolated subprocess, attaches `bpftrace` to capture live `sys_enter_execve` events generated by the shell commands, and pipes real kernel events into the scoring engine. If not available, it prints a fallback notification and executes using offline simulation fixtures.
+
+**Decision:** Consolidated single flagship entry point script.
+**Consequences:** Having separate synthetic, live-eBPF, tmux, and TUI scripts led to huge code duplication and confusing operational instructions. To address this, we consolidated all demo logic under a single script `examples/demo.py` and a single Makefile target `make demo`. It runs as our flagship interactive TUI, dynamically attaching eBPF kernel kprobes if root privileges are present and falling back to simulated telemetry if not.
+
+**Decision:** Telemetry endpoint path targeting.
+**Consequences:** Telemetry ingestion POSTs are now explicitly directed to `/telemetry`. Previously, target webhook URLs in the TUI were pointing directly to the root path `/` which resulted in `404 Not Found` response codes since the webhook server asserts `/telemetry` as the single ingestion route.
+
+**Decision:** Private attribute matching on SlidingWindowMatcher.
+**Consequences:** Fixed an attribute resolution lookup error where the TUI matched `_whitelist` instead of `whitelist`, resolving runtime errors when parsing real dynamically learned whitelist transitions in eBPF capture mode.
+
+**Decision:** Captured exploit command injection output printing.
+**Consequences:** The TUI now captures the HTTP response body of the exploit request and prints it to the stdout log feed. This logs `[Exploit Response] Stdout: boo` during Step 4, proving to the user that the command was successfully injected and executed by the shell before the vaccine is deployed.
+
+**Decision:** SGR ANSI color rendering in TUI logs.
+**Consequences:** Changed the logs panel text construction to use `Text.from_ansi`. This allows the scrolling logs feed to render inline terminal colors (such as the glaring bright red success alerts framing exploit stdout captures) instead of locking the entire widget under a single dim style.
+
+**Decision:** Top-aligned Narrative Guide layout hierarchy.
+**Consequences:** Changed the dynamic layout split order to guarantee that the `narrative` guide panel is always on top. This leads the user's focus immediately to instructions and explanations before they scan code snippets, whitelists, or output logs.
+
+**Decision:** Dual-column Middle Row splitting with Raw JSON trace feed panel.
+**Consequences:** The middle dashboard row is now split horizontally. The left panel shows the Transitions Whitelist Map, and the right panel shows a real-time scrolling JSON feed of the raw trace events being ingested (with color coding matching clean, anomalous, or denied execve states). This gives the user immediate visual confirmation of the kernel telemetries processed by the engine.
+
+**Decision:** Sequential baseline requests with live-view repainting.
+**Consequences:** Changed baseline query execution in Step 3 to execute and parse telemetry records sequentially with a 1.0 second delay in between. By attaching the `Live` context manager instance to `self.live_view`, the actions loop pushes new logs and whitelist transitions to the screen immediately, giving the user real-time visual feedback of each baseline request's ingestion process.
+
+**Decision:** Strict eBPF and root enforcement at startup (simulation dropped).
+**Consequences:** Removed all fallback simulated paths from the dashboard codebase. The TUI now asserts root execution and `bpftrace` visibility at start, exiting with clear diagnostics if they are missing. This guarantees that the E2E vaccination demo executes exclusively using real eBPF kernel instrumentation, reinforcing technology credibility.
+
+**Decision:** Split Client and Server Log Feeds in bottom TUI row.
+**Consequences:** The bottom logs row is split horizontally. The left panel renders client/attack actions (`client_log_pipe`), and the right panel renders target application server logs (`server_log_pipe`). This gives the user clear separation between client request triggers and server-side responses.
+
+**Decision:** Render HTTP response body/status code in Client Logs.
+**Consequences:** All baseline and exploit verify triggers now capture and print the resulting HTTP response status and body in the Client Logs pane. Blocked requests are colored red (`\033[91;1m`), matching exploit detonation styling.
+
+**Decision:** Enable unbuffered Python execution (`-u`) for Target App subprocess.
+**Consequences:** Added the `-u` argument to the target application's Popen execution list. This disables stdout/stderr stream buffering in the child process, allowing server log prints to flow in real time without lag.
+
+**Decision:** Route all eBPF/Tracer log messages directly into the eBPF Tracer panel.
+**Consequences:** Renamed the middle-right panel to `eBPF Tracer Logs & Raw Feeds`. Setup messages (eBPF activation status, capture start, event counts) are now appended directly to `self.raw_traces` and formatted using bold cyan highlights instead of printing to the Client Logs feed.
+
+**Decision:** Autoscrolling terminal logs via dynamic terminal viewport slicing.
+**Consequences:** Added `limit_text_lines(text, max_lines)` to split styled Rich text and slice to show only the last N lines. Terminal height is calculated dynamically via `self.console.size.height` to compute fitting line counts. This makes Client logs, Server logs, and the eBPF Tracer panel scroll automatically to keep recent entries at the bottom.
+
+**Decision:** Restore HTTP access logs and print command traces on the Target App server.
+**Consequences:** Enabled HTTP request tracking in `vulnerable_app.py`'s log handler, and added stdout/stderr console prints before and after executing shell commands. This makes the `echo boo` command injection payload output stand out clearly in the Target App Server logs pane.
+
+**Decision:** Automated line numbering in LogPipe buffers.
+**Consequences:** Programmed the `LogPipe` constructor to maintain a running line counter, splitting multiline inputs and prefixing each line with a unique formatted number (e.g. ` 1 | `).
+
+**Decision:** Granular client/server stream classification.
+**Consequences:** Replaced generic labels with specific stream identifiers. The Client pane uses `[Client request]`, `[Client response]`, `[Client stdout]`, and `[Client stderr]`. The Server pane uses two dedicated subprocess pipes to distinguish and print `[Server stdout]`, `[Server stderr]`, `[Server access.log]`, and `[Server webhook.log]`.
+
+**Decision:** Staggered chronological step execution with live TUI refreshing.
+**Consequences:** Refactored walkthrough step actions to execute in a staggered sequence of events (Outbound HTTP Client $\rightarrow$ Subprocess execution $\rightarrow$ eBPF event capture $\rightarrow$ Telemetry POST $\rightarrow$ Matcher analysis) utilizing explicit `time.sleep` intervals and calling `live.refresh()` at each stage. This allows the user to visually watch the logs hit the panels chronologically in real-time.
+
+**Decision:** Multi-schema validation support in simulated policy checks.
+**Consequences:** Configured the target web application to resolve KubeArmor block criteria against three independent hashing schemas of the target anomalous binary (actual eBPF, simulated test, and raw legacy). This resolves a bug where the target server failed to match incoming policy annotations and execute the block in live and integration test environments.
+
+
+
+**Decision:** Unified eBPF Daemon & Analysis Orchestrator panel.
+**Consequences:** Replaced the separate side-by-side middle telemetry and raw traces panels with a single consolidated `orchestrator` panel. It layouts eBPF Daemon Status (Monitored PID, active probes, warehouse size, anomaly score) and the transitions whitelist map table side-by-side with the scrolling live telemetry logs using a grid layout, keeping control plane telemetries centered in one pane.
+
+**Decision:** Embed Unicode architecture flowcharts in narrative guides.
+**Consequences:** Integrated visual ASCII/Unicode flow diagrams into the narrative guide text blocks across walkthrough steps (Steps 1, 3, 4, 5, 7) to visually map out telemetry ingestion, anomaly scoring, GitOps reconciliation, and process block enforcement. Relocated ports, paths, and PID details strictly to the narrative and daemon status sections.
+
+**Decision:** Unified webhook server log prefix matching.
+**Consequences:** Changed the webhook handler's log prefix output inside `fingerling/server.py` from `[Webhook Server]` to `[Server webhook.log]`. This aligns with the `LogPipe` parser mapping pattern in `demo.py`, allowing it to correctly capture and format the telemetry access logs as `[SRV:WHK]`.
+
+**Decision:** Dynamic webhook logging and complete client/server console isolation.
+**Consequences:** Added `log_writer` to `run_server` and routed webhook server access logs (`[Webhook Server] ...`) to `self.server_log_pipe`. Routed anomaly alarms, server status logs, and GitOps commit prints to `self.server_log_pipe` as well, keeping the Client Logs pane reserved exclusively for outbound requests and responses.
+
+
+**Decision:** 1-request step pacing (reduced baseline count).
+**Consequences:** Decreased Step 3's baseline requests from 2 to 1. This matches the target frequency across other validation steps, simplifying the walkthrough pacing.
+
+
+**Decision:** Global TTY Echo suppression and pre-block stdin flushes.
+**Consequences:** Disabled `ICANON` and `ECHO` globally in `run()` and restored them in `cleanup()`. A non-blocking stdin flush loop is executed in `get_key()` before blocking on a read. This prevents scroll wheel clicks from leaking or displaying control characters (like `^[[A`) on the screen during busy periods.
+
+
+
+
+
+
+
+
+**Decision:** High-fidelity visual telemetry structure (PID, Parent, Target, Return).
+**Consequences:** The TUI raw trace capture panel now displays full execution lineage metadata (e.g. process PIDs, parent binaries like `sh`, target binary paths like `/bin/echo`, and return states) in a tree-indented console format. Simulated payloads were enriched to mirror this schema, keeping the dashboard's look and feel identical in both modes.
+
+
+
+
+
+**Decision:** Filter and drain ANSI escape sequences in cbreak keyboard reader.
+**Consequences:** Using mouse scroll wheels or arrow keys sends multi-byte ANSI escape sequences starting with `\x1b`. To prevent these sequences from being parsed as multiple rapid keypresses (which skips step actions and shuts down the TUI), `get_key()` uses `select.select()` to drain any active burst sequences from the stdin buffer and returns `'escape'`, which the loop ignores.
+
+**Decision:** Updated Narrative text spatial references from above to below.
+**Consequences:** Since the narrative guide was promoted to the top of the body layout to establish visual priority, spatial descriptions inside the text segments (Steps 2 and 5) were updated from "(displayed above)" to "(displayed below)" to match their new relative placement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
