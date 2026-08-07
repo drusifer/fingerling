@@ -1,5 +1,16 @@
 # Sprint Log
 
+## Sprint: Fingerling Sprint 5 — 2026-07-22
+
+- **Planning:** Combined drafting (Cypher/Morpheus) → Combined review (Smith/Mouse) → Mouse plan.
+- **Velocity target:** 8 story points (4+4) across 2 stories.
+- **Phase breakdown:** 2 phases:
+  - Phase 1: STORY-FING-18 (Interactive CLI Controller Script)
+  - Phase 2: STORY-FING-19 (Multi-Pane Terminal Multiplexer Scaffolding)
+- **Board:** `task.md` (root) is single source of truth.
+
+---
+
 ## Sprint: Fingerling Sprint 4 — 2026-07-21
 
 - **Planning:** Combined drafting (Cypher/Morpheus) → Combined review (Smith/Mouse) → Mouse plan.
@@ -12,4 +23,4 @@
 - **Board:** `task.md` (root) is single source of truth.
 
 ---
-*Last updated: 2026-07-21T16:50:00*
+*Last updated: 2026-07-22T15:27:00*

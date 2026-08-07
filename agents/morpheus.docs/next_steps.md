@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Done. Sprint 4 closed and refinement launched.
+Awaiting Oracle to complete documentation grooming.
 
 ## Waiting On
-User — further requests.
+Oracle — Doc grooming.
 
 ## Planned Work
-None.
+Participate in Sprint 5 retrospective and launch.
 
 ---
-*Last updated: 2026-07-22T15:12:00*
+*Last updated: 2026-07-22T15:31:00*

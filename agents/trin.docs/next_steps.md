@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Done. Refinement UAT passed.
+Awaiting Morpheus to complete code review for Phase 2 (final phase).
 
 ## Waiting On
-User — further requests.
+Morpheus — Phase 2 code review.
 
 ## Planned Work
-None.
+Verify sprint closing and documentation grooming updates.
 
 ---
-*Last updated: 2026-07-22T15:12:00*
+*Last updated: 2026-07-22T15:31:00*

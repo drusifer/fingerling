@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Tracking Neo's STORY-FING-17 implementation.
+Track Neo's implementation of Sprint 5 Phase 1 (Interactive CLI Controller Script).
 
 ## Waiting On
-Neo — Refinement implementation.
+Neo — Phase 1 implementation.
 
 ## Planned Work
-Monitor UAT testing by Trin and review by Morpheus.
+Monitor Trin's UAT and Morpheus's code reviews for both Phase 1 and Phase 2.
 
 ---
-*Last updated: 2026-07-22T14:36:00*
+*Last updated: 2026-07-22T15:27:00*

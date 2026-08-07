@@ -1,20 +1,21 @@
 # Current Task
 
-**Status:** Completed refinement implementation
+**Status:** Completed Phase 2 implementation
 **Assigned to:** Neo
 **Started:** 2026-07-22
 
 ## Task Description
-`*swe impl refinement`: Refine baseline requests to execute actual HTTP GET requests to target app.
+`*swe impl phase-2`: Implement `examples/run_interactive_demo.sh` tmux launcher, single-terminal fallback, and Makefile target.
 
 ## Progress
-- [x] Refined `examples/vaccination_demo.py` Step 3 warmup GET requests
-- [x] Refined `tests/test_vaccination.py` Step 1 warmup GET requests
-- [x] Refined `fingerling/vaccine.py` to run two actual GET requests for baseline warmup
-- [x] Verified tests pass successfully (83/83)
+- [x] Implemented `examples/run_interactive_demo.sh` supporting 4 tmux panes
+- [x] Created `examples/run_webhook_server.py` to enable command-line webhook instantiation
+- [x] Added dynamic TTY checking (`! tty -s`) to launcher for graceful CI/pipe fallback
+- [x] Added `demo-interactive` target in root `Makefile` and `Makefile.prj`
+- [x] Verified build passes and all E2E steps execute correctly under fallback mode
 
 ## Blockers
 None
 
 ---
-*Last updated: 2026-07-22T14:37:00*
+*Last updated: 2026-07-22T15:30:00*

@@ -285,6 +285,24 @@ Fingerling features a "vaccination" engine to run target exploit simulations wit
 
 This closes the loop: triggering the exploit creates the anomalous trajectory which triggers policy compilation and GitOps hotfixes automatically.
 
+## Interactive Split-Pane Terminal UX Demo
+
+Fingerling includes a highly visual, interactive step-by-step CLI demo that utilizes `tmux` to split the console into 4 distinct frames, showing all aspects of the closed-loop vaccination pipeline in real-time.
+
+**Run Command**:
+```sh
+make demo-interactive
+```
+
+**Layout**:
+- **Top-Left Pane**: The main interactive controller. Explains each step of the pipeline with color formatting and emojis, prompting the user with `[Press Enter to continue...]` to advance.
+- **Bottom-Left Pane**: Live standard output and error logs from the running target application.
+- **Top-Right Pane**: Live logs from the Telemetry Webhook server.
+- **Bottom-Right Pane**: A continuous watch loop displaying the GitOps repository file hierarchy and git commit history tree.
+
+**Standalone Fallback Mode**:
+If `tmux` is not installed on the host system, or if the demo is executed in a non-interactive shell (such as an automated pipeline or standard input pipe), the launcher automatically falls back to single-terminal inline execution. It spawns the servers in background threads (writing logs to a temp file) while maintaining the interactive step-through explanation gates in the active terminal window.
+
 ## Known Gaps (see backlog)
 
 These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_STORIES_SPRINT4.md` and

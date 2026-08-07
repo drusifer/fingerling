@@ -92,4 +92,13 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** Actual HTTP GET requests for baseline warmup.
 **Consequences:** Rather than mocking baseline telemetry directly via POSTs, the E2E verification test and demo scripts execute two actual GET requests to the vulnerable app with normal query characters (`/ping?host=127.0.0.1`). This exercises target app reachability and validates the clean trajectory pipeline under realistic connectivity.
 
+## 2026-07-22 — Sprint 5: Interactive Split-Pane Terminal UX Demo
+
+**Decision:** Dynamic TTY detection and fallback in tmux launcher.
+**Consequences:** If `tmux` is missing or the script is run in a non-interactive shell (like a pipe or inside a CI sandbox lacking a TTY), `examples/run_interactive_demo.sh` automatically falls back to running the inline `interactive_controller.py` in standalone mode rather than crashing.
+
+**Decision:** Standard library-only CLI helper runners.
+**Consequences:** Added `examples/run_webhook_server.py` to allow the Webhook server to run as a separate command-line process in a dedicated tmux pane. This keeps the workspace free of third-party frameworks while meeting the multi-process layout requirement.
+
+
 

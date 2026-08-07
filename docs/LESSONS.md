@@ -72,5 +72,16 @@ cause from symptoms — the real answer was one skill-read away, not a guess.
 **What happened:** Warming up the sliding-window matcher was initially done via simulated direct JSON telemetry POSTs. By updating the tests and demos to execute actual HTTP GET requests (`/ping?host=127.0.0.1`) to the vulnerable application, we verified app server reachability, response codes, and actual HTTP behavior alongside pipeline telemetry.
 **Applying it:** Ensure integration test warmups trace actual application routes whenever possible to uncover network-level failures early.
 
+## 2026-07-22 — Sprint 5: Interactive Split-Pane Terminal UX Demo
+
+**Lesson:** Location-agnostic path injection resolves import errors for standalone CLI scripts.
+**What happened:** When `examples/interactive_controller.py` was first run, it failed with `ModuleNotFoundError: No module named 'examples'` because the project root directory was not in python's `sys.path`. Resolving this by inserting the parent directory dynamically at script startup (`sys.path.insert(0, ...)`) made the script location-agnostic.
+**Applying it:** For any new scripts located in subdirectories (like `examples/`), dynamically resolve the path to the workspace root at the very top of the script so developers can execute it from anywhere.
+
+**Lesson:** Multi-process tmux scripts must handle non-interactive TTY environments.
+**What happened:** Executing `make demo-interactive` inside the sandboxed shell ran into `open terminal failed: not a terminal` because the runner environment lacks a real TTY for attaching to a `tmux` session.
+**Applying it:** Add dynamic TTY checking (`! tty -s` or standard stream verification) to launcher scripts so they automatically fall back to single-terminal inline execution when running in automated testing pipelines or non-interactive shells.
+
+
 
 

@@ -1,13 +1,13 @@
 # Next Steps
 
 ## Immediate Next Action
-Awaiting Smith's final user verification pass (`*user test refinement`).
+Awaiting Smith to complete user verification pass for Sprint 5 (`*user test sprint5`).
 
 ## Waiting On
 Smith — Verification testing.
 
 ## Planned Work
-Participate in closing the refinement sprint cycle.
+Participate in Sprint 5 closing and backlog updates.
 
 ---
-*Last updated: 2026-07-22T14:38:00*
+*Last updated: 2026-07-22T15:32:00*

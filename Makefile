@@ -22,4 +22,24 @@ demo: ## Run the end-to-end pipeline demo (see docs/USER_GUIDE.md)
 	@python3 -m examples.demo
 
 demo-live: ## Run the real eBPF capture + live exploit demo (needs Linux, root, bpftrace; see docs/USER_GUIDE.md)
+<<<<<<< HEAD
 	@python3 -m examples.demo_live_exploit
+=======
+	@./agents/tools/mkf.py $(V) $@
+
+demo-interactive: ## Run the interactive step-through demo (with multi-pane tmux support)
+	@./agents/tools/mkf.py $(V) $@
+
+
+# Interception logic:
+# If we are the entry point (direct make call), intercept everything.
+# If we are included, we only provide targets, unless specified.
+ifeq ($(MKF_ACTIVE),)
+ifdef _IS_BOB_ENTRY
+%:
+	@./agents/tools/mkf.py $(V) $@
+endif
+endif
+
+endif
+>>>>>>> ab5e554 (Interactive demo works)
