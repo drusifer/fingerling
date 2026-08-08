@@ -1,0 +1,9 @@
+=== make test @ 2026-08-07 13:46:31 ===
+...capture: 1 unmatched ENTER event(s) dropped (mid-call at stream end)
+.capture: unmatched EXIT for (5, 'execve'), skipping
+....capture: skipping unparseable line: '@target[1234]: 1\n'
+....................................................
+----------------------------------------------------------------------
+Ran 60 tests in 0.015s
+
+OK

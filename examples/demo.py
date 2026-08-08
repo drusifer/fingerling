@@ -721,7 +721,7 @@ class TUIDemo:
                 
                 # Fetch dynamically learned whitelist transitions from the matcher
                 self.whitelist_2grams.clear()
-                for key_pair in list(self.webhook_matcher.whitelist):
+                for key_pair in list(self.webhook_matcher._whitelist):
                     targets = []
                     for fid in key_pair:
                         entry = self.webhook_warehouse.get(fid)
