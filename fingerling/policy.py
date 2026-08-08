@@ -20,11 +20,17 @@ def compile_policy(
     anomalous_trajectory: str | tuple[str, ...],
     namespace: str = "default",
     action: Literal["Block", "Post"] = "Block",
+    block_pattern: str | None = None,
 ) -> str:
     """Compile a KubeArmorPolicy CRD manifest as a YAML string.
 
     `action` is an explicit caller parameter (default "Block") rather than
     inferred from workload metadata — see docs/ARCH.md decision #3.
+
+    `block_pattern`, when given, adds `spec.process.matchPattern` (STORY-FING-22):
+    a comprehensive content-based rule (e.g. blocking any request containing
+    ";") layered alongside the exact-fingerprint `anomalous_trajectory` match,
+    without altering existing fields when omitted.
     """
     if action not in _VALID_ACTIONS:
         raise ValueError(f"action must be one of {_VALID_ACTIONS}, got {action!r}")
@@ -35,6 +41,10 @@ def compile_policy(
         trajectory_str = ",".join(anomalous_trajectory)
     else:
         trajectory_str = str(anomalous_trajectory)
+
+    process_spec: dict[str, object] = {"matchPaths": []}
+    if block_pattern is not None:
+        process_spec["matchPattern"] = block_pattern
 
     policy = {
         "apiVersion": "security.kubearmor.com/v1",
@@ -51,9 +61,7 @@ def compile_policy(
             "selector": {
                 "matchLabels": dict(match_labels),
             },
-            "process": {
-                "matchPaths": [],
-            },
+            "process": process_spec,
             "action": action,
         },
     }

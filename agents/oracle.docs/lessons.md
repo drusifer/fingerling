@@ -22,3 +22,59 @@ DO NOT consult the Oracle via chat (`@Oracle *ora ask ...`) for routine historic
 
 ### References
 - **Files:** `agents/*/SKILL.md`, `agents/oracle.docs/lessons.md`
+
+---
+
+## [2026-08-08] `rich.text.Text` Does Not Parse Bracket Markup
+
+> **Tags:** #Neo #Trin #examples/demo.py
+
+### Context
+STORY-FING-22 (Sprint 7) added new narrative/widget text to `examples/demo.py`'s TUI. Trin's
+UAT caught a stale-caption bug, and while fixing it Neo confirmed empirically (`Console(record=True)`
+round-trip) that `Text.append(str)` and `Text(str)` render `[bold]...[/bold]`-style bracket tags
+as **literal characters**, not styling — markup parsing only happens via `Text.from_markup()` or
+`console.print(..., markup=True)` on a plain string, neither of which this file uses.
+
+### The Issue
+Large parts of `get_narrative_text()`'s pre-existing text (written across Sprints 5-6) use
+exactly this bracket-tag pattern (e.g. `"...an [bold red]HTTP 403 Forbidden[/bold red]
+response!"`), meaning those specific words most likely render as literal bracketed text in the
+live TUI rather than being bold/red. Not confirmed against a real terminal render this session
+(no interactive TTY available) — flagged, not fixed, since fixing every pre-existing instance is
+out of scope for a single 3pt story.
+
+### The Rule (The "Lesson")
+In `examples/demo.py` (and anywhere else building `rich.text.Text` via `.append()`), NEVER use
+inline `[style]...[/style]` bracket tags inside a string argument — they will not be parsed.
+Split the string into separate `.append(text, style="...")` calls instead. If a future story
+touches `get_narrative_text()`, sweep it for the pre-existing bracket-tag instances.
+
+### References
+- **Files:** `examples/demo.py` (`get_narrative_text`, `get_telemetry_widget`)
+- **Story:** STORY-FING-22, `docs/USER_STORIES_SPRINT7.md`
+
+---
+
+## [2026-08-08] Extend an Existing TUI Step Instead of Renumbering
+
+> **Tags:** #Morpheus #Neo #examples/demo.py
+
+### Context
+STORY-FING-22 needed a new demonstration sequence in the 8-step `examples/demo.py` TUI. The
+step count is load-bearing in three separate places: the `while self.step <= 8` loop bound in
+`run()`, the `if self.step == 1 or self.step == 8` layout-reset branch in `update_view()`, and
+every `elif self.step == N` branch across `get_narrative_text()` and `run_step_actions()`.
+
+### The Rule (The "Lesson")
+For a small, additive demo scenario, prefer extending an existing step's narrative + actions
+over inserting a new numbered step and renumbering everything after it. Renumbering touches
+three independent branching mechanisms in a large, manually-choreographed file with no test
+coverage of the interactive loop itself (only `run_step_actions()` is scriptable/testable) —
+the blast radius of a renumbering mistake is much larger than the blast radius of one step doing
+more. Only renumber if the new content genuinely doesn't fit the pedagogical flow of any
+existing step.
+
+### References
+- **Files:** `examples/demo.py`
+- **Story:** STORY-FING-22, `docs/USER_STORIES_SPRINT7.md`

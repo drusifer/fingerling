@@ -2,6 +2,12 @@
 
 ## Context
 ## Recent Decisions
+- Sprint 7 (fast-track, Tier 2): STORY-FING-22, 3 pts, "Comprehensive Input-Validation Policy
+  Demo" — add a `;`-pattern-based comprehensive block alongside the existing exact-fingerprint
+  block, entirely via fingerling's simulated KubeArmor enforcement layer, with zero changes to
+  the vulnerable line in `vulnerable_app.py`. Chose **block** over silent **sanitize** (flagged
+  explicitly for Smith gate — a demo that visibly rejects `;` payloads is more legible than one
+  that silently rewrites them). See `docs/USER_STORIES_SPRINT7.md` for full stories+arch.
 - POC Fingerling sprint scoped to pure-logic core: 4 stories (STORY-FING-01..04) covering
   telemetry tokenization, stateful upsert warehouse, ring-buffer sequence matcher, KubeArmor
   policy compiler. Webhook ingestion, sandbox provisioning, live exploit execution, and real
@@ -26,9 +32,9 @@
   infra pieces are out of scope.
 
 ## Current Task
-**Status:** Stories drafted — awaiting Smith Gate 1 (user story review)
+**Status:** Sprint 7 complete — launched
 **Assigned to:** Cypher
-**Started:** 2026-07-13
+**Started:** 2026-08-08
 
 ## Task Description
 `*pm plan sprint`: draft Sprint 2 user stories from the Sprint 1 retro backlog, prioritize which
@@ -61,18 +67,17 @@ None needed — read lessons.md/memory.md directly per "Artifacts First" rule (2
 
 ## Next Steps
 ## Immediate Next Action
-Waiting on Smith Gate 1 (`*user review`) for `docs/USER_STORIES_SPRINT2.md`. Per the sprint
-skill this gate requires explicit `*user approve` before Morpheus architecture can start — do
-not auto-proceed.
+None — Sprint 7 shipped. Backlog item added: bracket-markup sweep of `examples/demo.py`'s
+pre-existing narrative text (`[bold red]...[/bold red]`-style tags don't render — `rich.text.Text`
+doesn't parse them; see Oracle's 2026-08-08 lessons.md entries and Smith's retro).
 
 ## Waiting On
-Smith (Gate 1) — user story review of Sprint 2 stories.
+Nothing.
 
 ## Planned Work
-- [ ] On Smith approval: hand off to Morpheus (`*lead arch sprint`) for Sprint 2 architecture,
-      especially formalizing STORY-FING-07's wildcard-match token semantics and STORY-FING-08's
-      HTTP server design.
-- [ ] On Smith rejection: revise `docs/USER_STORIES_SPRINT2.md` per feedback and re-submit.
+- [ ] Backlog (not scheduled): full `examples/demo.py` bracket-markup sweep.
+- [ ] Backlog (carried from earlier): baseline-whitelist helper, `compile_policy`
+      `str | tuple` trajectory param (see Smith's `*user test` findings, prior sprint).
 
 ---
-*Last updated: 2026-08-07T13:17:52-04:00*
+*Last updated: 2026-08-08T15:42:00-04:00*

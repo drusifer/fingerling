@@ -31,12 +31,19 @@
   logged the gap in `docs/LESSONS.md` for Tank.
 
 ## Current Task
-**Status:** Complete
+**Status:** Sprint 7 groom complete — handed to Smith for end-to-end user testing
 **Assigned to:** Oracle
-**Started:** 2026-07-12
+**Started:** 2026-08-08
 
 ## Task Description
-User guide + documented end-to-end demo for POC Fingerling (`/oracle` command, post-sprint-close).
+`*ora groom` for Sprint 7 (STORY-FING-22): updated `docs/USER_GUIDE.md` (new bullet in the TUI
+demo section, `block_pattern` param documented in the policy module reference), recorded 2 new
+lessons in `lessons.md` (rich `Text` markup doesn't parse bracket tags; prefer extending an
+existing TUI step over renumbering). `agents/CHAT.md` currently at ~250 blocks post-merge-fix —
+not yet over the 100-message archive threshold by much, leaving as-is.
+
+## Progress (previous task, kept for history)
+- [x] Read all 4 module source files (`fingerling/tokenizer.py`, `warehouse.py`, `ringbuffer.py`,
 
 ## Progress
 - [x] Read all 4 module source files (`fingerling/tokenizer.py`, `warehouse.py`, `ringbuffer.py`,

@@ -2,6 +2,17 @@
 
 ## Context
 ## Recent Decisions
+- Sprint 7 end-to-end user test: **PASSED**. All 7 ACs verified live. Surfaced (not filed as
+  blocking) a pre-existing bug: `examples/demo.py`'s narrative text uses `[bold red]...[/bold
+  red]`-style bracket tags that `rich.text.Text.append()` does NOT parse — they render as
+  literal bracket characters in the real TUI. Visible directly in Step 7 next to my new,
+  correctly-rendered text. Already logged by Oracle as a lesson; filed to Cypher's backlog for a
+  future full-file sweep, out of STORY-FING-22's 3pt scope.
+- Sprint 7 fast-track gate (docs/USER_STORIES_SPRINT7.md, STORY-FING-22): **Approved with one
+  non-blocking note**. Block-over-sanitize UX call endorsed (visible rejection > silent rewrite
+  for a teaching demo). Note to Neo: keep the "narrow policy misses novel `;` payload" moment
+  visible in whatever step sequencing is chosen — it's the pedagogical payoff of the story, not
+  incidental detail.
 - Gate 1 (POC Fingerling stories, docs/USER_STORIES.md): **Approved with notes**. Not a
   blocking rejection — notes are forward to Morpheus/Neo for design-time consideration, not
   story rewrites, since the ambiguity originates in the user's own source BRD/PRD.

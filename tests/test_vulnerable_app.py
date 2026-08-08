@@ -93,6 +93,99 @@ class VulnerableAppTests(unittest.TestCase):
             if os.path.exists(policy_path):
                 os.remove(policy_path)
 
+    def test_ping_endpoint_novel_payload_not_blocked_by_fingerprint_alone(self) -> None:
+        # STORY-FING-22 AC2: a policy with only the narrow exact-fingerprint match
+        # (no matchPattern) does NOT catch a *different* ';'-based payload it has
+        # never seen — the blind spot the comprehensive policy exists to close.
+        import tempfile
+        import os
+        import hashlib
+        fid_echo = hashlib.md5(b"hook_syscall:echo").hexdigest()
+        with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as tf:
+            tf.write(
+                f"metadata:\n  annotations:\n    fingerling.io/anomalous-trajectory: 'ping,{fid_echo}'\n".encode("utf-8")
+            )
+            policy_path = tf.name
+
+        try:
+            port = get_free_port()
+            server = run_app(port, policy_path)
+            t = threading.Thread(target=server.serve_forever)
+            t.daemon = True
+            t.start()
+
+            # Novel payload: uses ';id' not ';echo', so it doesn't match fid_echo
+            # and doesn't contain the literal substring "echo" the narrow check
+            # also requires — it slips through the narrow, fingerprint-only policy.
+            url = f"http://127.0.0.1:{port}/ping?host=127.0.0.1;id"
+            with urllib.request.urlopen(url) as resp:
+                self.assertEqual(resp.status, 200)
+
+            server.shutdown()
+            server.server_close()
+            t.join()
+        finally:
+            if os.path.exists(policy_path):
+                os.remove(policy_path)
+
+    def test_ping_endpoint_blocked_by_match_pattern(self) -> None:
+        # STORY-FING-22 AC3/AC4: a matchPattern policy blocks ANY payload
+        # containing the pattern, including the novel one the fingerprint-only
+        # policy above let through.
+        import tempfile
+        import os
+        with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as tf:
+            tf.write(b"spec:\n  process:\n    matchPattern: ';'\n")
+            policy_path = tf.name
+
+        try:
+            port = get_free_port()
+            server = run_app(port, policy_path)
+            t = threading.Thread(target=server.serve_forever)
+            t.daemon = True
+            t.start()
+
+            url = f"http://127.0.0.1:{port}/ping?host=127.0.0.1;id"
+            with self.assertRaises(urllib.error.HTTPError) as ctx:
+                urllib.request.urlopen(url)
+            self.assertEqual(ctx.exception.code, 403)
+            body = ctx.exception.read().decode("utf-8")
+            self.assertIn("Blocked by KubeArmorPolicy", body)
+
+            server.shutdown()
+            server.server_close()
+            t.join()
+        finally:
+            if os.path.exists(policy_path):
+                os.remove(policy_path)
+
+    def test_ping_endpoint_match_pattern_allows_clean_traffic(self) -> None:
+        # STORY-FING-22 AC5: matchPattern policy doesn't block traffic that
+        # doesn't contain the pattern.
+        import tempfile
+        import os
+        with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as tf:
+            tf.write(b"spec:\n  process:\n    matchPattern: ';'\n")
+            policy_path = tf.name
+
+        try:
+            port = get_free_port()
+            server = run_app(port, policy_path)
+            t = threading.Thread(target=server.serve_forever)
+            t.daemon = True
+            t.start()
+
+            url = f"http://127.0.0.1:{port}/ping?host=127.0.0.1"
+            with urllib.request.urlopen(url) as resp:
+                self.assertEqual(resp.status, 200)
+
+            server.shutdown()
+            server.server_close()
+            t.join()
+        finally:
+            if os.path.exists(policy_path):
+                os.remove(policy_path)
+
 
 if __name__ == "__main__":
     unittest.main()

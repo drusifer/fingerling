@@ -66,6 +66,24 @@ def create_handler(policy_file: str | None = None) -> type[BaseHTTPRequestHandle
                             self.end_headers()
                             self.wfile.write(b"Blocked by KubeArmorPolicy")
                             return
+
+                        # STORY-FING-22: comprehensive content-based rule, independent
+                        # of the exact-fingerprint check above — blocks ANY request
+                        # containing the configured pattern (e.g. ";"), not just the
+                        # one specific attack trajectory already captured.
+                        match_pattern = (
+                            policy_data.get("spec", {}).get("process", {}).get("matchPattern")
+                        )
+                        if match_pattern and match_pattern in host:
+                            print(
+                                f"KubeArmor blocked process execution: pattern match {match_pattern!r}",
+                                file=sys.stderr,
+                            )
+                            sys.stderr.flush()
+                            self.send_response(403)
+                            self.end_headers()
+                            self.wfile.write(b"Blocked by KubeArmorPolicy")
+                            return
                     except Exception as err:
                         print(f"Error parsing policy: {err}", file=sys.stderr)
                         sys.stderr.flush()

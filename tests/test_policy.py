@@ -87,6 +87,27 @@ class CompilePolicyTests(unittest.TestCase):
         )
         self.assertEqual(custom_manifest["metadata"]["namespace"], "checkout")
 
+    def test_block_pattern_omitted_by_default(self):
+        # STORY-FING-22: matchPattern absent unless block_pattern is explicitly passed —
+        # existing callers/tests must see no schema change.
+        manifest = yaml.safe_load(
+            compile_policy(workload_name="w", match_labels={"app": "w"}, anomalous_trajectory="x")
+        )
+        self.assertNotIn("matchPattern", manifest["spec"]["process"])
+
+    def test_block_pattern_adds_match_pattern_field(self):
+        # STORY-FING-22: comprehensive ';'-content block, additive to matchPaths.
+        manifest = yaml.safe_load(
+            compile_policy(
+                workload_name="w",
+                match_labels={"app": "w"},
+                anomalous_trajectory="x",
+                block_pattern=";",
+            )
+        )
+        self.assertEqual(manifest["spec"]["process"]["matchPattern"], ";")
+        self.assertEqual(manifest["spec"]["process"]["matchPaths"], [])
+
     def test_accepts_tuple_trajectory(self):
         # Verification Task: anomalous_trajectory accepts tuple and joins with commas
         manifest_text = compile_policy(

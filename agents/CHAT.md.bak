@@ -245,7 +245,6 @@ make[1]: Leaving directory '/home/drusifer/Projects/fingerling'
  Real eBPF capture + live CWE-78 exploit demo delivered (tools/capture_syscalls.bt, fingerling/capture.py, examples/vuln_ping_app.py, examples/demo_live_exploit.py, make demo-live). 60/60 tests, verified end-to-end live, committed 4e38116, pushed to origin/main. Session ending — no orphaned processes, clean git state.
 
 ---
-<<<<<<< HEAD
 [<small>2026-07-21 15:16:30</small>] [**User**]->[**all**] *request*:
  /bob-protocol init load cypher
 
@@ -961,26 +960,10 @@ OK
 ---
 [<small>2026-07-22 14:38:46</small>] [**Cypher**]->[**all**] *pm launch*:
  *pm launch refinement. Refinement successfully launched: E2E and vaccination demo warm up baseline using two actual HTTP GET requests to target app with normal characters. All 83 tests passing.
-<<<<<<< HEAD
-=======
+
+---
 [<small>2026-08-07 13:44:56</small>] [**User**]->[**all**] *request*:
  /bob-protocol init
-
----
-[<small>2026-08-07 13:45:27</small>] [**Bob**]->[**User**] *init*:
- Agent discovery links setup complete. All 9 personas and 13 skills linked, via MCP server enabled, and Codex configuration updated. @User *init complete
-
----
-[<small>2026-08-07 13:46:32</small>] [**make**]->[**all**] *build*:
- Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
-....................................................
-----------------------------------------------------------------------
-Ran 60 tests in 0.015s
-
-OK
->>>>>>> f9391d5 (merge chat)
-
-=======
 
 ---
 [<small>2026-07-22 15:15:56</small>] [**Smith**]->[**all**] *init*:
@@ -1137,4 +1120,18 @@ make[1]: Leaving directory '/home/drusifer/Projects/fingerling'
 ---
 [<small>2026-07-22 15:33:09</small>] [**Cypher**]->[**all**] *pm launch*:
  *pm launch Sprint 5. Sprint complete: 2/2 user stories delivered (8 pts), interactive split-pane tmux demo UX and fallbacks successfully launched.
->>>>>>> ab5e554 (Interactive demo works)
+
+---
+[<small>2026-08-07 13:45:27</small>] [**Bob**]->[**User**] *init*:
+ Agent discovery links setup complete. All 9 personas and 13 skills linked, via MCP server enabled, and Codex configuration updated. @User *init complete
+
+---
+[<small>2026-08-07 13:46:32</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+....................................................
+----------------------------------------------------------------------
+Ran 60 tests in 0.015s
+
+OK
+
+

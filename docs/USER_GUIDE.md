@@ -149,6 +149,9 @@ manifest_yaml = compile_policy(
     anomalous_trajectory="fp_x,fp_y",   # a string; join a tuple of IDs yourself (see Known Gaps)
     namespace="default",                 # optional, defaults to "default"
     action="Block",                      # optional, "Block" (default) or "Post"
+    block_pattern=None,                  # optional; e.g. ";" adds a comprehensive
+                                          # spec.process.matchPattern rule alongside the
+                                          # exact-fingerprint trajectory match
 )
 ```
 
@@ -225,6 +228,7 @@ sudo make demo
 - **Raw Ingested Trace Feed**: Real-time scrolling JSON feed showing raw eBPF process execution events paired from the kernel.
 - **Live Logs Pane**: Displays real-time stderr/stdout request logs piped directly from the background target application and webhook server.
 - **Hot-Patch Proof**: Demonstrates policy enforcement while visually proving the server PID remains unchanged (hot-patched on-the-fly, zero downtime).
+- **Narrow vs. Comprehensive Enforcement**: After the exact-fingerprint block, the demo shows a *different*, never-before-seen `;`-based payload slip past that narrow policy — then fingerling compiles a second, content-based policy (`spec.process.matchPattern`) that blocks any request containing `;`, closing the gap without touching the vulnerable handler's code.
 
 **Strict eBPF Tracing Requirement**:
 Fingerling requires standard Linux eBPF kprobes capabilities to monitor workloads:

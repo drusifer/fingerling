@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help tldr test via_index demo demo-live
+.PHONY: help tldr test via_index demo demo-live chat
 
 help: ## Show available make targets
 	@echo ""
@@ -23,3 +23,6 @@ demo: ## Run the end-to-end pipeline demo (see docs/USER_GUIDE.md)
 
 demo-live: ## Run the unified demo forcing real eBPF capture (needs Linux, root, bpftrace; see docs/USER_GUIDE.md)
 	@sudo python3 -m examples.demo
+
+chat: ## Post a message to agents/CHAT.md (MSG="..." PERSONA="Name" CMD="cmd" [TO="Recipient"])
+	@python3 agents/tools/chat.py "$(MSG)" $(if $(PERSONA),--persona "$(PERSONA)") $(if $(CMD),--cmd "$(CMD)") $(if $(TO),--to "$(TO)")

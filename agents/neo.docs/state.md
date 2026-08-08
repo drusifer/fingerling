@@ -69,60 +69,73 @@
   `docs/LESSONS.md` for the full writeup.
 
 ## Current Task
-**Status:** Complete
-**Assigned to:** Neo (implicit — implementation work done directly, not via formal Bloop handoff)
-**Started:** 2026-07-13
+**Status:** Phase 1 complete — Trin's AC7 finding (stale telemetry-widget caption after Step 7
+overwrites `policy_manifest`) fixed: caption now branches on whether `matchPattern` is present
+in the current manifest. Also fixed markup: `rich.text.Text.append()`/`Text(...)` do NOT parse
+`[bold]...[/bold]` bracket markup (confirmed empirically) — my new narrative/widget text uses
+real `style="bold"` spans instead. Pre-existing bracket-markup instances elsewhere in the file
+are out of scope for this story, left as-is. Re-verified: 88/88 tests, smoke test sequence
+unchanged, widget caption confirmed correct via direct Console render. Handed back to Trin.
+**Assigned to:** Neo
+**Started:** 2026-08-08
 
 ## Task Description
-User asked directly for "a way to capture the eBPF sequences from a real process," then "a real
-exploit we can use as a demo/test case." Built real bpftrace-based syscall capture plus a real,
-safe, local CWE-78 command-injection demo to exercise it end-to-end — see the plan at
-`/home/drusifer/.claude/plans/deep-prancing-donut.md` for the full design and its Context section.
+STORY-FING-22 (Sprint 7, fast-track): add a comprehensive, pattern-based (`;`) block
+alongside the existing exact-fingerprint block in the live demo, entirely via fingerling's
+policy layer — zero changes to `vulnerable_app.py`'s vulnerable `cmd = f"ping -c 1 {host}"` /
+`shell=True` line. Note the Makefile note above (two-file `Makefile.prj`/mkf.py stub pattern)
+is now obsolete — Sprint 6 consolidated the Makefile to a single self-contained file with no
+`-include Makefile.prj` at all; ignore that pattern for any new targets going forward.
 
 ## Progress
-- [x] Installed `bpftrace` v0.23.2 via apt (confirmed no BTF on this kernel — see context.md)
-- [x] `tools/capture_syscalls.bt` — process-subtree execve tracer (fork-propagation via
-      `sched_process_fork`, cleanup via `sched_process_exit` guarded `pid == tid`)
-- [x] `fingerling/capture.py` — pure ENTER/EXIT-pairing parser (`tests/test_capture.py`, 10
-      unit tests, offline) + `run_capture`/`stop_capture`/CLI (`python -m fingerling.capture`)
-- [x] `examples/vuln_ping_app.py` — minimal loopback-only CWE-78 Flask target
-- [x] `examples/demo_live_exploit.py` — real baseline capture -> real attack capture -> same
-      tokenizer/warehouse/ringbuffer/policy pipeline as `examples/demo.py`, on real data
-- [x] `Makefile.prj` + `Makefile` else-block stub for `demo-live` (two-file pattern from the
-      2026-07-12 Makefile fix, applied correctly first try)
-- [x] `docs/USER_GUIDE.md` — new "Live Capture (Real eBPF)" section + updated Known Gaps
-- [x] Found and fixed 2 real bugs via live testing (stderr pipe deadlock risk; `sched_process_exit`
-      firing per-thread not per-process) — see context.md for full writeups
-- [x] Verified: `make test` (60/60, offline), `sudo make demo-live` end-to-end (anomaly detected,
-      policy compiled, `/tmp/pwned_poc` confirmed then cleaned up, no orphaned processes)
-- [x] Committed as `4e38116` and pushed to `origin/main`
+- [x] TDD: added `test_block_pattern_omitted_by_default` / `test_block_pattern_adds_match_pattern_field`
+      to `tests/test_policy.py` first, then implemented.
+- [x] `fingerling/policy.py`: `compile_policy()` gained optional `block_pattern: str | None`
+      param → emits `spec.process.matchPattern` only when passed; `matchPaths`/existing fields
+      untouched when omitted. 10/10 `test_policy.py` passing.
+- [x] TDD: added 3 tests to `tests/test_vulnerable_app.py` (novel payload NOT blocked by
+      fingerprint-only policy; blocked by matchPattern policy; clean traffic unaffected by
+      matchPattern policy), then implemented.
+- [x] `examples/vulnerable_app.py`: added an independent `matchPattern` check in the existing
+      "Simulated KubeArmor Policy Enforcement" block, alongside (not replacing) the fingerprint
+      check. 7/7 `test_vulnerable_app.py` passing.
+- [x] `examples/demo.py`: extended Step 7 (narrative + `run_step_actions`) rather than inserting
+      a new numbered step — avoids touching the `while self.step <= 8` loop bound and the
+      `step == 1 or step == 8` layout branch in a large, fragile, manually-choreographed TUI
+      file. Sequence: retrigger original exploit (existing, unchanged) → novel `;id` payload
+      (200, narrow policy blind spot, per Smith's explicit note) → compile+write comprehensive
+      policy via `compile_policy(..., block_pattern=";")`, preserving the existing
+      `anomalous-trajectory` annotation read back from `self.policy_file` → retry both payloads
+      (403/403) → clean baseline (200).
+- [x] `make test`: 88/88 passing (83 pre-existing + 5 new: 2 in `test_policy.py`, 3 in
+      `test_vulnerable_app.py`). No regressions.
+- [x] Scripted smoke test of `examples/demo.py` steps 2→7 (`TUIDemo` driven directly, bypassing
+      the interactive `Live`/keypress loop): confirmed via `client_log_pipe.get_logs()` the
+      exact expected sequence — novel payload 200 → both payloads 403/403 under comprehensive
+      policy → baseline 200. No exceptions.
+- [ ] Did NOT run the actual interactive `sudo make demo-live` TUI end-to-end (needs a real
+      terminal + sudo password prompt, not available in this session) — flagging for Trin/Smith
+      to do a real interactive pass if possible, though the scripted smoke test exercises the
+      exact same `run_step_actions` code path.
 
 ## Blockers
-None
+None.
 
 ## Oracle Consultations
-None — this was direct user-driven implementation outside the formal sprint Bloop (a Sprint 2
-planning pass was in progress via Cypher but got redirected mid-flow; see
-`agents/cypher.docs/current_task.md` and the separate commit `6ed562b` for that unfinished
-thread, which is unrelated to this task).
+None needed — straightforward additive change, no ambiguity requiring history lookup.
 
 ## Next Steps
 ## Immediate Next Action
-None — real eBPF capture + live exploit demo delivered, verified end-to-end, committed
-(`4e38116`), and pushed. No further action planned.
+Trin: run `make test` (88/88 expected), review the 5 new/changed test cases against
+STORY-FING-22's AC1-AC7 in `docs/USER_STORIES_SPRINT7.md`, and — if a real terminal is
+available — do one interactive `sudo make demo-live` pass through step 7 to confirm the TUI
+rendering (colors/narrative) looks right, not just the underlying logic.
 
 ## Waiting On
-Nothing.
+Trin (`*qa uat phase-1`).
 
 ## Planned Work
-- [ ] If future project targets are added, remember the two-file pattern (Makefile.prj recipe
-      + Makefile else-block stub) — `make help | grep <target>` should show it twice.
-- [ ] Backlog, not scheduled: real `connect()` dport extraction (needs BTF or `buf()`-based raw
-      byte parsing — see context.md's 2026-07-13 entry), Sprint 2's other 3 stories
-      (`docs/USER_STORIES_SPRINT2.md`, still pending Smith Gate 1 review).
-- [ ] `tools/capture_syscalls.bt` only traces `execve`; connect/read/write/close were explicitly
-      scoped out of v1 (no payoff for the execve-only anomaly signal this demo needs) — revisit
-      if a future scenario needs them.
+- [ ] None beyond this story — Sprint 7 is single-phase.
 
 ---
-*Last updated: 2026-08-07T13:17:52-04:00*
+*Last updated: 2026-08-08T15:00:00-04:00*

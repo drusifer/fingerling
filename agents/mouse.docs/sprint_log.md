@@ -1,5 +1,18 @@
 # Sprint Log
 
+## Sprint: Fingerling Sprint 7 (Fast-Track) — 2026-08-08
+
+- **Planning:** Combined drafting (Cypher, stories+arch) → Single Smith gate → Mouse plan.
+- **Velocity target:** 3 story points, 1 story.
+- **Phase breakdown:** 1 phase, 1 task:
+  - Phase 1: STORY-FING-22 (Pattern-Based Comprehensive Block Demo) — `compile_policy()`
+    `block_pattern` param, `vulnerable_app.py` enforcement extension, new TUI step in
+    `examples/demo.py`.
+- **Board:** `docs/USER_STORIES_SPRINT7.md` is single source of truth (no separate task.md split
+  needed for a 1-phase sprint).
+
+---
+
 ## Sprint: Fingerling Sprint 6 — 2026-07-22
 
 - **Planning:** Combined drafting (Cypher/Morpheus) → Combined review (Smith) → Mouse plan.

@@ -28,42 +28,46 @@
   Trin's domain, not a usability issue.
 
 ## Current Task
-**Status:** Phase 4 UAT PASSED (final phase) — handed to Morpheus for code review
+**Status:** Phase 1 (Sprint 7, STORY-FING-22) UAT PASSED — handed to Morpheus for code review
 **Assigned to:** Trin
-**Started:** 2026-07-12
+**Started:** 2026-08-08
 
 ## Task Description
-`*qa uat phase-4`: verify `fingerling/policy.py` against STORY-FING-04's AC1-3 and
-Verification Tasks — last phase of the sprint.
+`*qa uat phase-1`: verify STORY-FING-22 (comprehensive `;`-pattern policy demo) against AC1-7
+in `docs/USER_STORIES_SPRINT7.md`.
 
 ## Progress
-- [x] `make test` — 47/47 passing
-- [x] AC1 (syntactically correct KubeArmorPolicy CRD from anomaly string) — tested via real
-      `yaml.safe_load` round-trip, not just string-matching
-- [x] AC2 (matchLabels injection) — tested with real `app: checkout-backend` fixture from the
-      story's own example
-- [x] AC3 (action defaults, explicit Block/Post) — tested both values + invalid-value guard
-- [x] Both Verification Tasks — literal match (schema shape, matchLabels mapping)
-- [x] Posted PASS handoff to Morpheus — all 4 phases now UAT-clean
+- [x] `make test` — 88/88 passing
+- [x] AC1 (narrow block unchanged) — confirmed original Step 7 exploit-retrigger path untouched
+- [x] AC2 (blind spot shown) — first pass caught it: rejected Neo's first submission because
+      `get_telemetry_widget()`'s static caption went stale once Step 7 overwrote
+      `policy_manifest`; Neo fixed with a conditional caption + fixed a real (if pre-existing
+      elsewhere) `Text.append()` markup bug in the new text
+- [x] AC3-5 (comprehensive policy compiled/applied, both payloads blocked, baseline unaffected)
+      — verified via `test_vulnerable_app.py`'s 3 new cases + Neo's scripted smoke test log
+      (`client_log_pipe.get_logs()` showing the exact 200→403/403→200 sequence)
+- [x] AC6 (vulnerable line untouched) — independently re-verified via `git diff
+      examples/vulnerable_app.py`: pure addition, zero lines changed/removed
+- [x] AC7 (narrative clarity) — re-verified after fix via direct `Console` render of both the
+      narrative text and the telemetry widget caption
+- [x] Posted PASS handoff to Morpheus
 
 ## Blockers
 None
 
 ## Oracle Consultations
-None yet
+None needed.
 
 ## Next Steps
 ## Immediate Next Action
-Wait for Neo to implement Phase 2 (warehouse.py), then `*qa uat phase-2` against
-STORY-FING-02's AC1-3 and both Verification Tasks.
+Wait for Morpheus's code review (`*lead review phase-1`) — last phase of Sprint 7 (single
+phase), so a PASS there hands straight to Oracle groom.
 
 ## Waiting On
-Neo — Phase 2 implementation.
+Morpheus.
 
 ## Planned Work
-- [ ] Phase 2 UAT (warehouse.py) — check match/drift reconciliation and sample-ring cap literally
-- [ ] Phase 3 UAT (ringbuffer.py) — check warm-up N=3 behavior and off-whitelist anomaly literally
-- [ ] Phase 4 UAT (policy.py) — check KubeArmor schema shape and matchLabels mapping literally
+- [ ] None beyond this story.
 
 ---
 *Last updated: 2026-08-07T13:17:52-04:00*

@@ -26,6 +26,7 @@ import time
 import urllib.request
 from typing import Any
 
+import yaml
 from rich.console import Console
 from rich.layout import Layout
 from rich.live import Live
@@ -36,6 +37,7 @@ from rich.text import Text
 
 # Import Fingerling core components
 from fingerling.gitops import initialize_repo
+from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
 from fingerling.tokenizer import MaskEntry, tokenize
@@ -394,12 +396,27 @@ class TUIDemo:
             txt.append("👉 Press any key to re-trigger the command injection exploit and test enforcement.")
             
         elif self.step == 7:
-            txt.append("🛡️ Step 7: Exploit Execution Blocked & PID Verification\n\n", style="bold green")
+            txt.append("🛡️ Step 7: Exploit Blocked, Then a Broader Fix Than Just That One Attack\n\n", style="bold green")
             txt.append("We triggered the exploit again: `/ping?host=127.0.0.1;echo%20boo`.\n")
             txt.append("The target app checked the active GitOps policy folder, matched the block rule for `/bin/echo`,\n")
             txt.append("and rejected the process fork immediately with an [bold red]HTTP 403 Forbidden[/bold red] response!\n\n")
             txt.append("💡 [bold yellow]Visual Proof: The target application server PID has not changed![/bold yellow]\n")
             txt.append(f"  * PID is still: {self.app_pid} (Zero Downtime, hot-patched live without restarts!)\n\n")
+            txt.append("⚠️  But that block is ")
+            txt.append("reactive and narrow", style="bold")
+            txt.append(" — it only recognizes the exact\n")
+            txt.append("attack fingerprint already captured. A ")
+            txt.append("different", style="bold")
+            txt.append(" `;`-payload it has never\n")
+            txt.append("seen (`;id` instead of `;echo`) still slips through, because nothing has actually\n")
+            txt.append("validated the input — the vulnerable handler still has none.\n\n")
+            txt.append("Fingerling now compiles a second, ")
+            txt.append("comprehensive", style="bold")
+            txt.append(" policy: block ANY request\n")
+            txt.append("containing `;`, regardless of fingerprint. This is real input validation, applied\n")
+            txt.append("entirely from the enforcement layer — the vulnerable line itself is never touched.\n")
+            txt.append("Watch: the novel payload gets through first, then both payloads are blocked once\n")
+            txt.append("the comprehensive rule is active, while clean baseline traffic keeps working.\n\n")
             txt.append("👉 Press any key to clean up resources.")
             
         elif self.step == 8:
@@ -415,14 +432,24 @@ class TUIDemo:
     def get_telemetry_widget(self) -> Any:
         """Returns the telemetry visualization widget (YAML policy manifest)."""
         from rich.console import Group
-        explanation = Text(
-            "\n💡 Policy Analysis & Mapping:\n"
-            "The compiled KubeArmorPolicy maps to the anomalous transition (ping -> echo).\n"
-            "By setting matchPaths path to /bin/echo and action to Block,\n"
-            "it disrupts the command injection attack chain directly at the process level,\n"
-            "securing the workload without editing server code or restarting.",
-            style="yellow"
-        )
+        if "matchPattern" in self.policy_manifest:
+            explanation = Text(style="yellow")
+            explanation.append("\n💡 Policy Analysis & Mapping:\n")
+            explanation.append("This is now the ")
+            explanation.append("comprehensive", style="bold")
+            explanation.append(" policy: `spec.process.matchPattern`\n")
+            explanation.append("blocks ANY request containing that pattern, not just the one exact fingerprint\n")
+            explanation.append("from `fingerling.io/anomalous-trajectory`. This is real input validation, applied\n")
+            explanation.append("entirely at the enforcement layer — the vulnerable line itself is never touched.")
+        else:
+            explanation = Text(
+                "\n💡 Policy Analysis & Mapping:\n"
+                "The compiled KubeArmorPolicy maps to the anomalous transition (ping -> echo).\n"
+                "By setting matchPaths path to /bin/echo and action to Block,\n"
+                "it disrupts the command injection attack chain directly at the process level,\n"
+                "securing the workload without editing server code or restarting.",
+                style="yellow"
+            )
         return Group(
             Syntax(self.policy_manifest, "yaml", theme="monokai", line_numbers=True),
             explanation
@@ -917,6 +944,71 @@ class TUIDemo:
             self.raw_traces.append(f"[eBPF Capture] Captured {len(records)} real execve() events.")
             for record in records:
                 self.raw_traces.append(json.dumps(record))
+            self.update_view()
+            if hasattr(self, "live_view") and self.live_view: self.live_view.refresh()
+
+            # STORY-FING-22: show the narrow policy's blind spot on a novel ';'
+            # payload, then close it with a comprehensive content-based rule —
+            # independent of the exact fingerprint captured above.
+            print("[Client request] GET /ping?host=127.0.0.1;id (novel payload, never captured)...", file=sys.stdout)
+            self.update_view()
+            if hasattr(self, "live_view") and self.live_view: self.live_view.refresh()
+            time.sleep(1.0)
+            try:
+                resp = urllib.request.urlopen(f"http://127.0.0.1:{self.app_port}/ping?host=127.0.0.1;id")
+                resp.read()
+                print("\033[93;1m⚠️  [Client response] HTTP 200 OK — narrow fingerprint policy MISSED this novel payload!\033[0m", file=sys.stdout)
+            except urllib.error.HTTPError as err:
+                print(f"[Client response] HTTP {err.code} (unexpected — novel payload should slip past the narrow policy)", file=sys.stdout)
+            self.update_view()
+            if hasattr(self, "live_view") and self.live_view: self.live_view.refresh()
+            time.sleep(1.0)
+
+            print("[Server stdout] Fingerling compiling comprehensive policy: block any ';' in request...", file=self.server_log_pipe)
+            try:
+                existing_trajectory = "ping,echo"
+                if os.path.exists(self.policy_file):
+                    with open(self.policy_file) as f:
+                        existing_data = yaml.safe_load(f) or {}
+                    existing_trajectory = (
+                        existing_data.get("metadata", {}).get("annotations", {})
+                        .get("fingerling.io/anomalous-trajectory", existing_trajectory)
+                    )
+                comprehensive_manifest = compile_policy(
+                    workload_name="vulnerable-target-app",
+                    match_labels={"app": "vuln-app"},
+                    anomalous_trajectory=existing_trajectory,
+                    block_pattern=";",
+                )
+                with open(self.policy_file, "w") as f:
+                    f.write(comprehensive_manifest)
+                self.policy_manifest = comprehensive_manifest
+            except Exception as err:
+                print(f"[Client stderr] Failed to compile comprehensive policy: {err}", file=sys.stderr)
+            self.update_view()
+            if hasattr(self, "live_view") and self.live_view: self.live_view.refresh()
+            time.sleep(1.0)
+
+            for label, payload in (("original", "127.0.0.1;echo%20boo"), ("novel", "127.0.0.1;id")):
+                print(f"[Client request] Retrying {label} payload under comprehensive policy...", file=sys.stdout)
+                try:
+                    urllib.request.urlopen(f"http://127.0.0.1:{self.app_port}/ping?host={payload}")
+                    print(f"\033[91;1m❌ [Client response] HTTP 200 — comprehensive policy failed to block {label} payload!\033[0m", file=sys.stdout)
+                except urllib.error.HTTPError as err:
+                    if err.code == 403:
+                        print(f"\033[92;1m✅ [Client response] HTTP 403 Forbidden — {label} payload blocked by comprehensive policy\033[0m", file=sys.stdout)
+                    else:
+                        print(f"[Client response] HTTP {err.code} Error", file=sys.stdout)
+                self.update_view()
+                if hasattr(self, "live_view") and self.live_view: self.live_view.refresh()
+                time.sleep(0.8)
+
+            print("[Client request] GET /ping?host=127.0.0.1 (clean baseline, no ';')...", file=sys.stdout)
+            try:
+                urllib.request.urlopen(f"http://127.0.0.1:{self.app_port}/ping?host=127.0.0.1")
+                print("\033[92;1m✅ [Client response] HTTP 200 OK — legitimate traffic unaffected\033[0m", file=sys.stdout)
+            except Exception as err:
+                print(f"[Client stderr] Baseline verification failed: {err}", file=sys.stderr)
             self.update_view()
             if hasattr(self, "live_view") and self.live_view: self.live_view.refresh()
 
