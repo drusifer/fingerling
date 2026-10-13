@@ -1,5 +1,7 @@
 # Project Lessons Learned
 
+> Standing rules for agents. Sprint-by-sprint engineering lessons are in `docs/LESSONS.md`.
+
 This file contains critical lessons and rules derived from past errors, technical discoveries, and architectural decisions. All agents MUST review this file before starting new implementation or architectural tasks.
 
 ---
@@ -52,7 +54,7 @@ touches `get_narrative_text()`, sweep it for the pre-existing bracket-tag instan
 
 ### References
 - **Files:** `examples/demo.py` (`get_narrative_text`, `get_telemetry_widget`)
-- **Story:** STORY-FING-22, `docs/USER_STORIES_SPRINT7.md`
+- **Story:** STORY-FING-22, `docs/sprints/USER_STORIES_SPRINT7.md`
 
 ---
 
@@ -77,7 +79,7 @@ existing step.
 
 ### References
 - **Files:** `examples/demo.py`
-- **Story:** STORY-FING-22, `docs/USER_STORIES_SPRINT7.md`
+- **Story:** STORY-FING-22, `docs/sprints/USER_STORIES_SPRINT7.md`
 
 ---
 

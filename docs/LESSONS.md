@@ -1,5 +1,8 @@
 # Lessons Learned
 
+Engineering lessons from each sprint, newest last. Standing rules that agents must follow
+(process and tooling) are kept separately in `agents/oracle/lessons.md`.
+
 ## 2026-07-12 — POC Fingerling Sprint
 
 **Lesson:** Architecture review should trace every acceptance criterion to a literal function

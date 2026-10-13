@@ -2,7 +2,7 @@
 
 **Status:** Sprint 9 complete — launched 2026-10-13 (18/18 pts); merged to `main`, tagged `v0.1.0`, not pushed
 **Branch:** `sprint-9`
-**Source:** `docs/USER_STORIES_SPRINT9.md` (stories + architecture D1-D7)
+**Source:** `docs/sprints/USER_STORIES_SPRINT9.md` (stories + architecture D1-D7)
 **Process:** `docs/SDLC.md` (branch per sprint, Conventional Commits, Tank check at close)
 **Points:** 18 · **Tier:** 1
 
@@ -35,7 +35,7 @@
 - [x] Merge `--no-ff` to `main`, release commit + tag, chat report [Tank, Oracle]
 
 ## Definition of Done
-- All ACs in `docs/USER_STORIES_SPRINT9.md` verified by Trin.
+- All ACs in `docs/sprints/USER_STORIES_SPRINT9.md` verified by Trin.
 - `make lint`, `make test`, `make secrets` green on the sprint branch.
 - Nothing pushed, nothing published.
 

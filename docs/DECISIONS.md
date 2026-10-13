@@ -7,7 +7,7 @@ technical rationale behind each — this file is the index Oracle keeps current.
 
 **Context:** First sprint in this repo. A full BRD/PRD/ARCH + 4 pre-written user stories already
 existed in `docs/SOURCE_SPEC.md` (moved here from repo root during grooming — was `Finglering
-Initial Docs.md`). Cypher formalized them into `docs/USER_STORIES.md` as the sprint backlog.
+Initial Docs.md`). Cypher formalized them into `docs/sprints/USER_STORIES_SPRINT1.md` as the sprint backlog.
 
 **Decision:** Scope the POC to the pure-logic fingerprinting core only — STORY-FING-01..04
 (tokenizer, warehouse, ring-buffer matcher, policy compiler). Webhook ingestion, sandbox

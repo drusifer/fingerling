@@ -89,7 +89,7 @@ When acting as a specific persona, **load their specific instructions** from the
     - **Tier 2 (Minor/Maintenance/Tech Debt Sprints)**: Fast-track planning loop:
       1. Cypher & Morpheus combine story writing and architecture design into a single document in a single turn.
       2. Smith reviews both stories & architecture in one turn, and Mouse generates the task plan in the same turn, handing off directly to Neo.
-11. **Single Source of Truth for Tasks (CRITICAL)**: Mouse must write sprint tasks directly to the root [task.md](file:///home/drusifer/Projects/via/task.md). Do not duplicate or maintain secondary sprint task lists inside agent folders.
+11. **Single Source of Truth for Tasks (CRITICAL)**: Mouse must write sprint tasks directly to the root `task.md`. Do not duplicate or maintain secondary sprint task lists inside agent folders.
 
 
 

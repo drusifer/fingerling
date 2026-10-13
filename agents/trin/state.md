@@ -34,7 +34,7 @@
 - 2026-10-13 Sprint 9 closed: 127 + 59 tests on 3.10-3.13. Unverified: GitHub workflows, --svg chat report.
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
 
 ## Next Steps

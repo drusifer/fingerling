@@ -8,12 +8,12 @@
   literal bracket characters in the real TUI. Visible directly in Step 7 next to my new,
   correctly-rendered text. Already logged by Oracle as a lesson; filed to Cypher's backlog for a
   future full-file sweep, out of STORY-FING-22's 3pt scope.
-- Sprint 7 fast-track gate (docs/USER_STORIES_SPRINT7.md, STORY-FING-22): **Approved with one
+- Sprint 7 fast-track gate (docs/sprints/USER_STORIES_SPRINT7.md, STORY-FING-22): **Approved with one
   non-blocking note**. Block-over-sanitize UX call endorsed (visible rejection > silent rewrite
   for a teaching demo). Note to Neo: keep the "narrow policy misses novel `;` payload" moment
   visible in whatever step sequencing is chosen — it's the pedagogical payoff of the story, not
   incidental detail.
-- Gate 1 (POC Fingerling stories, docs/USER_STORIES.md): **Approved with notes**. Not a
+- Gate 1 (POC Fingerling stories, docs/sprints/USER_STORIES_SPRINT1.md): **Approved with notes**. Not a
   blocking rejection — notes are forward to Morpheus/Neo for design-time consideration, not
   story rewrites, since the ambiguity originates in the user's own source BRD/PRD.
 
@@ -55,7 +55,7 @@
 - 2026-10-13 Sprint 9 user test passed (wheel in clean 3.11 env, README verbatim).
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
 
 ## Next Steps

@@ -20,7 +20,7 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 ## Important Notes
 - Both of Smith's Gate-1 notes were resolved architecturally (not punted to Neo to improvise) —
   Gate 2 review should confirm these resolutions are acceptable before Mouse plans phases.
-- 2026-10-12 Sprint 8 arch D1-D8 in docs/USER_STORIES_SPRINT8.md: python-jsonpath in .venv (make install), match-count token semantics, aggregators.py/profile.py/cli.py new, Warehouse = versioned fingerprint set (tokens stored, atomic save, profile_id check), old upsert(duration_ms, raw_record) replaced outright, entry point python -m fingerling (console script deferred).
+- 2026-10-12 Sprint 8 arch D1-D8 in docs/sprints/USER_STORIES_SPRINT8.md: python-jsonpath in .venv (make install), match-count token semantics, aggregators.py/profile.py/cli.py new, Warehouse = versioned fingerprint set (tokens stored, atomic save, profile_id check), old upsert(duration_ms, raw_record) replaced outright, entry point python -m fingerling (console script deferred).
 - 2026-10-12 Sprint 8 plan approved (4 phases).
 - 2026-10-12 Sprint 8 P1 review passed.
 - 2026-10-12 Sprint 8 P3 review passed.
@@ -30,7 +30,7 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 - 2026-10-13 Sprint 9 closed; all 4 phases reviewed.
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
 
 ## Next Steps
