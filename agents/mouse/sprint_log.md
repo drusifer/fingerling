@@ -35,7 +35,7 @@
   - Phase 1: STORY-FING-22 (Pattern-Based Comprehensive Block Demo) — `compile_policy()`
     `block_pattern` param, `vulnerable_app.py` enforcement extension, new TUI step in
     `examples/demo.py`.
-- **Board:** `docs/USER_STORIES_SPRINT7.md` is single source of truth (no separate task.md split
+- **Board:** `docs/sprints/USER_STORIES_SPRINT7.md` is single source of truth (no separate task.md split
   needed for a 1-phase sprint).
 
 ---

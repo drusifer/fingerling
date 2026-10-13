@@ -154,4 +154,4 @@ bobp chat    # post to CHAT.md
 bobp tldr    # show TL;DR from all files
 ```
 
-See **[SHORTHAND_GUIDE.md](../../SHORTHAND_GUIDE.md)** for the full trigger reference.
+See each persona's `SKILL.md` (indexed in `agents/DOCUMENTATION_INDEX.md`) for the full trigger reference.

@@ -80,7 +80,7 @@
   `bobp make <target>` (docs/SDLC.md section 3).
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
 
 ## Next Steps

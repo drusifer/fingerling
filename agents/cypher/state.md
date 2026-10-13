@@ -7,7 +7,7 @@
   block, entirely via fingerling's simulated KubeArmor enforcement layer, with zero changes to
   the vulnerable line in `vulnerable_app.py`. Chose **block** over silent **sanitize** (flagged
   explicitly for Smith gate — a demo that visibly rejects `;` payloads is more legible than one
-  that silently rewrites them). See `docs/USER_STORIES_SPRINT7.md` for full stories+arch.
+  that silently rewrites them). See `docs/sprints/USER_STORIES_SPRINT7.md` for full stories+arch.
 - POC Fingerling sprint scoped to pure-logic core: 4 stories (STORY-FING-01..04) covering
   telemetry tokenization, stateful upsert warehouse, ring-buffer sequence matcher, KubeArmor
   policy compiler. Webhook ingestion, sandbox provisioning, live exploit execution, and real
@@ -17,12 +17,12 @@
   STORY-FING-07 JSONPath wildcards) + STORY-FING-08, the first of three deferred infra epics.
   Chose webhook ingestion over sandbox provisioning/GitOps automation because it needs no
   external cluster/signing infra and unblocks real telemetry for later stories. 13 pts total.
-  See `docs/USER_STORIES_SPRINT2.md`.
+  See `docs/sprints/USER_STORIES_SPRINT2.md`.
 
 ## Key Findings
 - Full BRD/PRD/ARCH + 4 pre-written user stories already existed in `Finglering Initial Docs.md`
   at repo root before sprint start.
-  - Formalized/condensed them into `docs/USER_STORIES.md` as the sprint backlog of record.
+  - Formalized/condensed them into `docs/sprints/USER_STORIES_SPRINT1.md` as the sprint backlog of record.
 - Target velocity: 18 story points (5+5+5+3).
 
 ## Important Notes
@@ -57,7 +57,7 @@
 - 2026-10-13 Sprint 9 launched 2026-10-13: FING-27..30, 18/18. fingerprint-sampler 0.1.0 is the first release (tag v0.1.0, unpushed).
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
 
 ## Next Steps

@@ -1,7 +1,7 @@
 # Project Fingerling — Architecture
 
 Maintained by Morpheus. Module map current as of Sprint 9 (2026-10-13); sections 3-4 detail the
-fingerprinting core. Per-sprint design rationale lives in `docs/USER_STORIES_SPRINT<N>.md`; how
+fingerprinting core. Per-sprint design rationale lives in `docs/sprints/USER_STORIES_SPRINT<N>.md`; how
 the project is built, changed and released is in `docs/SDLC.md`.
 
 ## 1. System Overview

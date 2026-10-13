@@ -79,7 +79,7 @@ This document combines **User Stories** and **Architecture Design** for Sprint 3
 
 ### Class & Data Structures
 
-We introduce [fingerling/gitops.py](file:///home/drusifer/Projects/fingerling/fingerling/gitops.py):
+We introduce [fingerling/gitops.py](../../fingerling/gitops.py):
 
 ```python
 import subprocess

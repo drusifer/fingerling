@@ -3,7 +3,7 @@
 ## Context
 ## Recent Decisions
 - Sprint 7 (fast-track, 1 phase, STORY-FING-22, 3 pts) planned 2026-08-08 and launched same day.
-  Board for Sprint 7 was `docs/USER_STORIES_SPRINT7.md`, not `task.md` (1-phase sprint).
+  Board for Sprint 7 was `docs/sprints/USER_STORIES_SPRINT7.md`, not `task.md` (1-phase sprint).
 - No Tank tasks in any sprint so far — no deploy/infra/CI scope.
 
 ## Key Findings (as of 2026-10-12 status check)
@@ -26,7 +26,7 @@
 - 2026-10-13 Sprint 9 closed: 18/18 pts, 4 phases, 0 fix cycles; phase markers posted for 0-3 and close.
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
 
 ## Next Steps

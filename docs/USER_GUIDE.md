@@ -13,12 +13,12 @@ policy enforcement is simulated.
 2. [Fingerprint CLI](#fingerprint-cli)
 3. [The Pipeline at a Glance](#the-pipeline-at-a-glance)
 4. [Module Reference](#module-reference)
-   - [`fingerling.tokenizer`](#fingerlingtokenizer)
-   - [`fingerling.warehouse`](#fingerlingwarehouse)
-   - [`fingerling.ringbuffer`](#fingerlingringbuffer)
-   - [`fingerling.policy`](#fingerlingpolicy)
-5. [End-to-End Pipeline](#end-to-end-pipeline)
-6. [Interactive Vaccination TUI Demo](#interactive-closed-loop-vaccination-tui-demo)
+   - [`fingerprint_sampler.tokenizer`](#fingerprint_samplertokenizer)
+   - [`fingerprint_sampler.warehouse`](#fingerprint_samplerwarehouse)
+   - [`fingerling.ringbuffer`](#fingerlingringbuffer) *(parked)*
+   - [`fingerling.policy`](#fingerlingpolicy) *(parked)*
+5. [End-to-End Pipeline](#end-to-end-pipeline) *(parked)*
+6. [Interactive Vaccination TUI Demo](#interactive-closed-loop-vaccination-tui-demo) *(parked)*
 7. [Known Gaps](#known-gaps-see-backlog)
 8. [Troubleshooting / FAQ](#troubleshooting--faq)
 
@@ -156,14 +156,18 @@ fingerprints:
 
 ## The Pipeline at a Glance
 
+The first two stages are the `fingerprint-sampler` package and are under active development.
+The last two belong to the parked `fingerling` pipeline: they work and are tested, but are not
+being developed while the fingerprint tool is finished (see `docs/SDLC.md`, Active scope).
+
 ```
 raw JSONL telemetry
         │
         ▼
-fingerling.tokenizer   — extract fields via JSONPath, collapse to stable string tokens
+fingerprint_sampler.tokenizer   — extract fields via JSONPath, collapse to stable string tokens
         │
         ▼
-fingerling.warehouse   — hash tokens into a fingerprint ID, upsert into a bounded history
+fingerprint_sampler.warehouse   — hash tokens into a fingerprint ID, upsert into a bounded history
         │
         ▼
 fingerling.ringbuffer  — feed the fingerprint ID stream into a sliding-window matcher
@@ -177,13 +181,13 @@ Full architectural rationale (including why each interface looks the way it does
 
 ## Module Reference
 
-### `fingerling.tokenizer`
+### `fingerprint_sampler.tokenizer`
 
 Turns one telemetry record (or a JSONL stream of them) into a small dict of stable string
 tokens, using a list of extraction rules (a "mask profile").
 
 ```python
-from fingerling.tokenizer import MaskEntry, parse_jsonl, tokenize
+from fingerprint_sampler.tokenizer import MaskEntry, parse_jsonl, tokenize
 
 mask_profile = [
     MaskEntry(key="hook_syscall", path="$.process_kprobe.function_name", modifier="DEFAULT"),
@@ -215,14 +219,14 @@ treated as missing; one is tokenized as-is; several are tokenized individually, 
 sorted and comma-joined, so array order can't change a fingerprint. An invalid path raises
 `ValueError` from `compile_path()` (and at profile load time).
 
-### `fingerling.warehouse`
+### `fingerprint_sampler.warehouse`
 
 The fingerprint set as a library: hashes a token dict into a stable fingerprint ID and tracks
 each one, with the aggregators you declare.
 
 ```python
-from fingerling.aggregators import make_entry
-from fingerling.warehouse import Warehouse
+from fingerprint_sampler.aggregators import make_entry
+from fingerprint_sampler.warehouse import Warehouse
 
 warehouse = Warehouse(aggregates=[
     make_entry("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
@@ -242,9 +246,11 @@ warehouse.load("fingerprints.yaml")         # continue folding from stored state
 
 Two calls with the same tokens produce the same `fingerprint_id` and reuse one record (a
 "match"); different tokens create a new record (a "drift"). `Warehouse()` with no aggregators
-keeps only the count and first/last seen. `fingerling.warehouse.TELEMETRY_AGGREGATES` is the
-duration-bounds-plus-last-3-events set the telemetry pipeline uses. To load a profile file
-instead of building entries in Python, use `fingerling.profile.load_profile(path)` and pass its
+keeps only the count and first/last seen. The older import paths (`fingerling.tokenizer`,
+`fingerling.warehouse`, ...) still work: they re-export the same objects.
+`fingerling.warehouse.TELEMETRY_AGGREGATES` is the duration-bounds-plus-last-3-events set the
+parked telemetry pipeline uses. To load a profile file
+instead of building entries in Python, use `fingerprint_sampler.profile.load_profile(path)` and pass its
 `.aggregates` and `.profile_id` to `Warehouse`.
 
 > **Changed in Sprint 8:** `upsert(tokens, duration_ms=..., raw_record=...)` is now
@@ -252,6 +258,8 @@ instead of building entries in Python, use `fingerling.profile.load_profile(path
 > under `record.aggregates`. Set files written before this change are not readable.
 
 ### `fingerling.ringbuffer`
+
+*Parked module.*
 
 Feeds a stream of fingerprint IDs through a fixed-depth sliding window and scores each
 resulting N-gram against a pre-compiled whitelist of "known good" N-grams.
@@ -268,7 +276,7 @@ matcher.warm           # -> True once the window has filled at least once
 ```
 
 `push()` always returns `0.0` or `1.0` — that's the contract STORY-FING-03 specifies, and it's
-what `docs/USER_STORIES.md` and the tests are written against. **A `0.0` during warm-up looks
+what `docs/sprints/USER_STORIES_SPRINT1.md` (STORY-FING-03) and the tests are written against. **A `0.0` during warm-up looks
 identical to a genuine clean match** — check `matcher.warm` before trusting a `0.0` as "verified
 safe" (see the HCI note in `docs/DECISIONS.md`).
 
@@ -278,6 +286,8 @@ single unexpected syscall makes both itself *and* the syscall right after it reg
 anomalous.
 
 ### `fingerling.policy`
+
+*Parked module.*
 
 Compiles a `KubeArmorPolicy` Kubernetes manifest for an anomalous trajectory.
 
@@ -301,6 +311,8 @@ manifest_yaml = compile_policy(
 
 ## End-to-End Pipeline
 
+*Parked.*
+
 The whole detection flow — telemetry → tokens → fingerprint → sequence score → policy — is
 asserted in `tests/test_e2e.py`, which runs in `make test` on every change. A clean baseline
 teaches the matcher what normal looks like; one unexpected syscall then scores `1.0` and is
@@ -310,6 +322,8 @@ compiled into a `KubeArmorPolicy`. Note that the syscall *after* an anomalous on
 To watch the same flow live, use the TUI demo below.
 
 ## Interactive Closed-Loop Vaccination TUI Demo
+
+*Parked — last run before Sprint 8; not verified since (see `docs/SDLC.md` section 9).*
 
 Project Fingerling provides a single, unified, flagship interactive TUI dashboard. It guides the user step-by-step through a full E2E trace vaccination cycle, displaying source code snippets, live telemetry transition maps, scrolling server stdout/stderr output logs, and detailed narrative guides inside a single terminal screen.
 
@@ -337,6 +351,8 @@ Fingerling requires standard Linux eBPF kprobes capabilities to monitor workload
 
 ## Automated GitOps Delivery Pipeline
 
+*Parked. This section has not been re-checked against the code since Sprint 3.*
+
 Fingerling supports automated workload-bound GitOps delivery. When an anomaly is detected and a policy is compiled, the webhook server can write the policy and commit/merge it automatically to a target GitOps git repository to trigger git-reconciliation.
 
 **Configuration**:
@@ -356,6 +372,8 @@ The result is reported back in the HTTP response under `"gitops_status": "succes
 
 ## Controlled Exposure Sandbox (Vaccination)
 
+*Parked. This section has not been re-checked against the code since Sprint 4.*
+
 Fingerling features a "vaccination" engine to run target exploit simulations within isolated workspaces.
 
 **Modules**:
@@ -369,8 +387,7 @@ This closes the loop: triggering the exploit creates the anomalous trajectory wh
 
 ## Known Gaps (see backlog)
 
-These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_STORIES_SPRINT4.md` and
-`agents/CHAT.md`'s sprint-close message:
+These are known limits, not bugs. Planned work is listed in the backlog in `task.md`:
 
 - **No real destination-port capture.** `tools/capture_syscalls.bt` traces `execve()` only, not
   `connect()`. This Pi's kernel has no BTF (`/sys/kernel/btf/vmlinux` absent), so bpftrace can't
@@ -388,7 +405,8 @@ These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_S
 **"Why does `push()` only return 0.0 or 1.0 instead of a real similarity score?"**
 That's the STORY-FING-03 contract as written — a binary in-whitelist/not-in-whitelist check for
 the POC, not the full Jaccard-similarity scoring described in `docs/SOURCE_SPEC.md`'s
-architecture doc. The continuous Jaccard-based scoring is a next-sprint item.
+architecture doc. Continuous Jaccard-based scoring is on the backlog but parked with the rest of
+the sequence-analysis stage.
 
 **"`fingerling: the python-jsonpath package is not installed for this Python`".**
 You ran the system `python3`. Run `make install` once, then use `make fingerprint ARGS="..."` or

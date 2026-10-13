@@ -6,19 +6,28 @@ Its fingerprinting core is packaged separately as **fingerprint-sampler** (not y
 
 | Doc | Purpose |
 |---|---|
-| [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | **Start here** — module reference + end-to-end demo |
-| [docs/SOURCE_SPEC.md](docs/SOURCE_SPEC.md) | Original BRD/PRD/ARCH + source user stories |
-| [docs/USER_STORIES.md](docs/USER_STORIES.md) | POC sprint backlog (STORY-FING-01..04) |
-| [docs/ARCH.md](docs/ARCH.md) | Architecture: modules, data structures, decisions log |
+| [packages/fingerprint-sampler/README.md](packages/fingerprint-sampler/README.md) | **Start here** — the fingerprint tool: quickstart, profiles, options |
+| [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | Using the tool from a checkout; module reference; the parked pipeline and demo |
 | [docs/SDLC.md](docs/SDLC.md) | How the project is built, tested, changed and released — source of truth for change management |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | Chronological record of architectural/product decisions |
-| [docs/LESSONS.md](docs/LESSONS.md) | Lessons learned during sprint execution |
-| [task.md](task.md) | Current sprint task board |
+| [docs/ARCH.md](docs/ARCH.md) | Architecture: the two packages, modules, data structures |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | Chronological record of architectural, product and process decisions |
+| [docs/LESSONS.md](docs/LESSONS.md) | Engineering lessons learned during sprints |
+| [docs/sprints/](docs/sprints/) | One stories-and-architecture document per sprint (`USER_STORIES_SPRINT<N>.md`) |
+| [docs/SOURCE_SPEC.md](docs/SOURCE_SPEC.md) | Original BRD/PRD/architecture the project started from |
+| [task.md](task.md) | Task board: last sprint, owner actions, queued requests, backlog |
 
 ## Team (Bob Protocol)
 
-Multi-persona coordination lives under `agents/` — see [AGENTS.md](AGENTS.md) for the protocol
-and [agents/CHAT.md](agents/CHAT.md) for the team's live coordination log.
+Multi-persona coordination lives under `agents/`:
+
+| Path | Purpose |
+|---|---|
+| [AGENTS.md](AGENTS.md) | Shared instructions for every agent (also served as `AGENT.md`, `CHATGPT.md`, `GEMINI.md`, `.cursorrules`) |
+| [agents/DOCUMENTATION_INDEX.md](agents/DOCUMENTATION_INDEX.md) | Index of personas, skills, templates and tools |
+| [agents/CHAT.md](agents/CHAT.md) | Live coordination log for the current work |
+| [agents/chat_archive/](agents/chat_archive/) | One per-phase report per closed sprint — the project's change record |
+| `agents/<persona>/` | Each persona's instructions (`SKILL.md`), working memory (`state.md`) and work summaries |
+| [agents/oracle/lessons.md](agents/oracle/lessons.md) | Standing rules agents must follow (process and tooling) |
 
 ## Setup
 

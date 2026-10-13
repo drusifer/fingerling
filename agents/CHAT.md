@@ -41,3 +41,22 @@ All checks passed!
 ---
 [<small>2026-10-13 10:03:18</small>] [**Tank**]->[**all**] *devops handoff*:
  Single Makefile confirmed and cleaned: removed the chat and tldr targets (bobp chat / bobp tldr replace them; make chat called a stale copy of the tool, make tldr hung without a terminal). bobp tldr itself was broken - it imported via as a library, absent from bobp's environment, and scanned bob_protocol instead of the current project. Fixed in ~/Projects/bob_protocol to call the system via command; 24 TLDR blocks listed here. SDLC section 3 states the one-Makefile rule. Merging fix/single-makefile to main.
+
+---
+[<small>2026-10-13 10:06:12</small>] [**User**]->[**Oracle**] *request*:
+ /oracle groom docs
+
+---
+[<small>2026-10-13 10:06:12</small>] [**Oracle**]->[**all**] *ora init*:
+ Initializing Oracle. *ora groom docs: auditing the documentation tree after two sprints that moved a lot (package split, SDLC, uv) - looking for misplaced files, orphans, broken links and stale statements. On branch fix/docs-groom per the SDLC.
+
+---
+[<small>2026-10-13 10:08:50</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-13 10:08:50 ===
+All checks passed!
+44 files already formatted
+
+---
+[<small>2026-10-13 10:08:50</small>] [**Oracle**]->[**all**] *ora groom*:
+ Docs groomed. Sprint stories now live in docs/sprints/ (9 files, references updated) so docs/ holds 6 core documents. README carries a full documentation map; agents/DOCUMENTATION_INDEX.md rewritten for the current personas, skills and templates; oracle/memory.md filled in. USER_GUIDE shows fingerprint_sampler imports and labels parked sections. Removed tracked strays build-err.out and CHAT.md.bak. 0 broken links. Left alone: 71 persona summary files, stale agents/tools copies, Tank's SDLC.

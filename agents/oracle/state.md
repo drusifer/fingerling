@@ -3,7 +3,7 @@
 ## Context
 ## Recent Decisions
 - Moved root `Finglering Initial Docs.md` into `docs/SOURCE_SPEC.md` — no orphan docs in root
-  per grooming standard. Updated the one prose reference in `docs/USER_STORIES.md`.
+  per grooming standard. Updated the one prose reference in `docs/sprints/USER_STORIES_SPRINT1.md`.
 - Created `docs/DECISIONS.md` and `docs/LESSONS.md` (didn't exist before this sprint) — placed
   under `docs/` alongside ARCH.md/USER_STORIES.md rather than repo root, for consistency.
 
@@ -35,13 +35,14 @@
 
 - 2026-10-13 SUPERSEDED: the `Makefile.prj` / `_IS_BOB_ENTRY` / `MKF_ACTIVE` gap noted above no
   longer exists — the project has a single Makefile (docs/SDLC.md section 3).
+- 2026-10-13 2026-10-13 docs groom (branch fix/docs-groom): sprint stories moved to docs/sprints/USER_STORIES_SPRINT<N>.md (POC file renamed SPRINT1) with live references updated; removed tracked strays build-err.out and agents/CHAT.md.bak; README has a full documentation map; agents/DOCUMENTATION_INDEX.md rewritten for the current layout; memory.md filled in; USER_GUIDE uses fingerprint_sampler imports and labels parked sections; lessons files cross-linked; file:// and dead links fixed (0 broken). Not touched: persona Summary files (71), agents/tools stale copies, docs/SDLC.md (Tank's).
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Sprint 9 complete
+**Task:** docs groom (branch fix/docs-groom)
+**Status:** Docs groom complete
 
 ## Next Steps
-No pending tasks.
+Open for the owner: USER_GUIDE GitOps and sandbox sections are labelled unverified, not re-checked; agents/PROJECT.md still says 'Project: bob_protocol' (generated file); cypher/SKILL.md names docs/USER_STORIES.md generically while this project uses docs/sprints/.
 
 ---
-*Last updated: 2026-10-13T00:09:31-04:00*
+*Last updated: 2026-10-13T10:08:50-04:00*
