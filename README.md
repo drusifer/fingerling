@@ -1,5 +1,6 @@
 # fingerling
-Project Fingerling provides an automated, self-learning, adaptive software immune system
+Project Fingerling provides an automated, self-learning, adaptive software immune system.
+Its fingerprinting core is packaged separately as **fingerprint-sampler** (not yet on PyPI).
 
 ## Documentation
 
@@ -29,16 +30,22 @@ make test
 
 ## Fingerprint an event stream
 
-`fingerprint` folds any JSONL event stream into a fingerprint set that grows across runs:
+The fingerprint tool is its own package, [`fingerprint-sampler`](packages/fingerprint-sampler/)
+— this is where active development happens. It folds any JSONL event stream into a fingerprint
+set that grows across runs:
 
 ```sh
 make fingerprint ARGS="-p packages/fingerprint-sampler/examples/access_log.yaml -s web.fingerprints.yaml packages/fingerprint-sampler/examples/access_log.jsonl"
 some-producer | .venv/bin/fingerprint merge -p my-profile.yaml -s my.fingerprints.yaml -
 ```
 
-See [docs/USER_GUIDE.md](docs/USER_GUIDE.md#fingerprint-cli) for the profile format and options.
+See the [package README](packages/fingerprint-sampler/README.md) for a quickstart, the profile
+format and options.
 
-## Vaccination demo
+## Vaccination demo (parked)
+
+The rest of the repository — the `fingerling` pipeline built on fingerprint IDs — is parked while
+the fingerprint tool is finished.
 
 ```sh
 sudo make demo-live     # interactive TUI; needs Linux, root and bpftrace

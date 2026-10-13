@@ -52,13 +52,14 @@
 - 2026-10-12 Sprint 8 Gate 2 approved. Required note for Neo: missing jsonpath dependency must produce a 'run make install' message, not a traceback.
 - 2026-10-12 Sprint 8 user test passed; 1 cosmetic bug filed and fixed (usage prog). Backlog: 'skipped aggregate values' wording, table view of a set.
 - 2026-10-12 Sprint 9 Gates 1+2 approved; added FING-28 AC9 (self-contained README quickstart), AC10 (no silent failure for moved commands).
+- 2026-10-13 Sprint 9 user test passed (wheel in clean 3.11 env, README verbatim).
 
 ## Current Task
 **Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Gates done
+**Status:** Sprint 9 complete
 
 ## Next Steps
-At close: *user test sprint9 - install the built wheel in a clean env and follow the package README literally; try old commands.
+No pending gates.
 
 ---
-*Last updated: 2026-10-12T23:57:00-04:00*
+*Last updated: 2026-10-13T00:09:31-04:00*

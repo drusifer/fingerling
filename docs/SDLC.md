@@ -251,6 +251,7 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-13 on branch `sprint-9` (Phase 2), by Tank — lint clean, 127 + 59 tests,
-`make build` wheel runs in a clean environment, `release-check` accepts v0.1.0 and rejects a
-mismatched tag. Workflows reviewed statically only.*
+*Last verified: 2026-10-13 at Sprint 9 close (`*devops sdlc-check`, branch `sprint-9`), by Tank —
+from-clean rebuild; lint clean; 127 + 59 tests on Python 3.10, 3.11, 3.12 and 3.13; gitleaks
+clean; `make build` wheel runs in a clean environment; lockfile current; workflows call only
+existing make targets but have not yet run on GitHub.*

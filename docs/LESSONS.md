@@ -114,3 +114,21 @@ TUI step rather than renumbering.
 **What happened:** Because aggregator state is plain data that is loaded and folded further, batch-vs-split equivalence needed no special merge logic and holds at every split point.
 **Applying it:** Prefer resumable state over a separate merge routine when a tool accumulates across runs.
 
+## 2026-10-13 — Sprint 9: Fingerprint Package + SDLC Tooling
+
+**Lesson:** A formatter's defaults reach further than you expect — check the first diff before committing it.
+**What happened:** `ruff format .` also reformatted Python code blocks inside Markdown, breaking hand-aligned signature sketches in `docs/ARCH.md`. Separately, running ruff with no explicit rule selection flagged dozens of style rules beyond the intended baseline.
+**Applying it:** Pin the rule list and the exclusions in `pyproject.toml`, and put a mechanical reformat in its own commit so it can be reviewed and reverted alone.
+
+**Lesson:** A shell pipe hides the exit status you care about.
+**What happened:** The first `make test-all` piped test output through `tail`, so a failing Python version would have reported success.
+**Applying it:** In Makefile recipes capture output to a variable and test the command's own status; never judge success through a pipe.
+
+**Lesson:** uv picks its own interpreter unless told otherwise.
+**What happened:** After `make test-all` downloaded Pythons 3.10-3.12, the next `uv sync` rebuilt `.venv` on 3.12 instead of the system 3.13.
+**Applying it:** Keep `.python-version` in the repo for the development interpreter, and set `UV_PYTHON` explicitly where a different one is wanted (the CI matrix).
+
+**Lesson:** To split a package without touching its callers, move the code and leave re-export shims at the old paths.
+**What happened:** Parked modules and their tests import `fingerling.tokenizer` / `fingerling.warehouse`; those now re-export the same objects from `fingerprint_sampler`, so the split needed no edits to parked code. A set file written before the split merged with identical IDs afterwards.
+**Applying it:** Verify a move with an artifact produced by the old layout, and with the new package installed alone in a clean environment.
+

@@ -1,6 +1,6 @@
 # Task Board — Sprint 9: Fingerprint Package + SDLC Tooling
 
-**Status:** In progress
+**Status:** Sprint 9 complete — launched 2026-10-13 (18/18 pts); merged to `main`, tagged `v0.1.0`, not pushed
 **Branch:** `sprint-9`
 **Source:** `docs/USER_STORIES_SPRINT9.md` (stories + architecture D1-D7)
 **Process:** `docs/SDLC.md` (branch per sprint, Conventional Commits, Tank check at close)
@@ -28,20 +28,27 @@
 - [x] **3.2** Mouse/sprint instructions for markers; UAT + review. [Neo, Trin, Morpheus]
 
 ## Close
-- [ ] Tank `*devops sdlc-check` [Tank]
-- [ ] Oracle groom [Oracle]
-- [ ] Smith end-to-end user test [Smith]
-- [ ] Retro + launch (states SemVer bump) [All, Cypher]
-- [ ] Merge `--no-ff` to `main`, release commit + tag, chat report [Tank, Oracle]
+- [x] Tank `*devops sdlc-check` [Tank]
+- [x] Oracle groom [Oracle]
+- [x] Smith end-to-end user test [Smith]
+- [x] Retro + launch (states SemVer bump) [All, Cypher]
+- [x] Merge `--no-ff` to `main`, release commit + tag, chat report [Tank, Oracle]
 
 ## Definition of Done
 - All ACs in `docs/USER_STORIES_SPRINT9.md` verified by Trin.
 - `make lint`, `make test`, `make secrets` green on the sprint branch.
 - Nothing pushed, nothing published.
 
-## Queued requests (next up after Sprint 9)
+## Owner actions (agents do not push or publish)
+- One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
+- `git push origin main` — first run of the CI workflow; watch the parked tests on the runner.
+- `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0.
+- Commit the `chat-report` change in `~/Projects/bob_protocol` and sync the skill/persona edits upstream.
+
+## Queued requests (next up)
 - **Artifact rubrics** (User, 2026-10-13): inventory the output artifacts each persona and skill is expected to produce; for templated artifacts, add a rubric appendix to the template for qualitative judgement of agent-produced content; recommend which skills to pilot first.
 
 ## Backlog (unscheduled)
-- Fingerprint tool: `GLOB`/`REGEX` modifiers; table/report view of a set (`fingerprint show`); reword "skipped aggregate values"; event-time timestamps; set-to-set merge.
+- Fingerprint tool: `fingerprint show` (table/report view of a set); `GLOB`/`REGEX` modifiers; reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
+- Process: reset or archive `CHAT.md` before a sprint starts so "Planning" holds only that sprint; `--svg`/mermaid lint of chat reports need Node.
 - Parked (not scheduled while the fingerprint tool is the focus): n-gram/Jaccard stage, `examples/demo.py` markup sweep and smoke test, `sudo make demo-live` verification, `tests/test_server.py` private access, USER_GUIDE GitOps/sandbox sections.

@@ -23,13 +23,14 @@
 - 2026-10-12 Sprint 8 planned: task.md rewritten (was stale Sprint 6 board), 4 phases one story each, order FING-23 -> 25 -> 24 -> 26.
 - 2026-10-12 Sprint 8 closed: 16/16 pts, 4 phases, 1 fix cycle. task.md shows it complete with the retro backlog.
 - 2026-10-12 Sprint 9 planned (task.md): P0 Tank env, P1 Neo split, P2 Tank CI/publish, P3 Neo chat-report. Post a phase marker (--cmd 'phase N') at each phase start and 'phase close' at close.
+- 2026-10-13 Sprint 9 closed: 18/18 pts, 4 phases, 0 fix cycles; phase markers posted for 0-3 and close.
 
 ## Current Task
 **Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Phase 0 in progress
+**Status:** Sprint 9 complete
 
 ## Next Steps
-Tick task.md per phase; post markers; at close confirm Tank sdlc-check before merge.
+No active sprint. Next sprint: check docs/SDLC.md, create sprint-<N> from clean main, post phase markers.
 
 ---
-*Last updated: 2026-10-12T23:57:00-04:00*
+*Last updated: 2026-10-13T00:09:31-04:00*
