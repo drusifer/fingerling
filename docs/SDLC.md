@@ -17,25 +17,29 @@ today and are updated as each lands.
 
 | | Python |
 |---|---|
-| Runtime version | 3.13 — `requires-python = ">=3.13"` in `pyproject.toml` (only version it has been run on) |
-| Manifest | `pyproject.toml` (PEP 621 `[project]`, setuptools backend) |
-| Lockfile | None — plain pip has none; lower bounds are pinned in the manifest |
-| Package manager | stdlib `venv` + `pip` |
+| Runtime version | 3.10 - 3.13 — `requires-python = ">=3.10"` in `pyproject.toml`; all four are tested |
+| Manifest | `pyproject.toml` (PEP 621 `[project]`; dev tools in `[dependency-groups] dev`; tool config in `[tool.*]`) |
+| Lockfile | `uv.lock` (committed) |
+| Package manager | `uv` |
 | Local environment | `.venv/` (gitignored, isolated from system site-packages) |
 
 Other required tools:
 
-- `make` and a system `python3` — to create the venv.
-- `sudo` + `bpftrace` — only for `make demo-live` (real eBPF capture); installed from the OS.
+- `make`.
+- `uv` — install once per machine with `pipx install uv` (no sudo). It also supplies the
+  interpreters for `make test-all`.
+- `gitleaks` — on `PATH`; needed by `make secrets` and the pre-commit hook.
+- `sudo` + `bpftrace` — only for `make demo-live` (parked).
 - `bobp`, `via`, `rg` — team tooling behind `make chat`, `make via_index`, `make tldr`; not
-  project dependencies and not installed by `make install`.
+  project dependencies.
 
 ## 2. Setup
 
 From a clean checkout:
 
 ```sh
-make install     # python3 -m venv .venv && pip install -e ".[dev]"
+pipx install uv   # once per machine
+make install      # uv sync --all-extras, and points git at .githooks/
 make test
 ```
 
@@ -45,49 +49,53 @@ path (`sudo .venv/bin/python ...`), never `sudo python3`.
 
 ## 3. Make targets
 
-The Makefile is the only entry point. Environment-using recipes run `.venv/bin/python` and stop
-with "No .venv - run 'make install' first" if it is missing. Agents invoke targets as
+The Makefile is the only entry point. Environment-using recipes run tools from `.venv/bin/` and
+stop with "No .venv - run 'make install' first" if it is missing. Agents invoke targets as
 `bobp make <target>`.
 
 | Target | Runs | Notes |
 |---|---|---|
-| `install` | `.venv/bin/python -m pip install -q -e ".[dev]"` | creates `.venv` if absent; idempotent |
+| `install` | `uv sync --all-extras` + `install-hooks` | exact install from `uv.lock`; idempotent |
+| `install-hooks` | `git config core.hooksPath .githooks` | enables the gitleaks pre-commit hook |
 | `test` | `.venv/bin/python -m unittest discover -s tests` | `ARGS="tests.test_cli"` runs one module |
-| `check` | `.venv/bin/python -m compileall -q fingerling examples tests` | syntax check only |
+| `test-all` | the suite on Python 3.10, 3.11, 3.12, 3.13 in throwaway uv environments | downloads interpreters on first use |
+| `lint` | `ruff check .` and `ruff format --check .` | changes nothing |
+| `format` | `ruff check --select I --fix .` and `ruff format .` | rewrites files |
+| `secrets` | `gitleaks detect --source .` | git-aware: scans history and tree |
+| `check` | `python -m compileall -q fingerling examples tests` | syntax check only |
 | `run` | `.venv/bin/fingerling $(ARGS)` | the CLI |
 | `fingerprint` | `.venv/bin/fingerling fingerprint $(ARGS)` | project-specific |
-| `demo` | `.venv/bin/python -m examples.demo` | interactive TUI; needs a TTY |
-| `demo-live` | `sudo .venv/bin/python -m examples.demo` | needs root + `bpftrace` |
-| `clean` | removes `__pycache__`, `fingerling.egg-info` | keeps `.venv` |
+| `demo`, `demo-live` | `examples/demo.py` (the latter under `sudo`) | parked |
+| `clean` | removes `__pycache__`, `*.egg-info`, `.ruff_cache`, `dist` | keeps `.venv` |
 | `distclean` | `clean` + removes `.venv/` | |
 | `help` | lists targets | default goal |
-| `tldr`, `via_index`, `chat` | team tooling (`rg`, `via`, `agents/tools/chat.py`) | use system tools, not `.venv` |
+| `tldr`, `via_index`, `chat` | team tooling | use system tools, not `.venv` |
 
-Standard targets deliberately absent:
+Standard targets deliberately absent: `build` — agreed, not yet built (section 11).
 
-- `lint`, `format`, `build` — agreed, not yet built (section 11).
+Lint rules are pinned in `[tool.ruff.lint] select` (`E4`, `E7`, `E9`, `F`, `I`); widening them
+is a Mechanism-class change. `agents/` (BobProtocol tooling) and Markdown are excluded.
 
 ## 4. Dependencies
 
-- **Add a runtime dependency:** add it to `[project] dependencies` in `pyproject.toml` with a
-  lower bound, then `make install`.
-- **Add a dev/test tool:** add it to `[project.optional-dependencies] dev`, then `make install`.
-- **Optional features:** `demo` = `rich`, needed only by `examples/demo.py`. `dev` includes it.
-- **Upgrade / remove:** edit the bound or delete the line, then `make distclean && make install`.
-- **Commit afterwards:** `pyproject.toml`.
+- **Add a runtime dependency:** `uv add <package>` (edits `[project] dependencies` and
+  `uv.lock`).
+- **Add a dev tool:** `uv add --dev <package>` (the `dev` dependency group).
+- **Optional features:** `demo` extra = `rich`, needed only by `examples/demo.py`.
+- **Upgrade / remove:** `uv lock --upgrade-package <package>` / `uv remove <package>`, then
+  `make install`.
+- **Commit afterwards:** `pyproject.toml` **and** `uv.lock`, together. Never hand-edit `uv.lock`.
 - **Who:** Neo adds and bumps dependencies. A new package manager, language or Python version is
   a mechanism change — Tank's.
-- `requirements.txt` is a pointer containing `-e .[dev]`; it is never the source of truth.
 
 ## 5. Quality gates
 
 | Gate | Target | Required before |
 |---|---|---|
+| Lint + format | `make lint` | every handoff to Trin; sprint close |
 | Tests | `make test` | every handoff to Trin; sprint close |
-| Syntax | `make check` | optional fast pre-check |
-
-Not in place yet: `ruff` lint and `gitleaks` secret scan — agreed as baseline gates, see
-section 11.
+| Tests, all Pythons | `make test-all` | sprint close |
+| Secret scan | `make secrets` | sprint close; staged changes are scanned on every commit by the hook |
 
 ## 6. Change management
 
@@ -181,11 +189,8 @@ If CI is added it must run `make install && make test`, not raw tool commands.
 
 ## 9. Known deviations
 
-- **No lockfile, no lint gate, no secret scan, no CI yet** — all agreed and scheduled; see
-  section 11.
-- **`requires-python >=3.13`** reflects the only tested interpreter; widening to 3.10 is
-  scheduled (section 11).
-- **`Makefile.prj` and `requirements.txt`** are leftovers scheduled for deletion (section 11).
+- **No CI yet** — agreed and scheduled; see section 11.
+- **`uv` and `gitleaks` are machine prerequisites**, not installed by `make install`.
 - **Parked modules are outside the manual gates.** `make demo-live` needs a terminal, root and
   `bpftrace` and has not been run since before Sprint 8; by the owner's decision no process is
   built around it while the fingerprint tool is the focus.
@@ -194,14 +199,15 @@ If CI is added it must run `make install && make test`, not raw tool commands.
 
 Run by Tank at sprint close (`*devops sdlc-check`):
 
-1. `make distclean && make install && make test` passes.
+1. `make distclean && make install && make lint && make test && make secrets` passes, and
+   `make test-all` passes on every supported Python.
 2. Every third-party import in `fingerling/`, `examples/` and `tests/` is declared in
-   `pyproject.toml` (`.venv/bin/pip list --not-required` shows only `fingerling`, `pip` and
-   `rich`).
+   `pyproject.toml`, and `uv lock --check` reports the lockfile is up to date.
 3. `.venv/pyvenv.cfg` still says `include-system-site-packages = false`.
 4. Every target in section 3 exists and still does what the table says; new targets are listed.
 5. No doc or script tells people to run bare `python3`/`pip` against the project.
-6. `.venv/` and `*.egg-info/` are ignored; `requires-python` unchanged or deliberately bumped.
+6. `.venv/` and `*.egg-info/` are ignored; `requires-python` unchanged or deliberately bumped;
+   `git config core.hooksPath` is `.githooks`.
 7. This sprint's changes followed section 6: made on the sprint branch, Conventional Commit
    messages, right class and approval, chat report produced, nothing pushed by agents.
 8. `.venv/bin/fingerling fingerprint --help` runs, and a second `make install` changes nothing.
@@ -213,16 +219,11 @@ into the sections above, and off this list, when it lands.
 
 | Change | Decision | Lands in |
 |---|---|---|
-| Package manager + lockfile | Switch to `uv`; commit `uv.lock`; `make install` = `uv sync` | sections 1-4 |
-| Python support | Declare and test 3.10 through 3.13 | sections 1, 8 |
-| Lint / format gate | `ruff` for lint and format; `make lint`, `make format`; lint is a required gate | sections 3, 5 |
-| Secret scan gate | `gitleaks` in git-aware mode, as a `make` target and pre-commit hook | sections 3, 5 |
 | CI | GitHub Actions: `make install`, lint, test and gitleaks on every push and sprint branch | section 8 |
 | Publishing | PyPI trusted publishing from a workflow triggered by a version tag, only if the gates pass; `make build` | sections 3, 7, 8 |
 | Package split | The fingerprint tool becomes its own package in this repo, published on its own (the name `fingerling` is taken on PyPI; `fingerprint-sampler` is the working name). Parked modules stay unpublished and import it | sections 1, 7 |
-| Leftovers | Delete `Makefile.prj` and `requirements.txt` | sections 4, 9 |
 | Per-phase chat report | `bobp chat-report` emits sprint description, then per-phase description + diagram, from phase markers | section 6 |
 
 ---
-*Last verified: 2026-10-12, working tree after Sprint 8 + Python bootstrap, by Tank — from-clean
-rebuild, 178/178 tests. Sections 6, 7, 9 and 11 revised the same day from the owner's decisions.*
+*Last verified: 2026-10-12 on branch `sprint-9` (Phase 0), by Tank — from-clean rebuild with uv,
+lint clean, 178/178 tests on Python 3.10, 3.11, 3.12 and 3.13, gitleaks clean.*

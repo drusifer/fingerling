@@ -46,7 +46,9 @@ test-all: ## Run the test suite on every supported Python (3.10-3.13) in throwaw
 	$(need_uv)
 	@for v in $(PYTHONS); do \
 		echo "== Python $$v =="; \
-		uv run --isolated --all-extras --quiet --python $$v python -m unittest discover -s tests 2>&1 | tail -n 3 || exit 1; \
+		out=$$(uv run --isolated --all-extras --quiet --python $$v python -m unittest discover -s tests 2>&1) \
+			|| { echo "$$out" | tail -n 40; exit 1; }; \
+		echo "$$out" | tail -n 3; \
 	done
 
 lint: ## Static checks: ruff lint + format check (changes nothing)

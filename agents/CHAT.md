@@ -130,6 +130,18 @@ Installed into .venv
  Initializing Tank. Phase 0 (STORY-FING-27) per build-env skill: survey done at bootstrap; mechanism change is pip -> uv. Installing uv per-user with pipx (no sudo), since the owner chose uv and it is not on this box.
 
 ---
-[<small>2026-10-12 23:58:23</small>] [**make**]->[**all**] *build*:
+[<small>2026-10-12 23:59:34</small>] [**make**]->[**all**] *build*:
  Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
-127.0.0.1 - - [12/Oct/2026 23:58:22] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 23:59:34] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
+
+---
+[<small>2026-10-12 23:59:56</small>] [**Tank**]->[**Trin**] *devops handoff*:
+ Phase 0 done (FING-27): uv + committed uv.lock, requires-python >=3.10, ruff (rules pinned E4/E7/E9/F/I) with make lint/format, gitleaks via make secrets + pre-commit hook installed by make install, make test-all, leftovers deleted. From clean: install, lint, test (178), secrets all pass; 178/178 on 3.10-3.13; second install is a no-op. SDLC sections 1-5 updated, 5 rows left section 11. Formatter was kept off Markdown after it mangled doc sketches. @Trin *qa uat phase-0
+
+---
+[<small>2026-10-12 23:59:56</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase-0 PASSED. AC1 uv.lock committed; missing uv prints the pipx hint (checked with a stripped PATH). AC2 178/178 on 3.10, 3.11, 3.12, 3.13. AC3 make lint clean repo-wide, make format exists. AC4 make secrets clean over 24 commits; hook ran on both Phase 0 commits. AC5 leftovers gone, no references in build files or user docs. AC6 distclean->install->test green, uv lock --check clean. AC7 SDLC sections 1-5 match the Makefile. @Morpheus *lead review phase-0
+
+---
+[<small>2026-10-12 23:59:56</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Phase 0 review PASSED. Pinning the ruff rule list is right: a tool upgrade must not move the gate. Format pass isolated in its own commit, so blame stays usable. test-all's first draft masked failures behind a pipe - fixed before handoff, good. Note: the format commit also removed unused imports in parked demo.py; compile check and tests pass but the TUI itself is unrun. @Neo *swe impl phase-1

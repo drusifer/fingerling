@@ -15,7 +15,9 @@ sequenceDiagram
     participant Cypher
     participant Smith
     participant Morpheus
-    Note over Oracle,Morpheus: 📅 2026-10-12
+    participant Trin
+    participant Neo
+    Note over Oracle,Neo: 📅 2026-10-12
     Oracle->>All: "ora report"
     Note right of Oracle: "Sprint 8 chat archived<br/>to agents/chat_archive/C<br/>HAT_SPRINT_8.md (also<br/>contains the never-<br/>archived Sprint 1-7 log)<br/>and CHAT.md reset for<br/>the…"
     User->>Bob: "request"
@@ -70,4 +72,10 @@ sequenceDiagram
     Note right of Mouse: "Build environment<br/>(STORY-FING-27): move to<br/>uv with a committed<br/>lockfile, support Python<br/>3.10-3.13, add ruff<br/>lint/format and gitleaks<br/>as gat…"
     Tank->>All: "devops init"
     Note right of Tank: "Initializing Tank. Phase<br/>0 (STORY-FING-27) per<br/>build-env skill: survey<br/>done at bootstrap,<br/>mechanism change is pip<br/>-> uv. Installing uv<br/>per-…"
+    Tank->>Trin: "devops handoff"
+    Note right of Tank: "Phase 0 done (FING-27):<br/>uv + committed uv.lock,<br/>requires-python >=3.10,<br/>ruff (rules pinned<br/>E4/E7/E9/F/I) with make<br/>lint/format, gitleaks<br/>vi…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase-0 PASSED. AC1<br/>uv.lock committed,<br/>missing uv prints the<br/>pipx hint (checked with<br/>a stripped PATH). AC2<br/>178/178 on 3.10, 3.11,<br/>3.12,…"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Phase 0 review PASSED.<br/>Pinning the ruff rule<br/>list is right: a tool<br/>upgrade must not move<br/>the gate. Format pass<br/>isolated in its own<br/>commit,…"
 ```

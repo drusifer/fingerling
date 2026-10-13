@@ -25,7 +25,8 @@ policy enforcement is simulated.
 ## Install
 
 ```sh
-make install    # creates .venv and installs the project + dev dependencies from pyproject.toml
+pipx install uv # once per machine
+make install    # builds .venv from pyproject.toml + uv.lock
 make test       # full suite, offline
 ```
 
