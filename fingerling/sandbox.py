@@ -7,17 +7,13 @@ import subprocess
 import sys
 
 
-def run_in_sandbox(
-    command: list[str], cgroup_name: str | None = None
-) -> subprocess.Popen:
+def run_in_sandbox(command: list[str], cgroup_name: str | None = None) -> subprocess.Popen:
     """Launch a command inside a subprocess with optional cgroup v2 resource limits.
 
     Falls back gracefully to plain subprocess execution if cgroups v2 is not supported
     or running without root permissions.
     """
-    proc = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-    )
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if cgroup_name:
         cgroup_path = f"/sys/fs/cgroup/{cgroup_name}"

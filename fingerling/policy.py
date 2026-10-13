@@ -56,7 +56,6 @@ def compile_policy(
                 "fingerling.io/anomalous-trajectory": trajectory_str,
             },
         },
-
         "spec": {
             "selector": {
                 "matchLabels": dict(match_labels),

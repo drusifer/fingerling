@@ -30,8 +30,9 @@ include = ["fingerling*"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-# agents/ is BobProtocol tooling, maintained in its own repository.
-extend-exclude = ["agents"]
+# agents/ is BobProtocol tooling, maintained in its own repository. Markdown is excluded so
+# hand-aligned code sketches in the docs are left alone.
+extend-exclude = ["agents", "*.md"]
 
 [tool.ruff.lint]
 # Baseline gate: real errors (pyflakes, syntax/runtime-level pycodestyle) and import order.

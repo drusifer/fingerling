@@ -21,7 +21,9 @@ class ParseLineTests(unittest.TestCase):
         event = parse_line(ENTER_SH)
         self.assertEqual(
             event,
-            ProbeEvent(kind="ENTER", syscall="execve", pid=100, comm="python3", nsecs=1000, extra="/bin/sh"),
+            ProbeEvent(
+                kind="ENTER", syscall="execve", pid=100, comm="python3", nsecs=1000, extra="/bin/sh"
+            ),
         )
 
     def test_parses_exit_line(self):
@@ -46,12 +48,14 @@ class PairEventsTests(unittest.TestCase):
         self.assertAlmostEqual(record["duration_ms"], 0.0002)  # (1200-1000) ns -> ms
 
     def test_pairs_two_independent_pids_in_order(self):
-        events = [parse_line(l) for l in (ENTER_SH, EXIT_SH, ENTER_PING, EXIT_PING)]
+        events = [parse_line(line) for line in (ENTER_SH, EXIT_SH, ENTER_PING, EXIT_PING)]
         records = list(pair_events(events))
 
         self.assertEqual(len(records), 2)
         self.assertEqual(records[0]["process_kprobe"]["args"][0]["exec_arg"]["filename"], "/bin/sh")
-        self.assertEqual(records[1]["process_kprobe"]["args"][0]["exec_arg"]["filename"], "/usr/bin/ping")
+        self.assertEqual(
+            records[1]["process_kprobe"]["args"][0]["exec_arg"]["filename"], "/usr/bin/ping"
+        )
 
     def test_nested_same_syscall_same_pid_pairs_lifo(self):
         # Two execve ENTERs on the same pid before either EXIT (re-exec chain) must pair
@@ -65,8 +69,12 @@ class PairEventsTests(unittest.TestCase):
         records = list(pair_events(events))
 
         self.assertEqual(len(records), 2)
-        self.assertEqual(records[0]["process_kprobe"]["args"][0]["exec_arg"]["filename"], "/bin/inner")
-        self.assertEqual(records[1]["process_kprobe"]["args"][0]["exec_arg"]["filename"], "/bin/outer")
+        self.assertEqual(
+            records[0]["process_kprobe"]["args"][0]["exec_arg"]["filename"], "/bin/inner"
+        )
+        self.assertEqual(
+            records[1]["process_kprobe"]["args"][0]["exec_arg"]["filename"], "/bin/outer"
+        )
 
     def test_unmatched_exit_is_skipped_not_raised(self):
         events = [ProbeEvent("EXIT", "execve", 5, "a", 100, "0")]

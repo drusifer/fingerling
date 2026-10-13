@@ -12,9 +12,9 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 
 from fingerling.policy import compile_policy
+from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.tokenizer import MaskEntry, parse_jsonl, tokenize
 from fingerling.warehouse import Warehouse
-from fingerling.ringbuffer import SlidingWindowMatcher
 
 
 def create_handler(
@@ -33,7 +33,9 @@ def create_handler(
     class TelemetryHandler(BaseHTTPRequestHandler):
         def log_message(self, format: str, *args: Any) -> None:
             if log_writer:
-                log_writer.write(f"[Server webhook.log] 127.0.0.1 - - [{self.log_date_time_string()}] {format % args}\n")
+                log_writer.write(
+                    f"[Server webhook.log] 127.0.0.1 - - [{self.log_date_time_string()}] {format % args}\n"
+                )
 
         def do_POST(self) -> None:
             if self.path != "/telemetry":
@@ -77,8 +79,12 @@ def create_handler(
                         if gitops_repo_path:
                             try:
                                 import uuid
-                                from fingerling.gitops import commit_policy, auto_merge_policy
-                                branch_name = f"fingerling-policy-{workload_name}-{uuid.uuid4().hex[:8]}"
+
+                                from fingerling.gitops import auto_merge_policy, commit_policy
+
+                                branch_name = (
+                                    f"fingerling-policy-{workload_name}-{uuid.uuid4().hex[:8]}"
+                                )
                                 commit_policy(
                                     repo_path=gitops_repo_path,
                                     policy_yaml=policy_yaml,

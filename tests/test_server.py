@@ -34,9 +34,7 @@ class TelemetryServerTests(unittest.TestCase):
         cls.warehouse = Warehouse()
         # Seed whitelist with one trajectory so we can test match vs anomaly
         cls.matcher = SlidingWindowMatcher(n=2, whitelist={("a1", "b1")})
-        cls.mask_profile = [
-            MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")
-        ]
+        cls.mask_profile = [MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
         cls.server = run_server(
             port=cls.port,
             warehouse=cls.warehouse,
@@ -117,7 +115,7 @@ class TelemetryServerTests(unittest.TestCase):
         # We push a sequence of 2 calls. Whitelist is {("a1", "b1")}, so this sequence will be anomalous.
         data1 = '{"process_kprobe": {"function_name": "sys_connect"}}'
         data2 = '{"process_kprobe": {"function_name": "sys_write"}}'
-        
+
         # Send first
         req1 = urllib.request.Request(
             url,
@@ -151,9 +149,7 @@ class GitOpsTelemetryServerTests(unittest.TestCase):
         self.port = get_free_port()
         self.warehouse = Warehouse()
         self.matcher = SlidingWindowMatcher(n=2, whitelist={("a1", "b1")})
-        self.mask_profile = [
-            MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")
-        ]
+        self.mask_profile = [MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
         self.server = run_server(
             port=self.port,
             warehouse=self.warehouse,
@@ -203,4 +199,3 @@ class GitOpsTelemetryServerTests(unittest.TestCase):
             self.repo_path, "policies", "fingerling-test-gitops-workload.yaml"
         )
         self.assertTrue(os.path.exists(policy_file))
-

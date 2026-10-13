@@ -37,7 +37,9 @@ class ProbeEvent:
 def parse_line(line: str) -> ProbeEvent:
     """Parse one tab-delimited bpftrace output line into a `ProbeEvent`."""
     kind, syscall, pid, comm, nsecs, extra = line.rstrip("\n").split("\t", 5)
-    return ProbeEvent(kind=kind, syscall=syscall, pid=int(pid), comm=comm, nsecs=int(nsecs), extra=extra)
+    return ProbeEvent(
+        kind=kind, syscall=syscall, pid=int(pid), comm=comm, nsecs=int(nsecs), extra=extra
+    )
 
 
 def _to_record(enter: ProbeEvent, exit_: ProbeEvent) -> dict:
@@ -79,7 +81,10 @@ def pair_events(events: Iterable[ProbeEvent]) -> Iterator[dict]:
 
     dropped = sum(len(stack) for stack in stacks.values())
     if dropped:
-        print(f"capture: {dropped} unmatched ENTER event(s) dropped (mid-call at stream end)", file=sys.stderr)
+        print(
+            f"capture: {dropped} unmatched ENTER event(s) dropped (mid-call at stream end)",
+            file=sys.stderr,
+        )
 
 
 def to_jsonl(records: Iterable[dict]) -> Iterator[str]:
@@ -182,7 +187,9 @@ def main(argv: list[str] | None = None) -> None:
     target.add_argument("--pid", type=int, help="Attach to an already-running root pid.")
     target.add_argument("--cmd", help="Launch this command and trace it and its descendants.")
     parser.add_argument("--out", help="Output JSONL path (default: stdout).")
-    parser.add_argument("--seconds", type=float, default=10.0, help="Capture duration (default: 10s).")
+    parser.add_argument(
+        "--seconds", type=float, default=10.0, help="Capture duration (default: 10s)."
+    )
     args = parser.parse_args(argv)
 
     launched = subprocess.Popen(shlex.split(args.cmd)) if args.cmd else None

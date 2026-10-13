@@ -142,13 +142,24 @@ class PersistenceTests(unittest.TestCase):
 
         with open(self.path) as f:
             text = f.read()
-        order = ["version:", "profile_id:", "fingerprints:", "tokens:", "total_occurrences:",
-                 "first_seen:", "last_seen:", "aggregates:"]
+        order = [
+            "version:",
+            "profile_id:",
+            "fingerprints:",
+            "tokens:",
+            "total_occurrences:",
+            "first_seen:",
+            "last_seen:",
+            "aggregates:",
+        ]
         positions = [text.index(key) for key in order]
         self.assertEqual(positions, sorted(positions))
 
     def test_folding_across_a_save_load_boundary_equals_one_pass(self):
-        aggs = [make_entry("d", "$.d", ["SUM", "AVG", "MIN", "MAX"]), make_entry("s", "$", "LAST(2)")]
+        aggs = [
+            make_entry("d", "$.d", ["SUM", "AVG", "MIN", "MAX"]),
+            make_entry("s", "$", "LAST(2)"),
+        ]
         events = [({"k": str(i % 2)}, {"d": i * 0.1, "i": i}) for i in range(9)]
 
         one_pass = Warehouse(aggregates=aggs)
@@ -173,7 +184,9 @@ class PersistenceTests(unittest.TestCase):
         wh = Warehouse(profile_id="new")
         with self.assertRaises(ProfileMismatchError) as ctx:
             wh.load(self.path)
-        self.assertEqual((ctx.exception.set_profile_id, ctx.exception.current_profile_id), ("old", "new"))
+        self.assertEqual(
+            (ctx.exception.set_profile_id, ctx.exception.current_profile_id), ("old", "new")
+        )
 
     def test_load_with_force_adopts_a_mismatched_set(self):
         old = Warehouse(profile_id="old")
@@ -221,9 +234,8 @@ class PersistenceTests(unittest.TestCase):
 
 class BuildWhitelistTests(unittest.TestCase):
     def test_builds_correct_whitelisted_ngrams(self):
-        from fingerling.tokenizer import MaskEntry
+        from fingerling.tokenizer import MaskEntry, tokenize
         from fingerling.warehouse import build_whitelist, fingerprint_id
-        from fingerling.tokenizer import tokenize
 
         records = [
             {"process_kprobe": {"function_name": "sys_connect"}},
@@ -244,4 +256,3 @@ class BuildWhitelistTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

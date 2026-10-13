@@ -130,9 +130,6 @@ Installed into .venv
  Initializing Tank. Phase 0 (STORY-FING-27) per build-env skill: survey done at bootstrap; mechanism change is pip -> uv. Installing uv per-user with pipx (no sudo), since the owner chose uv and it is not on this box.
 
 ---
-[<small>2026-10-12 23:57:45</small>] [**make**]->[**all**] *build*:
+[<small>2026-10-12 23:58:23</small>] [**make**]->[**all**] *build*:
  Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
-----------------------------------------------------------------------
-Ran 178 tests in 4.962s
-
-OK
+127.0.0.1 - - [12/Oct/2026 23:58:22] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -

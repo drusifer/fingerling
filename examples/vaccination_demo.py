@@ -66,9 +66,7 @@ def main() -> None:
     # Pre-seed whitelist with (ping, ping)
     fid_ping = fingerprint_id({"hook_syscall": "ping"})
     matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
-    mask_profile = [
-        MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")
-    ]
+    mask_profile = [MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
     warehouse = Warehouse(aggregates=TELEMETRY_AGGREGATES)
 
     webhook_server = run_server(
@@ -90,9 +88,7 @@ def main() -> None:
 
     # Step 3: Send baseline traffic
     print("\nStep 3: Simulating normal baseline traffic (ping) via actual GET requests...")
-    base_telemetry = (
-        '{"process_kprobe": {"function_name": "ping"}, "duration_ms": 10.0}'
-    )
+    base_telemetry = '{"process_kprobe": {"function_name": "ping"}, "duration_ms": 10.0}'
     for i in range(2):
         # 1. Send the actual GET request to the target app with normal characters
         base_url = f"http://127.0.0.1:{app_port}/ping?host=127.0.0.1"
@@ -110,7 +106,7 @@ def main() -> None:
         )
         with urllib.request.urlopen(req) as resp:
             res = json.loads(resp.read().decode("utf-8"))
-            print(f"  [Baseline {i+1}] Telemetry score: {res['scores'][0]} (whitelisted)")
+            print(f"  [Baseline {i + 1}] Telemetry score: {res['scores'][0]} (whitelisted)")
 
     # Step 4: Run the Vaccine (Baseline + Benign Exploit)
     print("\nStep 4: Executing controlled exploit exposure (Vaccination)...")
@@ -124,9 +120,7 @@ def main() -> None:
     print(f"  * Telemetry anomaly scores: {exploit_resp['scores']}")
     print(f"  * GitOps Commit & Auto-Merge Status: {exploit_resp['gitops_status']}")
 
-    policy_file = os.path.join(
-        repo_path, "policies", "fingerling-vulnerable-target-app.yaml"
-    )
+    policy_file = os.path.join(repo_path, "policies", "fingerling-vulnerable-target-app.yaml")
     if os.path.exists(policy_file):
         print(f"  * Generated KubeArmorPolicy file found at: {policy_file}")
         with open(policy_file) as f:

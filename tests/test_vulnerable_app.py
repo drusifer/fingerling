@@ -7,6 +7,7 @@ import threading
 import unittest
 import urllib.error
 import urllib.request
+
 from examples.vulnerable_app import run_app
 
 
@@ -57,13 +58,16 @@ class VulnerableAppTests(unittest.TestCase):
         self.assertEqual(ctx.exception.code, 400)
 
     def test_ping_endpoint_blocked_by_policy(self) -> None:
-        import tempfile
-        import os
         import hashlib
+        import os
+        import tempfile
+
         fid_echo = hashlib.md5(b"hook_syscall:echo").hexdigest()
         with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as tf:
             tf.write(
-                f"metadata:\n  annotations:\n    fingerling.io/anomalous-trajectory: 'ping,{fid_echo}'\n".encode("utf-8")
+                f"metadata:\n  annotations:\n    fingerling.io/anomalous-trajectory: 'ping,{fid_echo}'\n".encode(
+                    "utf-8"
+                )
             )
             policy_path = tf.name
 
@@ -97,13 +101,16 @@ class VulnerableAppTests(unittest.TestCase):
         # STORY-FING-22 AC2: a policy with only the narrow exact-fingerprint match
         # (no matchPattern) does NOT catch a *different* ';'-based payload it has
         # never seen — the blind spot the comprehensive policy exists to close.
-        import tempfile
-        import os
         import hashlib
+        import os
+        import tempfile
+
         fid_echo = hashlib.md5(b"hook_syscall:echo").hexdigest()
         with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as tf:
             tf.write(
-                f"metadata:\n  annotations:\n    fingerling.io/anomalous-trajectory: 'ping,{fid_echo}'\n".encode("utf-8")
+                f"metadata:\n  annotations:\n    fingerling.io/anomalous-trajectory: 'ping,{fid_echo}'\n".encode(
+                    "utf-8"
+                )
             )
             policy_path = tf.name
 
@@ -132,8 +139,9 @@ class VulnerableAppTests(unittest.TestCase):
         # STORY-FING-22 AC3/AC4: a matchPattern policy blocks ANY payload
         # containing the pattern, including the novel one the fingerprint-only
         # policy above let through.
-        import tempfile
         import os
+        import tempfile
+
         with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as tf:
             tf.write(b"spec:\n  process:\n    matchPattern: ';'\n")
             policy_path = tf.name
@@ -162,8 +170,9 @@ class VulnerableAppTests(unittest.TestCase):
     def test_ping_endpoint_match_pattern_allows_clean_traffic(self) -> None:
         # STORY-FING-22 AC5: matchPattern policy doesn't block traffic that
         # doesn't contain the pattern.
-        import tempfile
         import os
+        import tempfile
+
         with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as tf:
             tf.write(b"spec:\n  process:\n    matchPattern: ';'\n")
             policy_path = tf.name

@@ -15,7 +15,7 @@ def main() -> None:
             raise
         print(
             f"fingerling: the {_DEPENDENCIES[exc.name]} package is not installed for this Python.\n"
-            "  Run `make install` once, then use `make fingerprint ARGS=\"...\"`\n"
+            '  Run `make install` once, then use `make fingerprint ARGS="..."`\n'
             "  or `.venv/bin/python -m fingerling ...`.",
             file=sys.stderr,
         )

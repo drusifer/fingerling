@@ -109,7 +109,9 @@ def validate_modifier(modifier: str) -> None:
     low, high = _ARG_COUNTS[name]
     if len(args) < low or (high is not None and len(args) > high):
         expected = f"{low}" if low == high else f"at least {low}"
-        raise ValueError(f"Modifier {name} takes {expected} argument(s), got {len(args)}: {modifier!r}")
+        raise ValueError(
+            f"Modifier {name} takes {expected} argument(s), got {len(args)}: {modifier!r}"
+        )
     if name == "IN_RANGE":
         try:
             bounds = [float(a) for a in args]

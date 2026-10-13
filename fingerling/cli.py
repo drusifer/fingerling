@@ -67,17 +67,40 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=_FINGERPRINT_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    fp.add_argument("-p", "--profile", required=True, metavar="PROFILE",
-                    help="YAML profile: which fields identify a fingerprint, what to aggregate")
-    fp.add_argument("-s", "--set", required=True, metavar="SET", dest="set_path",
-                    help="fingerprint set file to merge into (created if missing, updated in place)")
-    fp.add_argument("events", nargs="?", default="-", metavar="EVENTS",
-                    help="JSONL file of events, one JSON object per line; '-' or omitted reads stdin")
-    fp.add_argument("-o", "--output", metavar="OUTPUT",
-                    help="write the merged set here instead, leaving SET unchanged")
-    fp.add_argument("--force-profile", action="store_true",
-                    help="merge even if SET was built with a different profile "
-                         "(its existing fingerprints are kept as they are)")
+    fp.add_argument(
+        "-p",
+        "--profile",
+        required=True,
+        metavar="PROFILE",
+        help="YAML profile: which fields identify a fingerprint, what to aggregate",
+    )
+    fp.add_argument(
+        "-s",
+        "--set",
+        required=True,
+        metavar="SET",
+        dest="set_path",
+        help="fingerprint set file to merge into (created if missing, updated in place)",
+    )
+    fp.add_argument(
+        "events",
+        nargs="?",
+        default="-",
+        metavar="EVENTS",
+        help="JSONL file of events, one JSON object per line; '-' or omitted reads stdin",
+    )
+    fp.add_argument(
+        "-o",
+        "--output",
+        metavar="OUTPUT",
+        help="write the merged set here instead, leaving SET unchanged",
+    )
+    fp.add_argument(
+        "--force-profile",
+        action="store_true",
+        help="merge even if SET was built with a different profile "
+        "(its existing fingerprints are kept as they are)",
+    )
     fp.set_defaults(func=_cmd_fingerprint)
     return parser
 

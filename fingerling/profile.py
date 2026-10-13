@@ -105,7 +105,9 @@ def parse_profile(data: Any, source: str = "<profile>") -> Profile:
         where = f"{source}: aggregates[{i}]"
         entry = _entry_mapping(raw, where, _AGGREGATE_KEYS, ("key", "path"))
         if "fn" not in entry:
-            raise ProfileError(f"{where} (key {entry['key']!r}): 'fn' is required, e.g. fn: [MIN, MAX]")
+            raise ProfileError(
+                f"{where} (key {entry['key']!r}): 'fn' is required, e.g. fn: [MIN, MAX]"
+            )
         try:
             aggregates.append(make_entry(entry["key"], entry["path"], entry["fn"]))
         except ValueError as exc:
