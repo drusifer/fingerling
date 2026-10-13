@@ -76,9 +76,7 @@ def commit_policy(
     _run_git(commit_args, cwd=repo_path)
 
 
-def auto_merge_policy(
-    repo_path: str, branch_name: str, target_branch: str = "main"
-) -> None:
+def auto_merge_policy(repo_path: str, branch_name: str, target_branch: str = "main") -> None:
     """Merge the hotfix branch back to the target deployment branch."""
     # Check out target branch
     _run_git(["checkout", target_branch], cwd=repo_path)
@@ -86,7 +84,13 @@ def auto_merge_policy(
     # Merge hotfix branch
     try:
         _run_git(
-            ["merge", "--no-ff", branch_name, "-m", f"Auto-merge policy update branch {branch_name}"],
+            [
+                "merge",
+                "--no-ff",
+                branch_name,
+                "-m",
+                f"Auto-merge policy update branch {branch_name}",
+            ],
             cwd=repo_path,
         )
     except RuntimeError as e:

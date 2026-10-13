@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 
-_DEPENDENCIES = {"jsonpath": "python-jsonpath", "yaml": "PyYAML"}
+_DEPENDENCIES = ("fingerprint_sampler", "jsonpath", "yaml")
 
 
 def main() -> None:
@@ -14,9 +14,9 @@ def main() -> None:
         if exc.name not in _DEPENDENCIES:
             raise
         print(
-            f"fingerling: the {_DEPENDENCIES[exc.name]} package is not installed for this Python.\n"
-            "  Run `make install` once, then use `make fingerprint ARGS=\"...\"`\n"
-            "  or `.venv/bin/python -m fingerling ...`.",
+            f"fingerling: the {exc.name!r} module is not installed for this Python.\n"
+            '  Run `make install` once, then use `make fingerprint ARGS="..."`\n'
+            "  or `.venv/bin/fingerprint merge ...`.",
             file=sys.stderr,
         )
         sys.exit(2)

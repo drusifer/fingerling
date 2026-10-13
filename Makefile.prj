@@ -1,9 +1,0 @@
-# Project-specific targets for Project Fingerling.
-# Included automatically by the bob-protocol Makefile (see Makefile's -include Makefile.prj).
-
-.PHONY: demo
-
-demo: ## Run the interactive step-through TUI dashboard (supports real eBPF if run with sudo)
-	@python3 examples/demo.py
-
-

@@ -38,23 +38,25 @@ def create_handler(policy_file: str | None = None) -> type[BaseHTTPRequestHandle
                     try:
                         with open(policy_file) as f:
                             policy_data = yaml.safe_load(f)
-                        annotations = (
-                            policy_data.get("metadata", {}).get("annotations", {})
-                        )
+                        annotations = policy_data.get("metadata", {}).get("annotations", {})
                         traj = annotations.get("fingerling.io/anomalous-trajectory", "")
                         import hashlib
-                        
+
                         # 1. Real eBPF capture format from bpftrace
-                        real_echo_flat = "exec_target:/bin/echo|hook_syscall:sys_execve|kernel_return_state:TRUE"
+                        real_echo_flat = (
+                            "exec_target:/bin/echo|hook_syscall:sys_execve|kernel_return_state:TRUE"
+                        )
                         fid_real = hashlib.md5(real_echo_flat.encode("utf-8")).hexdigest()
-                        
+
                         # 2. Simulated test format from vaccine.py
-                        sim_echo_flat = "exec_target:NULL|hook_syscall:echo|kernel_return_state:FALSE"
+                        sim_echo_flat = (
+                            "exec_target:NULL|hook_syscall:echo|kernel_return_state:FALSE"
+                        )
                         fid_sim = hashlib.md5(sim_echo_flat.encode("utf-8")).hexdigest()
-                        
+
                         # 3. Legacy unittest format from test_vulnerable_app.py
                         fid_legacy = hashlib.md5(b"hook_syscall:echo").hexdigest()
-                        
+
                         is_blocked = (fid_real in traj) or (fid_sim in traj) or (fid_legacy in traj)
                         if is_blocked and "echo" in host:
                             print(
@@ -93,13 +95,15 @@ def create_handler(policy_file: str | None = None) -> type[BaseHTTPRequestHandle
                     cmd = f"ping -c 1 {host}"
                     print(f"\n[Server Exec] Running shell command: {cmd}", file=sys.stdout)
                     sys.stdout.flush()
-                    res = subprocess.run(
-                        cmd, shell=True, capture_output=True, text=True, timeout=5
-                    )
+                    res = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=5)
                     if res.stdout:
-                        print(f"[Server Exec] Command stdout:\n{res.stdout.strip()}", file=sys.stdout)
+                        print(
+                            f"[Server Exec] Command stdout:\n{res.stdout.strip()}", file=sys.stdout
+                        )
                     if res.stderr:
-                        print(f"[Server Exec] Command stderr:\n{res.stderr.strip()}", file=sys.stdout)
+                        print(
+                            f"[Server Exec] Command stderr:\n{res.stderr.strip()}", file=sys.stdout
+                        )
                     sys.stdout.flush()
 
                     self.send_response(200)

@@ -1,26 +1,34 @@
 # Project Fingerling — Architecture
 
-Maintained by Morpheus. Module map current as of Sprint 8 (2026-10-12); sections 3-4 detail the
-fingerprinting core. Per-sprint design rationale lives in `docs/USER_STORIES_SPRINT<N>.md`.
+Maintained by Morpheus. Module map current as of Sprint 9 (2026-10-13); sections 3-4 detail the
+fingerprinting core. Per-sprint design rationale lives in `docs/USER_STORIES_SPRINT<N>.md`; how
+the project is built, changed and released is in `docs/SDLC.md`.
 
 ## 1. System Overview
 
-Fingerling is a set of composable Python library modules in two groups.
+The repository is a uv workspace with two Python packages.
 
-**Fingerprint sampling tool** — general-purpose, works on any JSONL event stream:
-
-| Module | Story | Responsibility |
-|---|---|---|
-| `fingerling/tokenizer.py` | FING-01, -07, -23 | JSONPath extraction (via `python-jsonpath`, full syntax) + modifier engine |
-| `fingerling/aggregators.py` | FING-25 | Per-fingerprint `SUM`/`AVG`/`MIN`/`MAX`/`LAST(n)` state, mergeable across runs |
-| `fingerling/warehouse.py` | FING-02, -05, -25 | The fingerprint set: MD5 IDs, stateful upsert, versioned atomic YAML file, baseline whitelist helper |
-| `fingerling/profile.py` | FING-24 | YAML profile loading + validation, `profile_id` |
-| `fingerling/cli.py`, `__main__.py` | FING-26 | `python -m fingerling fingerprint` — merge a stream into a set |
-
-**Detection and response pipeline** — consumes fingerprint IDs from the tool above:
+**`fingerprint-sampler`** (`packages/fingerprint-sampler/`, import `fingerprint_sampler`) — the
+published, general-purpose tool for any JSONL event stream. **This is the active scope.**
 
 | Module | Story | Responsibility |
 |---|---|---|
+| `fingerprint_sampler/tokenizer.py` | FING-01, -07, -23 | JSONPath extraction (via `python-jsonpath`, full syntax) + modifier engine |
+| `fingerprint_sampler/aggregators.py` | FING-25 | Per-fingerprint `SUM`/`AVG`/`MIN`/`MAX`/`LAST(n)` state, mergeable across runs |
+| `fingerprint_sampler/warehouse.py` | FING-02, -25 | The fingerprint set: MD5 IDs, stateful upsert, versioned atomic YAML file |
+| `fingerprint_sampler/profile.py` | FING-24 | YAML profile loading + validation, `profile_id` |
+| `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28 | `fingerprint merge` — merge a stream into a set |
+
+It depends only on PyYAML and python-jsonpath and never imports `fingerling`.
+
+**`fingerling`** (`fingerling/`, repository root) — the detection-and-response pipeline built on
+fingerprint IDs. **Parked** and unpublished: kept importable and tested, not developed.
+
+| Module | Story | Responsibility |
+|---|---|---|
+| `fingerling/tokenizer.py`, `aggregators.py`, `profile.py` | FING-28 | One-line re-export shims over `fingerprint_sampler` |
+| `fingerling/warehouse.py` | FING-05, -28 | Re-exports the fingerprint set; owns `TELEMETRY_AGGREGATES` and the N-gram `build_whitelist` helper |
+| `fingerling/cli.py`, `__main__.py` | FING-28 | `fingerling fingerprint`, an alias for `fingerprint merge` |
 | `fingerling/ringbuffer.py` | FING-03 | FIFO sliding-window N-gram anomaly matcher |
 | `fingerling/policy.py` | FING-04, -06, -22 | KubeArmorPolicy YAML compiler (`block_pattern` adds `matchPattern`) |
 | `fingerling/server.py` | FING-08 | stdlib HTTP webhook telemetry ingestion server |
@@ -28,8 +36,8 @@ Fingerling is a set of composable Python library modules in two groups.
 | `fingerling/sandbox.py`, `vaccine.py` | Sprint 4 | Controlled-exposure sandbox and baseline/exploit replay |
 | `fingerling/capture.py` | — | bpftrace `execve` capture → Tetragon-shaped JSONL |
 
-The sampling tool has no dependency on the pipeline group. N-gram analysis is deliberately a
-later stage: it sees only the fingerprint IDs `Warehouse.upsert()` returns.
+N-gram analysis is deliberately a later stage: it sees only the fingerprint IDs
+`Warehouse.upsert()` returns.
 
 ## 2. Architectural Principles
 
@@ -55,7 +63,7 @@ flowchart TD
 
 ## 4. Class & Data Structures
 
-### 4.1 `tokenizer.py` (STORY-FING-01, -07, -23)
+### 4.1 `fingerprint_sampler/tokenizer.py` (STORY-FING-01, -07, -23)
 
 ```python
 @dataclass(frozen=True)
@@ -77,7 +85,7 @@ Paths use full JSONPath (RFC 9535 plus the `[?(@.x == 1)]` filter form): filters
 negative indexes, recursive descent. Empty/missing matches tokenize to `"FALSE"`/`"NULL"`, never
 raising.
 
-### 4.2 `aggregators.py`, `warehouse.py`, `profile.py` (STORY-FING-02, -05, -24, -25)
+### 4.2 `fingerprint_sampler` set, aggregators and profiles (STORY-FING-02, -24, -25); `fingerling/warehouse.py` helpers (-05)
 
 ```python
 @dataclass(frozen=True)
@@ -105,7 +113,7 @@ class Warehouse:
     def load(self, path: str, force: bool = False) -> None: ...   # ProfileMismatchError unless force
     def save(self, path: str) -> None: ...                         # temp file + os.replace
 
-TELEMETRY_AGGREGATES   # duration_ms MIN/MAX + LAST(3) raw events, for the telemetry pipeline
+TELEMETRY_AGGREGATES   # in fingerling.warehouse: duration_ms MIN/MAX + LAST(3) raw events
 
 @dataclass(frozen=True)
 class Profile:
@@ -115,7 +123,7 @@ class Profile:
 
 def load_profile(path: str) -> Profile: ...   # ProfileError names file + entry
 
-def build_whitelist(records, mask_profile, n, warehouse=None) -> set[tuple[str, ...]]: ...
+def build_whitelist(records, mask_profile, n, warehouse=None) -> set[tuple[str, ...]]: ...  # in fingerling.warehouse
 ```
 
 Aggregator state is keyed by function name, so changing `n` in `LAST(n)` keeps collected
@@ -159,9 +167,10 @@ class TelemetryHTTPRequestHandler(BaseHTTPRequestHandler):
 
 ## 5. Technical Stack
 
-- **Language:** Python 3.13
+- **Language:** Python 3.10 - 3.13
 - **Stdlib:** `hashlib`, `dataclasses`, `collections.deque`, `http.server`, `json`, `argparse`
-- **Third-party:** `PyYAML`, `python-jsonpath` (installed into `.venv` by `make install`)
+- **Third-party:** `PyYAML`, `python-jsonpath`; `rich` for the parked demo only
+- **Tooling:** `uv` (workspace + lockfile), `hatchling`, `ruff`, `gitleaks`, GitHub Actions — see `docs/SDLC.md`
 - **Test runner:** `unittest`
 
 ## 6. Decisions Log (Sprint 2 additions)
@@ -178,3 +187,10 @@ class TelemetryHTTPRequestHandler(BaseHTTPRequestHandler):
 13. **Declared aggregators replace hardcoded stats**: `upsert(duration_ms, raw_record)` became `upsert(tokens, record)`; duration bounds and sample ring are now `TELEMETRY_AGGREGATES`.
 14. **Profile-bound sets**: a set records the `profile_id` of its `fields`; merging under another profile is refused unless forced.
 15. **Sampling tool is independent of sequence analysis**: n-grams/scoring stay a downstream stage.
+
+## 8. Decisions Log (Sprint 9 additions)
+
+16. **Two packages, one repository**: the fingerprint tool is `fingerprint-sampler`, a uv workspace member published on its own; `fingerling` is private and depends on it.
+17. **Move behind shims**: parked modules import the old `fingerling.*` paths, which re-export the same objects, so the split changed no parked code.
+18. **`fingerprint merge`**: a subcommand, so later commands (`show`, `report`) can be added without breaking users; `fingerling fingerprint` is kept as an alias.
+19. **One version stream**: only `fingerprint-sampler` is versioned, tagged (`v<version>`) and published.

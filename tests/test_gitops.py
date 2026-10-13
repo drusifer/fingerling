@@ -6,7 +6,7 @@ import os
 import tempfile
 import unittest
 
-from fingerling.gitops import initialize_repo, _run_git
+from fingerling.gitops import _run_git, initialize_repo
 
 
 class GitOpsScaffoldingTests(unittest.TestCase):
@@ -21,7 +21,7 @@ class GitOpsScaffoldingTests(unittest.TestCase):
             # Verify commit is made
             log = _run_git(["log", "--oneline"], cwd=repo_path)
             self.assertIn("Initial commit", log)
-            
+
             # Verify user name/email are set locally
             name = _run_git(["config", "user.name"], cwd=repo_path).strip()
             email = _run_git(["config", "user.email"], cwd=repo_path).strip()
@@ -78,7 +78,7 @@ class GitOpsScaffoldingTests(unittest.TestCase):
                 )
 
     def test_auto_merge_policy_success_and_cleanup(self) -> None:
-        from fingerling.gitops import commit_policy, auto_merge_policy
+        from fingerling.gitops import auto_merge_policy, commit_policy
 
         with tempfile.TemporaryDirectory() as tmp:
             repo_path = os.path.join(tmp, "gitops-repo")

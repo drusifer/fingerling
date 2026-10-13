@@ -31,13 +31,14 @@
   logged the gap in `docs/LESSONS.md` for Tank.
 - 2026-10-12 Sprint 8 groom done: ARCH.md, DECISIONS.md, LESSONS.md, USER_GUIDE.md, README.md, agents/oracle/lessons.md (venv rule). Docs backlog remaining: USER_GUIDE GitOps/sandbox sections unverified against code; DOCUMENTATION_INDEX.md not reviewed; agents/oracle/memory.md still has template placeholders.
 - 2026-10-12 Sprint 8 chat archived: agents/chat_archive/CHAT_SPRINT_8.md (includes Sprints 1-7 history). CHAT.md reset.
+- 2026-10-13 Sprint 9 groomed and archived to agents/chat_archive/CHAT_SPRINT_9*.md in per-phase format.
 
 ## Current Task
-**Sprint:** 8 — Fingerprint Sampling CLI (`docs/USER_STORIES_SPRINT8.md`, board: `task.md`)
-**Status:** Sprint 8 complete
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Status:** Sprint 9 complete
 
 ## Next Steps
 No pending tasks.
 
 ---
-*Last updated: 2026-10-12T21:29:18-04:00*
+*Last updated: 2026-10-13T00:09:31-04:00*

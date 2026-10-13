@@ -44,11 +44,10 @@ class E2EVaccinationTests(unittest.TestCase):
         self.warehouse = Warehouse()
         # Seed whitelist with the baseline transition: (fid_ping, fid_ping)
         from fingerling.warehouse import fingerprint_id
+
         fid_ping = fingerprint_id({"hook_syscall": "ping"})
         self.matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
-        self.mask_profile = [
-            MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")
-        ]
+        self.mask_profile = [MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
         self.webhook_server = run_server(
             port=self.webhook_port,
             warehouse=self.warehouse,
@@ -59,9 +58,7 @@ class E2EVaccinationTests(unittest.TestCase):
             gitops_repo_path=self.repo_path,
             gpg_sign=False,
         )
-        self.webhook_thread = threading.Thread(
-            target=self.webhook_server.serve_forever
-        )
+        self.webhook_thread = threading.Thread(target=self.webhook_server.serve_forever)
         self.webhook_thread.daemon = True
         self.webhook_thread.start()
 
@@ -81,9 +78,7 @@ class E2EVaccinationTests(unittest.TestCase):
 
         # Step 1: Run baseline telemetry to warm up the matcher
         # We need 2 baseline calls to fill the window (n=2)
-        base_telemetry = (
-            '{"process_kprobe": {"function_name": "ping"}, "duration_ms": 10.0}'
-        )
+        base_telemetry = '{"process_kprobe": {"function_name": "ping"}, "duration_ms": 10.0}'
         for _ in range(2):
             # 1. Send the actual GET request to the target app with normal characters
             base_url = f"http://127.0.0.1:{self.app_port}/ping?host=127.0.0.1"

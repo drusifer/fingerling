@@ -29,13 +29,16 @@
 - 2026-10-12 Sprint 8 P1 UAT passed. Reusable check: scratchpad diff of git-HEAD tokenizer vs new over every MaskEntry literal in repo (90 comparisons, 0 diffs). AC5 'fails at profile load' depends on Phase 3 calling compile_path in load_profile — verify then.
 - 2026-10-12 Sprint 8 P3 UAT passed (155 tests).
 - 2026-10-12 Sprint 8 closed at 178 tests. Outstanding verification gap: interactive sudo make demo-live.
+- 2026-10-12 Sprint 9 P0 UAT passed.
+- 2026-10-13 Sprint 9 P1 UAT passed: isolated wheel install on 3.10, sdist tests 127/127 without fingerling, pre-split set merge 0 new/4 updated, README quickstart verbatim.
+- 2026-10-13 Sprint 9 closed: 127 + 59 tests on 3.10-3.13. Unverified: GitHub workflows, --svg chat report.
 
 ## Current Task
-**Sprint:** 8 — Fingerprint Sampling CLI (`docs/USER_STORIES_SPRINT8.md`, board: `task.md`)
-**Status:** Sprint 8 complete
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Status:** Sprint 9 complete
 
 ## Next Steps
-If asked to verify the demo: needs real TTY + root + bpftrace; run sudo make demo-live.
+No pending UAT.
 
 ---
-*Last updated: 2026-10-12T21:29:12-04:00*
+*Last updated: 2026-10-13T00:09:31-04:00*

@@ -37,9 +37,7 @@ class CompilePolicyTests(unittest.TestCase):
 
         manifest = yaml.safe_load(manifest_text)
 
-        self.assertEqual(
-            manifest["spec"]["selector"]["matchLabels"], {"app": "checkout-backend"}
-        )
+        self.assertEqual(manifest["spec"]["selector"]["matchLabels"], {"app": "checkout-backend"})
 
     def test_action_defaults_to_block(self):
         manifest_text = compile_policy(
@@ -124,4 +122,3 @@ class CompilePolicyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

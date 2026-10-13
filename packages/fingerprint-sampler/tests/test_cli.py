@@ -1,4 +1,4 @@
-"""Tests for STORY-FING-26: the `fingerprint` CLI."""
+"""Tests for the `fingerprint merge` CLI."""
 
 import contextlib
 import io
@@ -13,12 +13,12 @@ from unittest import mock
 
 import yaml
 
-from fingerling.cli import main
-from fingerling.profile import load_profile
+from fingerprint_sampler.cli import main
+from fingerprint_sampler.profile import load_profile
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ACCESS_PROFILE = os.path.join(REPO_ROOT, "examples", "profiles", "access_log.yaml")
-ACCESS_EVENTS = os.path.join(REPO_ROOT, "examples", "data", "access_log.jsonl")
+PACKAGE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ACCESS_PROFILE = os.path.join(PACKAGE_ROOT, "examples", "access_log.yaml")
+ACCESS_EVENTS = os.path.join(PACKAGE_ROOT, "examples", "access_log.jsonl")
 
 PROFILE = """
 version: 1
@@ -73,7 +73,9 @@ class CliTestCase(unittest.TestCase):
         return code, out.getvalue(), err.getvalue()
 
     def fingerprint(self, events_path, *extra, **kwargs):
-        return self.run_cli("fingerprint", "-p", self.profile, "-s", self.set_path, events_path, *extra, **kwargs)
+        return self.run_cli(
+            "merge", "-p", self.profile, "-s", self.set_path, events_path, *extra, **kwargs
+        )
 
     def load_set(self, path=None):
         with open(path or self.set_path) as f:
@@ -123,11 +125,11 @@ class CreateAndMergeTests(CliTestCase):
         merged = self.load_set()
         by_kind = {rec["tokens"]["kind"]: (fid, rec) for fid, rec in merged["fingerprints"].items()}
         fid_a, rec_a = by_kind["a"]
-        self.assertEqual(rec_a["total_occurrences"], 3)                       # 2 + 1: counts add
-        self.assertEqual(rec_a["aggregates"]["size"]["SUM"], 40.5)            # aggregates merge
-        self.assertEqual(rec_a["aggregates"]["recent"]["LAST"], [3, 4])       # LAST continues
+        self.assertEqual(rec_a["total_occurrences"], 3)  # 2 + 1: counts add
+        self.assertEqual(rec_a["aggregates"]["size"]["SUM"], 40.5)  # aggregates merge
+        self.assertEqual(rec_a["aggregates"]["recent"]["LAST"], [3, 4])  # LAST continues
         self.assertEqual(rec_a["first_seen"], first["fingerprints"][fid_a]["first_seen"])
-        self.assertIn("c", by_kind)                                           # new fingerprint appended
+        self.assertIn("c", by_kind)  # new fingerprint appended
 
     def _fingerprints_line(self, err):
         return next(line for line in err.splitlines() if "fingerprints:" in line)
@@ -144,7 +146,14 @@ class CreateAndMergeTests(CliTestCase):
     def test_batch_and_split_runs_produce_equivalent_sets(self):
         # AC3: one batch == the same events split over several runs, at every split point.
         batch_set = os.path.join(self.dir, "batch.yaml")
-        self.run_cli("fingerprint", "-p", self.profile, "-s", batch_set, self.write_events("all.jsonl", EVENTS))
+        self.run_cli(
+            "merge",
+            "-p",
+            self.profile,
+            "-s",
+            batch_set,
+            self.write_events("all.jsonl", EVENTS),
+        )
         expected = self.without_timestamps(self.load_set(batch_set))
 
         for cut in range(1, len(EVENTS)):
@@ -152,7 +161,7 @@ class CreateAndMergeTests(CliTestCase):
                 split_set = os.path.join(self.dir, f"split{cut}.yaml")
                 for part, events in (("x", EVENTS[:cut]), ("y", EVENTS[cut:])):
                     path = self.write_events(f"{part}{cut}.jsonl", events)
-                    self.run_cli("fingerprint", "-p", self.profile, "-s", split_set, path)
+                    self.run_cli("merge", "-p", self.profile, "-s", split_set, path)
                 self.assertEqual(self.without_timestamps(self.load_set(split_set)), expected)
 
     def test_reads_events_from_stdin(self):
@@ -161,7 +170,13 @@ class CreateAndMergeTests(CliTestCase):
             with self.subTest(events_arg=events_arg):
                 set_path = os.path.join(self.dir, f"stdin{len(events_arg)}.yaml")
                 code, _, err = self.run_cli(
-                    "fingerprint", "-p", self.profile, "-s", set_path, *events_arg, stdin=FakeStdin(text)
+                    "merge",
+                    "-p",
+                    self.profile,
+                    "-s",
+                    set_path,
+                    *events_arg,
+                    stdin=FakeStdin(text),
                 )
                 self.assertEqual(code, 0)
                 self.assertIn("6 events read from stdin", err)
@@ -186,12 +201,15 @@ class NonTelemetryFixtureTests(CliTestCase):
     """AC8: the tool is not eBPF-specific — web access-log events, filter-expression field."""
 
     def test_access_log_fixture(self):
-        code, _, err = self.run_cli("fingerprint", "-p", ACCESS_PROFILE, "-s", self.set_path, ACCESS_EVENTS)
+        code, _, err = self.run_cli(
+            "merge", "-p", ACCESS_PROFILE, "-s", self.set_path, ACCESS_EVENTS
+        )
 
         self.assertEqual(code, 0, err)
         records = list(self.load_set()["fingerprints"].values())
         by_shape = {
-            (r["tokens"]["method"], r["tokens"]["route"], r["tokens"]["status_class"]): r for r in records
+            (r["tokens"]["method"], r["tokens"]["route"], r["tokens"]["status_class"]): r
+            for r in records
         }
         self.assertEqual(len(records), 4)
 
@@ -199,12 +217,18 @@ class NonTelemetryFixtureTests(CliTestCase):
         self.assertEqual(ok_items["total_occurrences"], 3)
         self.assertEqual(ok_items["aggregates"]["bytes_out"]["SUM"], 512 + 498 + 505)
         self.assertEqual(ok_items["aggregates"]["latency_ms"]["MIN"], 9.0)
-        self.assertEqual(ok_items["aggregates"]["recent_paths"]["LAST"], ["/items/17", "/items/42", "/items/3"])
+        self.assertEqual(
+            ok_items["aggregates"]["recent_paths"]["LAST"], ["/items/17", "/items/42", "/items/3"]
+        )
 
-        self.assertEqual(by_shape[("GET", "/items/{id}", "FALSE")]["total_occurrences"], 1)  # the 404
+        self.assertEqual(
+            by_shape[("GET", "/items/{id}", "FALSE")]["total_occurrences"], 1
+        )  # the 404
 
         orders = by_shape[("POST", "/orders", "TRUE")]
-        self.assertEqual(orders["tokens"]["slow_upstreams"], "payments")  # from the [?(@.ms > 500)] filter
+        self.assertEqual(
+            orders["tokens"]["slow_upstreams"], "payments"
+        )  # from the [?(@.ms > 500)] filter
         self.assertEqual(orders["aggregates"]["latency_ms"]["MAX"], 910.0)
 
         health = by_shape[("GET", "/health", "TRUE")]
@@ -240,7 +264,9 @@ class BadInputTests(CliTestCase):
         self.assertIn("50 malformed lines", err)
 
     def test_terminal_stdin_explains_instead_of_hanging(self):
-        code, _, err = self.run_cli("fingerprint", "-p", self.profile, "-s", self.set_path, stdin=FakeStdin(tty=True))
+        code, _, err = self.run_cli(
+            "merge", "-p", self.profile, "-s", self.set_path, stdin=FakeStdin(tty=True)
+        )
         self.assertEqual(code, 2)
         self.assertIn("no events to read", err)
         self.assertFalse(os.path.exists(self.set_path))
@@ -248,7 +274,7 @@ class BadInputTests(CliTestCase):
     def test_invalid_profile_fails_before_reading_events(self):
         bad = self.write("bad.yaml", "fields:\n  - {key: k, path: '$.a[', modifier: DEFAULT}\n")
         code, _, err = self.run_cli(
-            "fingerprint", "-p", bad, "-s", self.set_path, self.write_events("e.jsonl", EVENTS)
+            "merge", "-p", bad, "-s", self.set_path, self.write_events("e.jsonl", EVENTS)
         )
         self.assertEqual(code, 2)
         self.assertIn("'k'", err)
@@ -256,7 +282,7 @@ class BadInputTests(CliTestCase):
         self.assertFalse(os.path.exists(self.set_path))
 
     def test_missing_profile_and_missing_events_file(self):
-        code, _, err = self.run_cli("fingerprint", "-p", "/no/such.yaml", "-s", self.set_path, "x.jsonl")
+        code, _, err = self.run_cli("merge", "-p", "/no/such.yaml", "-s", self.set_path, "x.jsonl")
         self.assertEqual(code, 2)
         self.assertIn("/no/such.yaml", err)
 
@@ -276,14 +302,18 @@ class BadInputTests(CliTestCase):
 
     def test_unwritable_destination(self):
         code, _, err = self.run_cli(
-            "fingerprint", "-p", self.profile, "-s", os.path.join(self.dir, "no-dir", "set.yaml"),
+            "merge",
+            "-p",
+            self.profile,
+            "-s",
+            os.path.join(self.dir, "no-dir", "set.yaml"),
             self.write_events("e.jsonl", EVENTS),
         )
         self.assertEqual(code, 2)
         self.assertIn("cannot write", err)
 
     def test_missing_required_arguments_is_a_usage_error(self):
-        code, _, err = self.run_cli("fingerprint", "-s", self.set_path)
+        code, _, err = self.run_cli("merge", "-s", self.set_path)
         self.assertEqual(code, 2)
         self.assertIn("--profile", err)
 
@@ -298,18 +328,18 @@ class ProfileMismatchTests(CliTestCase):
         self.events = self.write_events("run2.jsonl", EVENTS)
 
     def test_merge_with_a_different_profile_is_refused(self):
-        code, _, err = self.run_cli("fingerprint", "-p", self.other, "-s", self.set_path, self.events)
+        code, _, err = self.run_cli("merge", "-p", self.other, "-s", self.set_path, self.events)
 
         self.assertEqual(code, 2)
         self.assertIn(yaml.safe_load(self.before)["profile_id"], err)  # AC13: names both IDs...
         self.assertIn(load_profile(self.other).profile_id, err)
-        self.assertIn("--force-profile", err)     # ...and the override flag
+        self.assertIn("--force-profile", err)  # ...and the override flag
         with open(self.set_path) as f:
             self.assertEqual(f.read(), self.before)
 
     def test_force_profile_overrides(self):
         code, _, _ = self.run_cli(
-            "fingerprint", "-p", self.other, "-s", self.set_path, self.events, "--force-profile"
+            "merge", "-p", self.other, "-s", self.set_path, self.events, "--force-profile"
         )
         self.assertEqual(code, 0)
         data = self.load_set()
@@ -318,7 +348,7 @@ class ProfileMismatchTests(CliTestCase):
 
     def test_changing_only_aggregates_is_not_a_mismatch(self):
         tweaked = self.write("tweaked.yaml", PROFILE.replace('fn: "LAST(2)"', 'fn: "LAST(5)"'))
-        code, _, _ = self.run_cli("fingerprint", "-p", tweaked, "-s", self.set_path, self.events)
+        code, _, _ = self.run_cli("merge", "-p", tweaked, "-s", self.set_path, self.events)
         self.assertEqual(code, 0)
 
 
@@ -328,7 +358,10 @@ class AtomicWriteTests(CliTestCase):
         with open(self.set_path) as f:
             before = f.read()
 
-        with mock.patch("fingerling.warehouse.os.replace", side_effect=OSError(28, "No space left on device")):
+        with mock.patch(
+            "fingerprint_sampler.warehouse.os.replace",
+            side_effect=OSError(28, "No space left on device"),
+        ):
             code, _, err = self.fingerprint(self.write_events("run2.jsonl", EVENTS[3:]))
 
         self.assertEqual(code, 2)
@@ -340,18 +373,24 @@ class AtomicWriteTests(CliTestCase):
 
 
 class EntryPointTests(unittest.TestCase):
-    """The real `python -m fingerling` process, not just main()."""
+    """The real `python -m fingerprint_sampler` process, not just main()."""
 
     def run_module(self, *argv, **kwargs):
         return subprocess.run(
-            [sys.executable, "-m", "fingerling", *argv],
-            cwd=REPO_ROOT, capture_output=True, text=True, timeout=60, **kwargs,
+            [sys.executable, "-m", "fingerprint_sampler", *argv],
+            cwd=PACKAGE_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=60,
+            **kwargs,
         )
 
     def test_help_has_worked_example_and_in_place_warning(self):
-        result = self.run_module("fingerprint", "--help")
+        result = self.run_module("merge", "--help")
         self.assertEqual(result.returncode, 0)
-        self.assertIn("usage: python -m fingerling fingerprint", result.stdout)  # a command that exists
+        self.assertIn(
+            "usage: python -m fingerprint_sampler merge", result.stdout
+        )  # a command that exists
         self.assertIn("example:", result.stdout)
         self.assertIn("updated in place", result.stdout)
         self.assertIn("--force-profile", result.stdout)
@@ -361,22 +400,18 @@ class EntryPointTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             set_path = os.path.join(tmp, "set.yaml")
             with open(ACCESS_EVENTS) as events:
-                result = self.run_module("fingerprint", "-p", ACCESS_PROFILE, "-s", set_path, "-", stdin=events)
+                result = self.run_module(
+                    "merge", "-p", ACCESS_PROFILE, "-s", set_path, "-", stdin=events
+                )
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(result.stdout, "")
             self.assertIn("8 events read from stdin", result.stderr)
             self.assertIn("4 new, 0 updated, 4 total in set", result.stderr)
 
-    def test_missing_dependency_gives_install_hint_not_traceback(self):
-        # Simulate a Python without python-jsonpath by shadowing it with a module that fails to import.
-        with tempfile.TemporaryDirectory() as tmp:
-            with open(os.path.join(tmp, "jsonpath.py"), "w") as f:
-                f.write("raise ModuleNotFoundError(\"No module named 'jsonpath'\", name='jsonpath')\n")
-            env = dict(os.environ, PYTHONPATH=tmp + os.pathsep + REPO_ROOT)
-            result = self.run_module("fingerprint", "--help", env=env)
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("make install", result.stderr)
-        self.assertNotIn("Traceback", result.stderr)
+    def test_version_flag(self):
+        result = self.run_module("--version")
+        self.assertEqual(result.returncode, 0)
+        self.assertRegex(result.stdout, r"^fingerprint-sampler \d+\.\d+\.\d+")
 
 
 if __name__ == "__main__":

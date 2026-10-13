@@ -273,3 +273,23 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** Standard Makefile targets `install`, `test`, `check`, `run`, `clean`, `distclean`, `help`; targets fail with "run 'make install' first" when `.venv` is missing instead of falling back to the system Python.
 **Consequences:** One failure mode instead of import errors. No `lint`/`format`/`build` targets yet: the project has no linter configured and ships no artifact.
 
+## 2026-10-12 / 13 — Sprint 9: Fingerprint Package + SDLC Tooling
+
+**Decision (owner):** Only the fingerprint tool is active scope; all other fingerling features are back-burnered until the fingerprint CLI is complete.
+**Consequences:** No new gates, tests or manual checks for parked modules; `sudo make demo-live` stays unverified by choice. Parked code must keep importing and its existing tests must pass.
+
+**Decision (owner):** Change management — a branch per sprint (`sprint-<N>`), agents branch/commit/merge but never push, Conventional Commits, SemVer bumped by what changed, the per-phase chat report as the record instead of a changelog. `docs/SDLC.md` is the source of truth.
+**Consequences:** `main` only ever holds finished sprints. Releases reach PyPI only when the owner pushes a tag.
+
+**Decision (owner):** `uv` with a committed `uv.lock`; `ruff` and `gitleaks` as baseline gates; Python 3.10+; CI gates plus PyPI trusted publishing. **Supersedes** "venv + pip, no lockfile" from the bootstrap.
+**Consequences:** Installs are exact. `uv` and `gitleaks` are machine prerequisites. Ruff's rule list is pinned (`E4`, `E7`, `E9`, `F`, `I`) so a tool upgrade cannot move the gate. A `.python-version` pins the development interpreter because uv otherwise prefers its own downloaded Pythons.
+
+**Decision:** The fingerprint tool is the `fingerprint-sampler` distribution (import `fingerprint_sampler`, command `fingerprint merge`), a uv workspace member in `packages/fingerprint-sampler/`. `fingerling` and `fingerprint` were already taken on PyPI.
+**Consequences:** It installs alone with PyYAML and python-jsonpath. `fingerling` keeps re-export shims and the `fingerling fingerprint` alias, so nothing parked changed. **Breaking:** CLI message prefix is now `fingerprint:`; the access-log example moved into the package. Fingerprint IDs and file formats are unchanged.
+
+**Decision:** One version stream — `fingerprint-sampler`, starting at 0.1.0, tagged `v<version>`. Root `fingerling` is marked private.
+**Consequences:** Sprint numbers and versions are no longer related; a sprint that does not touch the published package makes no release.
+
+**Decision:** `bobp chat-report` splits the archive by `*phase <label>*` marker messages (change made in the bob_protocol repository).
+**Consequences:** One document per sprint: summary, then each phase's description and diagram. Logs without markers archive as before.
+

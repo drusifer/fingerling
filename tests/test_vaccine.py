@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import socket
 import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Any
+
 from examples.vulnerable_app import run_app
 from fingerling.vaccine import run_vaccination
 

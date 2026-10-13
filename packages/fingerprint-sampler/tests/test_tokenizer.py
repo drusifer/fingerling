@@ -1,9 +1,9 @@
-"""Tests for STORY-FING-01: eBPF telemetry parser & modifier engine."""
+"""Tests: eBPF telemetry parser & modifier engine."""
 
 import json
 import unittest
 
-from fingerling.tokenizer import (
+from fingerprint_sampler.tokenizer import (
     MaskEntry,
     apply_modifier,
     compile_path,
@@ -84,7 +84,9 @@ class FullJsonPathSyntaxTests(unittest.TestCase):
         self.assertEqual(find_values(MULTI_ARG_RECORD, "$.args[-1].dport"), [80])
 
     def test_union_of_names(self):
-        self.assertEqual(find_values(MULTI_ARG_RECORD, "$.args[1]['type','name']"), ["file", "/etc/passwd"])
+        self.assertEqual(
+            find_values(MULTI_ARG_RECORD, "$.args[1]['type','name']"), ["file", "/etc/passwd"]
+        )
 
     def test_recursive_descent(self):
         self.assertEqual(find_values(MULTI_ARG_RECORD, "$..dport"), [6379, 443, 80])
@@ -140,7 +142,7 @@ class ApplyModifierTests(unittest.TestCase):
         self.assertEqual(apply_modifier("sys_connect", "DEFAULT"), "sys_connect")
 
     def test_default_missing_yields_null(self):
-        from fingerling.tokenizer import _MISSING
+        from fingerprint_sampler.tokenizer import _MISSING
 
         self.assertEqual(apply_modifier(_MISSING, "DEFAULT"), "NULL")
 
@@ -149,12 +151,12 @@ class ApplyModifierTests(unittest.TestCase):
         self.assertEqual(apply_modifier(14205, "IS_PRESENT"), "TRUE")
 
     def test_is_present_false_for_missing(self):
-        from fingerling.tokenizer import _MISSING
+        from fingerprint_sampler.tokenizer import _MISSING
 
         self.assertEqual(apply_modifier(_MISSING, "IS_PRESENT"), "FALSE")
 
     def test_is_null_true_for_missing(self):
-        from fingerling.tokenizer import _MISSING
+        from fingerprint_sampler.tokenizer import _MISSING
 
         self.assertEqual(apply_modifier(_MISSING, "IS_NULL"), "TRUE")
 
@@ -169,7 +171,7 @@ class ApplyModifierTests(unittest.TestCase):
         self.assertEqual(apply_modifier(5, "IN_RANGE(-999, 0)"), "FALSE")
 
     def test_in_range_false_for_missing(self):
-        from fingerling.tokenizer import _MISSING
+        from fingerprint_sampler.tokenizer import _MISSING
 
         self.assertEqual(apply_modifier(_MISSING, "IN_RANGE(-999, 0)"), "FALSE")
 
@@ -267,9 +269,7 @@ class WildcardAndRecursiveDescentTests(unittest.TestCase):
                 ]
             }
         }
-        profile = [
-            MaskEntry("ports", "$.process_kprobe.args[*].sock_arg.dport", "DEFAULT")
-        ]
+        profile = [MaskEntry("ports", "$.process_kprobe.args[*].sock_arg.dport", "DEFAULT")]
         tokens = tokenize(record, profile)
         # Expected sorted and joined: "443,6379"
         self.assertEqual(tokens, {"ports": "443,6379"})
@@ -281,14 +281,10 @@ class WildcardAndRecursiveDescentTests(unittest.TestCase):
                     {"sock_arg": {"dport": 6379}},
                     {"sock_arg": {"dport": 443}},
                 ],
-                "nested": {
-                    "other_port": {"dport": 80}
-                }
+                "nested": {"other_port": {"dport": 80}},
             }
         }
-        profile = [
-            MaskEntry("all_ports", "$.process_kprobe..dport", "DEFAULT")
-        ]
+        profile = [MaskEntry("all_ports", "$.process_kprobe..dport", "DEFAULT")]
         tokens = tokenize(record, profile)
         # Expected sorted, deduplicated and joined: "443,6379,80" (sorted alphabetically: "443,6379,80" -> wait, str sort: '443', '6379', '80')
         # Let's verify str sort order: '443' < '6379' < '80' because '6' < '8'. Yes! "443,6379,80"
@@ -296,9 +292,7 @@ class WildcardAndRecursiveDescentTests(unittest.TestCase):
 
     def test_missing_wildcard_resolves_to_null_and_never_raises(self):
         record = {"process_kprobe": {}}
-        profile = [
-            MaskEntry("ports", "$.process_kprobe.args[*].sock_arg.dport", "DEFAULT")
-        ]
+        profile = [MaskEntry("ports", "$.process_kprobe.args[*].sock_arg.dport", "DEFAULT")]
         tokens = tokenize(record, profile)
         self.assertEqual(tokens, {"ports": "NULL"})
 

@@ -72,13 +72,15 @@
 - 2026-10-12 Sprint 8 P3 done: profile.py + validate_modifier; examples/profiles/{ebpf_telemetry,access_log}.yaml, examples/data/access_log.jsonl (8 events -> used by CLI tests).
 - 2026-10-12 Sprint 8 P4 done: cli.py/_fold_stream, __main__.py dependency hint, make fingerprint, tests/test_cli.py (in-process main() + subprocess entry-point tests). Set YAML uses sort_keys=False (header, then tokens, counters, aggregates). Not run: sudo make demo-live (no TTY in session) — demo.py changes are 3 lines (TELEMETRY_AGGREGATES, len(warehouse), entry.tokens).
 - 2026-10-12 Sprint 8 closed. One post-UAT fix: argparse prog='python -m fingerling'.
+- 2026-10-13 Sprint 9 P1 done: fingerprint tool lives in packages/fingerprint-sampler/src/fingerprint_sampler (tokenizer, aggregators, warehouse, profile, cli, __main__); cli has build_parser(prog)/merge_main(argv, prog)/default_prog(); fingerling/{tokenizer,aggregators,profile}.py are shims, fingerling/warehouse.py holds TELEMETRY_AGGREGATES + build_whitelist, fingerling/cli.py is the alias. Tests: package tests in packages/fingerprint-sampler/tests, root tests/test_fingerprint_shims.py.
+- 2026-10-13 Sprint 9 closed. bob_protocol has uncommitted chat_report.py + tests changes (owner commits).
 
 ## Current Task
-**Sprint:** 8 — Fingerprint Sampling CLI (`docs/USER_STORIES_SPRINT8.md`, board: `task.md`)
-**Status:** Sprint 8 complete
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Status:** Sprint 9 complete
 
 ## Next Steps
 No pending tasks.
 
 ---
-*Last updated: 2026-10-12T21:29:12-04:00*
+*Last updated: 2026-10-13T00:09:31-04:00*

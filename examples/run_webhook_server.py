@@ -19,15 +19,15 @@ from fingerling.warehouse import TELEMETRY_AGGREGATES, Warehouse, fingerprint_id
 def main() -> None:
     parser = argparse.ArgumentParser(description="Telemetry Webhook Server Runner")
     parser.add_argument("--port", type=int, default=8081, help="Server port")
-    parser.add_argument("--repo-path", type=str, required=True, help="Path to the GitOps repository")
+    parser.add_argument(
+        "--repo-path", type=str, required=True, help="Path to the GitOps repository"
+    )
     args = parser.parse_args()
 
     # Pre-seed whitelist with (ping, ping)
     fid_ping = fingerprint_id({"hook_syscall": "ping"})
     matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
-    mask_profile = [
-        MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")
-    ]
+    mask_profile = [MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
     warehouse = Warehouse(aggregates=TELEMETRY_AGGREGATES)
 
     server = run_server(

@@ -53,13 +53,15 @@
     outright rather than shimmed. Listed as Open Question 1 for Morpheus.
 - 2026-10-12 User ran /sprint 'fingerprint cli till done' — Sprint 8 is go, full ceremony.
 - 2026-10-12 Sprint 8 launched 2026-10-12: FING-23..26 delivered, 16/16 pts, 178 tests. Backlog recorded in task.md.
+- 2026-10-12 Sprint 9 stories written (FING-27..30, 18 pts) from SDLC section 11. Owner decision: fingerprint CLI is the only active scope.
+- 2026-10-13 Sprint 9 launched 2026-10-13: FING-27..30, 18/18. fingerprint-sampler 0.1.0 is the first release (tag v0.1.0, unpushed).
 
 ## Current Task
-**Sprint:** 8 — Fingerprint Sampling CLI (`docs/USER_STORIES_SPRINT8.md`, board: `task.md`)
-**Status:** Sprint 8 complete — launched
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Status:** Sprint 9 complete
 
 ## Next Steps
-No sprint in flight. Next fingerprint iteration candidates: GLOB/REGEX, set report view, event-time timestamps, then n-gram stage. Next story ID: STORY-FING-27.
+No sprint in flight. Queued next: artifact-rubrics request (task.md). Then fingerprint iteration: show/report, GLOB/REGEX, event-time. Next story ID: STORY-FING-31.
 
 ---
-*Last updated: 2026-10-12T21:29:12-04:00*
+*Last updated: 2026-10-13T00:09:31-04:00*
