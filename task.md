@@ -39,6 +39,9 @@
 - `make lint`, `make test`, `make secrets` green on the sprint branch.
 - Nothing pushed, nothing published.
 
+## Queued requests (next up after Sprint 9)
+- **Artifact rubrics** (User, 2026-10-13): inventory the output artifacts each persona and skill is expected to produce; for templated artifacts, add a rubric appendix to the template for qualitative judgement of agent-produced content; recommend which skills to pilot first.
+
 ## Backlog (unscheduled)
 - Fingerprint tool: `GLOB`/`REGEX` modifiers; table/report view of a set (`fingerprint show`); reword "skipped aggregate values"; event-time timestamps; set-to-set merge.
 - Parked (not scheduled while the fingerprint tool is the focus): n-gram/Jaccard stage, `examples/demo.py` markup sweep and smoke test, `sudo make demo-live` verification, `tests/test_server.py` private access, USER_GUIDE GitOps/sandbox sections.

@@ -16,7 +16,7 @@ define need_uv
 	@command -v uv >/dev/null || { echo "uv is not installed - run 'pipx install uv' (see docs/SDLC.md)"; exit 1; }
 endef
 
-.PHONY: help tldr install install-hooks check test test-fingerprint test-fingerling test-all lint format secrets run fingerprint demo demo-live clean distclean via_index chat
+.PHONY: help tldr install install-hooks check test test-fingerprint test-fingerling test-all lint format secrets build release-check run fingerprint demo demo-live clean distclean via_index chat
 
 help: ## Show available make targets
 	@echo ""
@@ -82,6 +82,20 @@ distclean: clean ## Also remove the virtualenv
 
 via_index: ## Build the via index required by the via MCP server
 	@via index "$(CURDIR)"
+
+build: ## Build the fingerprint-sampler wheel + sdist into dist/ and smoke-test the wheel in a clean environment
+	$(need_uv)
+	@rm -rf dist
+	@uv build --package fingerprint-sampler --out-dir dist --quiet
+	@uv run --isolated --no-project --quiet --with dist/*.whl fingerprint --version
+	@ls dist
+
+release-check: ## Fail unless TAG (e.g. TAG=v0.1.0) matches the fingerprint-sampler version
+	$(need_uv)
+	@version=$$(uv version --package fingerprint-sampler --short); \
+	test "v$$version" = "$(TAG)" \
+		|| { echo "Tag '$(TAG)' does not match fingerprint-sampler version '$$version' (expected v$$version)"; exit 1; }
+	@echo "Tag $(TAG) matches fingerprint-sampler $$(uv version --package fingerprint-sampler --short)"
 
 run: ## Run the fingerprint CLI (ARGS="merge --help")
 	$(need_venv)

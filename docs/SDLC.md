@@ -18,9 +18,9 @@ today and are updated as each lands.
 | | Python |
 |---|---|
 | Runtime version | 3.10 - 3.13 — `requires-python = ">=3.10"` in `pyproject.toml`; all four are tested |
-| Manifest | `pyproject.toml` (PEP 621 `[project]`; dev tools in `[dependency-groups] dev`; tool config in `[tool.*]`) |
-| Lockfile | `uv.lock` (committed) |
-| Package manager | `uv` |
+| Manifest | root `pyproject.toml` (the parked `fingerling` package, the uv workspace, dev tools in `[dependency-groups] dev`, tool config) and `packages/fingerprint-sampler/pyproject.toml` (the published package) |
+| Lockfile | `uv.lock` (committed; one for the whole workspace) |
+| Package manager | `uv` (workspace: root + `packages/*`); build backend `hatchling` |
 | Local environment | `.venv/` (gitignored, isolated from system site-packages) |
 
 Other required tools:
@@ -55,31 +55,36 @@ stop with "No .venv - run 'make install' first" if it is missing. Agents invoke 
 
 | Target | Runs | Notes |
 |---|---|---|
-| `install` | `uv sync --all-extras` + `install-hooks` | exact install from `uv.lock`; idempotent |
+| `install` | `uv sync --all-packages --all-extras` + `install-hooks` | exact install from `uv.lock`; idempotent |
 | `install-hooks` | `git config core.hooksPath .githooks` | enables the gitleaks pre-commit hook |
-| `test` | `.venv/bin/python -m unittest discover -s tests` | `ARGS="tests.test_cli"` runs one module |
-| `test-all` | the suite on Python 3.10, 3.11, 3.12, 3.13 in throwaway uv environments | downloads interpreters on first use |
+| `test` | `test-fingerprint` then `test-fingerling` | both suites |
+| `test-fingerprint` | `unittest discover` in `packages/fingerprint-sampler` | `ARGS="test_cli"` runs one module |
+| `test-fingerling` | `unittest discover -s tests` | parked modules + compatibility shims |
+| `test-all` | both suites on Python 3.10, 3.11, 3.12, 3.13 in throwaway uv environments | downloads interpreters on first use |
 | `lint` | `ruff check .` and `ruff format --check .` | changes nothing |
 | `format` | `ruff check --select I --fix .` and `ruff format .` | rewrites files |
 | `secrets` | `gitleaks detect --source .` | git-aware: scans history and tree |
-| `check` | `python -m compileall -q fingerling examples tests` | syntax check only |
-| `run` | `.venv/bin/fingerling $(ARGS)` | the CLI |
-| `fingerprint` | `.venv/bin/fingerling fingerprint $(ARGS)` | project-specific |
+| `build` | `uv build --package fingerprint-sampler --out-dir dist`, then runs the built wheel in a clean environment | wheel + sdist in `dist/` (gitignored) |
+| `release-check` | compares `TAG=v<x.y.z>` with the fingerprint-sampler version | used by the publish workflow |
+| `check` | `python -m compileall -q` over all sources | syntax check only |
+| `run` | `.venv/bin/fingerprint $(ARGS)` | the CLI |
+| `fingerprint` | `.venv/bin/fingerprint merge $(ARGS)` | project-specific |
 | `demo`, `demo-live` | `examples/demo.py` (the latter under `sudo`) | parked |
 | `clean` | removes `__pycache__`, `*.egg-info`, `.ruff_cache`, `dist` | keeps `.venv` |
 | `distclean` | `clean` + removes `.venv/` | |
 | `help` | lists targets | default goal |
 | `tldr`, `via_index`, `chat` | team tooling | use system tools, not `.venv` |
 
-Standard targets deliberately absent: `build` — agreed, not yet built (section 11).
+Standard targets deliberately absent: none.
 
 Lint rules are pinned in `[tool.ruff.lint] select` (`E4`, `E7`, `E9`, `F`, `I`); widening them
 is a Mechanism-class change. `agents/` (BobProtocol tooling) and Markdown are excluded.
 
 ## 4. Dependencies
 
-- **Add a runtime dependency:** `uv add <package>` (edits `[project] dependencies` and
-  `uv.lock`).
+- **Add a runtime dependency:** `uv add --package fingerprint-sampler <package>` for the
+  published package, or `uv add <package>` for the parked `fingerling` package. Anything added to
+  fingerprint-sampler becomes an install requirement for PyPI users — keep it minimal.
 - **Add a dev tool:** `uv add --dev <package>` (the `dev` dependency group).
 - **Optional features:** `demo` extra = `rich`, needed only by `examples/demo.py`.
 - **Upgrade / remove:** `uv lock --upgrade-package <package>` / `uv remove <package>`, then
@@ -96,6 +101,7 @@ is a Mechanism-class change. `agents/` (BobProtocol tooling) and Markdown are ex
 | Tests | `make test` | every handoff to Trin; sprint close |
 | Tests, all Pythons | `make test-all` | sprint close |
 | Secret scan | `make secrets` | sprint close; staged changes are scanned on every commit by the hook |
+| Package build | `make build` | sprint close; before any tag |
 
 ## 6. Change management
 
@@ -168,28 +174,50 @@ undivided diagram.)*
 
 ## 7. Versioning and release
 
-- **Scheme:** Semantic Versioning, bumped according to what changed since the last tag:
-  breaking change → major, new feature → minor, fixes only → patch. While the version is
-  `0.x`, a breaking change bumps the minor instead. The Conventional Commit types on the sprint
-  branch determine the bump; Cypher states it in the launch message.
-- **Version lives in:** `[project] version` in `pyproject.toml` (currently `0.8.0`).
-- **Bumped and tagged:** by Tank on `main` as part of the sprint merge — a `build: release
-  v<version>` commit and an annotated tag `v<version>`.
-- **CLI entry points:** `[project.scripts]` — `fingerling`, installed to `.venv/bin/`.
-- **Artifact:** none yet. Publishing the fingerprint tool to PyPI is agreed (section 11).
+- **What is versioned:** one stream — the published package, `fingerprint-sampler`. Its version
+  is `[project] version` in `packages/fingerprint-sampler/pyproject.toml` (currently `0.1.0`).
+  The root `fingerling` package is private (`Private :: Do Not Upload`), keeps a static version,
+  and is never tagged or published.
+- **Scheme:** Semantic Versioning, bumped according to what changed in the published package
+  since the last tag: breaking change → major, new feature → minor, fixes only → patch. While the
+  version is `0.x`, a breaking change bumps the minor instead. The Conventional Commit types on
+  the sprint branch determine the bump; Cypher states it in the launch message. A sprint that
+  changes nothing in the published package makes no release.
+- **Bumped and tagged:** by Tank on `main` as part of the sprint merge — a
+  `build: release v<version>` commit (version field + `uv lock`) and an annotated tag
+  `v<version>`. `make release-check TAG=v<version>` must pass.
+- **Published:** pushing the tag triggers the publish workflow (section 8). Agents never push, so
+  a release reaches PyPI only when the project owner pushes the tag.
+- **Artifact:** wheel + sdist from `make build`. Distribution `fingerprint-sampler`, import
+  package `fingerprint_sampler`, commands `fingerprint` and `fingerprint-sampler`.
 - **Data format versions:** fingerprint set files carry `version: 1`; profiles carry
   `version: 1`. A format change is a breaking change.
 
 ## 8. CI / deploy
 
-None — everything runs locally. `.github/` holds only editor instructions, no workflows.
-There is no deploy target; KubeArmor enforcement in the demo is simulated.
+Both workflows call only `make` targets, so CI cannot drift from the local gates.
 
-If CI is added it must run `make install && make test`, not raw tool commands.
+| Workflow | Trigger | Does |
+|---|---|---|
+| `.github/workflows/ci.yml` | every push (any branch) and pull request | Matrix over Python 3.10-3.13: `make install`, `make lint`, `make test`. Separate job: `make secrets` over the full history. |
+| `.github/workflows/publish.yml` | push of a tag `v*` | Reruns the CI gates; `make release-check`; `make build`; publishes `dist/` to PyPI by trusted publishing (no stored token). |
+
+**Not yet exercised:** neither workflow has run, because nothing has been pushed since they were
+written. Treat the first push as their test.
+
+**One-time setup by the project owner, before the first tag is pushed:**
+
+1. On pypi.org → *Publishing* → add a **pending trusted publisher**: PyPI project name
+   `fingerprint-sampler`, owner `drusifer`, repository `fingerling`, workflow `publish.yml`,
+   environment `pypi`.
+2. On GitHub → repository *Settings → Environments* → create an environment named `pypi`
+   (optionally with yourself as a required reviewer, so each publish needs a click).
+
+There is no deploy target; KubeArmor enforcement in the demo is simulated.
 
 ## 9. Known deviations
 
-- **No CI yet** — agreed and scheduled; see section 11.
+- **CI and publishing are written but unexercised** until the owner pushes (section 8).
 - **`uv` and `gitleaks` are machine prerequisites**, not installed by `make install`.
 - **Parked modules are outside the manual gates.** `make demo-live` needs a terminal, root and
   `bpftrace` and has not been run since before Sprint 8; by the owner's decision no process is
@@ -199,10 +227,11 @@ If CI is added it must run `make install && make test`, not raw tool commands.
 
 Run by Tank at sprint close (`*devops sdlc-check`):
 
-1. `make distclean && make install && make lint && make test && make secrets` passes, and
-   `make test-all` passes on every supported Python.
-2. Every third-party import in `fingerling/`, `examples/` and `tests/` is declared in
-   `pyproject.toml`, and `uv lock --check` reports the lockfile is up to date.
+1. `make distclean && make install && make lint && make test && make secrets && make build`
+   passes, and `make test-all` passes on every supported Python.
+2. Every third-party import is declared in the manifest of the package that uses it —
+   `fingerprint_sampler` imports only PyYAML and python-jsonpath, and never imports `fingerling` —
+   and `uv lock --check` reports the lockfile is up to date.
 3. `.venv/pyvenv.cfg` still says `include-system-site-packages = false`.
 4. Every target in section 3 exists and still does what the table says; new targets are listed.
 5. No doc or script tells people to run bare `python3`/`pip` against the project.
@@ -210,7 +239,9 @@ Run by Tank at sprint close (`*devops sdlc-check`):
    `git config core.hooksPath` is `.githooks`.
 7. This sprint's changes followed section 6: made on the sprint branch, Conventional Commit
    messages, right class and approval, chat report produced, nothing pushed by agents.
-8. `.venv/bin/fingerling fingerprint --help` runs, and a second `make install` changes nothing.
+8. `.venv/bin/fingerprint merge --help` and `.venv/bin/fingerling fingerprint --help` run, and a
+   second `make install` changes nothing.
+9. The workflows under `.github/workflows/` invoke only `make` targets that exist.
 
 ## 11. Agreed changes not yet built
 
@@ -219,11 +250,9 @@ into the sections above, and off this list, when it lands.
 
 | Change | Decision | Lands in |
 |---|---|---|
-| CI | GitHub Actions: `make install`, lint, test and gitleaks on every push and sprint branch | section 8 |
-| Publishing | PyPI trusted publishing from a workflow triggered by a version tag, only if the gates pass; `make build` | sections 3, 7, 8 |
-| Package split | The fingerprint tool becomes its own package in this repo, published on its own (the name `fingerling` is taken on PyPI; `fingerprint-sampler` is the working name). Parked modules stay unpublished and import it | sections 1, 7 |
 | Per-phase chat report | `bobp chat-report` emits sprint description, then per-phase description + diagram, from phase markers | section 6 |
 
 ---
-*Last verified: 2026-10-12 on branch `sprint-9` (Phase 0), by Tank — from-clean rebuild with uv,
-lint clean, 178/178 tests on Python 3.10, 3.11, 3.12 and 3.13, gitleaks clean.*
+*Last verified: 2026-10-13 on branch `sprint-9` (Phase 2), by Tank — lint clean, 127 + 59 tests,
+`make build` wheel runs in a clean environment, `release-check` accepts v0.1.0 and rejects a
+mismatched tag. Workflows reviewed statically only.*

@@ -177,3 +177,22 @@ OK
 ---
 [<small>2026-10-13 00:04:02</small>] [**Tank**]->[**all**] *devops init*:
  Initializing Tank. Phase 2 (FING-29): make build first and prove the wheel in a clean env, then the two workflows - they must call only make targets so CI cannot drift from local gates.
+
+---
+[<small>2026-10-13 00:04:33</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make build | /home/drusifer/Projects/fingerling/build/build.out
+=== make build @ 2026-10-13 00:04:31 ===
+fingerprint-sampler 0.1.0
+fingerprint_sampler-0.1.0-py3-none-any.whl
+fingerprint_sampler-0.1.0.tar.gz
+
+---
+[<small>2026-10-13 00:04:44</small>] [**User**]->[**Cypher**] *queue newreq*:
+ *queue newreq artifact rubrics: first go through the personas and skills and identify the expected output artifacts. For templated artifacts, include rubrics in an appendix to help make qualitative judgements of agent-produced content. Which skills should we try this with first?
+
+---
+[<small>2026-10-13 00:05:14</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-13 00:05:14 ===
+All checks passed!
+44 files already formatted

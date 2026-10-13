@@ -91,4 +91,6 @@ sequenceDiagram
     Note right of Mouse: "CI and publishing<br/>(STORY-FING-29): make<br/>build for the<br/>fingerprint-sampler<br/>package, a GitHub<br/>Actions workflow running<br/>the same make gates on…"
     Tank->>All: "devops init"
     Note right of Tank: "Initializing Tank. Phase<br/>2 (FING-29): make build<br/>first and prove the<br/>wheel in a clean env,<br/>then the two workflows -<br/>they must call only mak…"
+    User->>Cypher: "queue newreq"
+    Note right of User: "*queue newreq artifact<br/>rubrics: first go<br/>through the personas and<br/>skills and identify the<br/>expected output<br/>artifacts. For templated<br/>artifact…"
 ```
