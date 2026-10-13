@@ -33,6 +33,9 @@
 - 2026-10-12 Sprint 8 chat archived: agents/chat_archive/CHAT_SPRINT_8.md (includes Sprints 1-7 history). CHAT.md reset.
 - 2026-10-13 Sprint 9 groomed and archived to agents/chat_archive/CHAT_SPRINT_9*.md in per-phase format.
 
+- 2026-10-13 SUPERSEDED: the `Makefile.prj` / `_IS_BOB_ENTRY` / `MKF_ACTIVE` gap noted above no
+  longer exists — the project has a single Makefile (docs/SDLC.md section 3).
+
 ## Current Task
 **Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete

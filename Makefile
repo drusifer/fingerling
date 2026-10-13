@@ -1,7 +1,10 @@
 .DEFAULT_GOAL := help
 
-# Everything runs through the project virtualenv, which `make install` builds with uv
-# from pyproject.toml + uv.lock. See docs/SDLC.md.
+# The project's one Makefile. Everything runs through the project virtualenv, which
+# `make install` builds with uv from pyproject.toml + uv.lock. See docs/SDLC.md.
+#
+# Agents run targets as `bobp make <target>` (captures output, posts status). Team tooling such
+# as chat and TL;DR summaries is provided by bobp itself (`bobp chat`, `bobp tldr`), not here.
 PYTHON := .venv/bin/python
 PYTHONS := 3.10 3.11 3.12 3.13
 # The published package (docs/SDLC.md section 7).
@@ -16,7 +19,7 @@ define need_uv
 	@command -v uv >/dev/null || { echo "uv is not installed - run 'pipx install uv' (see docs/SDLC.md)"; exit 1; }
 endef
 
-.PHONY: help tldr install install-hooks check test test-fingerprint test-fingerling test-all lint format secrets build release-check run fingerprint demo demo-live clean distclean via_index chat
+.PHONY: help install install-hooks check test test-fingerprint test-fingerling test-all lint format secrets build release-check run fingerprint demo demo-live clean distclean via_index
 
 help: ## Show available make targets
 	@echo ""
@@ -24,9 +27,6 @@ help: ## Show available make targets
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "    \033[36m%-22s\033[0m %s\n", $$1, $$2}'
 	@echo ""
-
-tldr: ## Show TL;DR summaries from all project files (quick orientation for agents)
-	@rg --no-heading "TL;DR:" --glob "*.md" -N | sed 's|^\./||' | sort
 
 install: install-hooks ## Build .venv from uv.lock (all extras + dev tools) and install the git hooks
 	$(need_uv)
@@ -112,6 +112,3 @@ demo: ## Run the interactive vaccination TUI (see docs/USER_GUIDE.md)
 demo-live: ## Run the TUI with real eBPF capture (needs Linux, root, bpftrace; see docs/USER_GUIDE.md)
 	$(need_venv)
 	@sudo $(PYTHON) -m examples.demo
-
-chat: ## Post a message to agents/CHAT.md (MSG="..." PERSONA="Name" CMD="cmd" [TO="Recipient"])
-	@python3 agents/tools/chat.py "$(MSG)" $(if $(PERSONA),--persona "$(PERSONA)") $(if $(CMD),--cmd "$(CMD)") $(if $(TO),--to "$(TO)")

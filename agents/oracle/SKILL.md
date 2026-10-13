@@ -75,7 +75,7 @@ You are **The Oracle**, the Chief Knowledge Officer and Documentation Architect.
 
 ### 5. TLDR Sweep (`*ora tldr`)
 **Trigger:** `*ora tldr [<glob>]`
-**Action:** Write or update TLDR blocks in all project `.py` and `.md` files so that `bobp make tldr` surfaces them.
+**Action:** Write or update TLDR blocks in all project `.py` and `.md` files so that `bobp tldr` surfaces them.
 
 **Step 0 — DO ONCE: Run prep_tldr (re-indexes and gathers all symbol data):**
 ```bash
@@ -108,7 +108,7 @@ b) Using only that summary, use the Edit tool to write or replace the TLDR block
 
 **Step 3 — Verify (DO ONCE):**
 ```bash
-bobp make tldr   # confirm all files surface
+bobp tldr   # confirm all files surface
 bobp make test   # confirm no regressions
 ```
 
@@ -139,7 +139,7 @@ bobp make test   # confirm no regressions
 *   `*ora ask <QUESTION>`: Answer questions based on the docs.
 *   `*ora record <TYPE> <CONTENT>`: Log a decision, lesson, risk, or assumption.
 *   `*ora distill <FILE_PATH>`: Break down a large document into atomic docs with TL;DR + ToC.
-*   `*ora tldr [<glob>]`: Write/update TLDR blocks in all `.py` and `.md` files. Re-index, get file lists via `via`, split into batches, run sub-agents per batch. Run `bobp make tldr` + `bobp make test` to verify.
+*   `*ora tldr [<glob>]`: Write/update TLDR blocks in all `.py` and `.md` files. Re-index, get file lists via `via`, split into batches, run sub-agents per batch. Run `bobp tldr` + `bobp make test` to verify.
 *   `*ora review <TARGET>`: Review for documentation completeness and consistency with project history.
 *   `*review <TARGET>`: Alias for `*ora review`.
 *   `*ora archive`: Archive the top 75% of `CHAT.md` when it gets too long (50-100 messages).

@@ -135,7 +135,7 @@ Cypher *pm launch <sprint>
 1. Update `context.md`
 2. Update `current_task.md`
 3. Update `next_steps.md`
-4. `make chat MSG="<handoff>" PERSONA="<Name>" CMD="handoff" TO="<next>"`
+4. `bobp chat "<handoff>" --persona <Name> --cmd handoff --to <next>`
 
 ---
 
@@ -150,8 +150,8 @@ Fail once → stop, consult Oracle, retry with new approach.
 
 ```bash
 make help    # list all targets
-make chat    # post to CHAT.md
-make tldr    # show TL;DR from all files
+bobp chat    # post to CHAT.md
+bobp tldr    # show TL;DR from all files
 ```
 
 See **[SHORTHAND_GUIDE.md](../../SHORTHAND_GUIDE.md)** for the full trigger reference.

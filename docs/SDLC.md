@@ -29,8 +29,9 @@ Other required tools:
   interpreters for `make test-all`.
 - `gitleaks` — on `PATH`; needed by `make secrets` and the pre-commit hook.
 - `sudo` + `bpftrace` — only for `make demo-live` (parked).
-- `bobp`, `via`, `rg` — team tooling behind `make chat`, `make via_index`, `make tldr`; not
-  project dependencies.
+- `bobp` — team tooling (`bobp make`, `bobp chat`, `bobp tldr`); wraps this Makefile but adds
+  no targets to it. `via` — behind `make via_index`, and used by `bobp tldr` to list files.
+  Neither is a project dependency.
 
 ## 2. Setup
 
@@ -48,7 +49,8 @@ path (`sudo .venv/bin/python ...`), never `sudo python3`.
 
 ## 3. Make targets
 
-The Makefile is the only entry point. Environment-using recipes run tools from `.venv/bin/` and
+There is exactly one Makefile, at the repository root, and it is the only entry point: no
+included or generated make files, no wrapper scripts. Environment-using recipes run tools from `.venv/bin/` and
 stop with "No .venv - run 'make install' first" if it is missing. Agents invoke targets as
 `bobp make <target>`.
 
@@ -72,7 +74,7 @@ stop with "No .venv - run 'make install' first" if it is missing. Agents invoke 
 | `clean` | removes `__pycache__`, `*.egg-info`, `.ruff_cache`, `dist` | keeps `.venv` |
 | `distclean` | `clean` + removes `.venv/` | |
 | `help` | lists targets | default goal |
-| `tldr`, `via_index`, `chat` | team tooling | use system tools, not `.venv` |
+| `via_index` | `via index .` | builds the code index for the `via` tool; uses the system `via` |
 
 Standard targets deliberately absent: none.
 
@@ -235,7 +237,9 @@ Run by Tank at sprint close (`*devops sdlc-check`):
    `fingerprint_sampler` imports only PyYAML and python-jsonpath, and never imports `fingerling` —
    and `uv lock --check` reports the lockfile is up to date.
 3. `.venv/pyvenv.cfg` still says `include-system-site-packages = false`.
-4. Every target in section 3 exists and still does what the table says; new targets are listed.
+4. Every target in section 3 exists and still does what the table says; new targets are listed;
+   there is still only one Makefile, with no included make files and no team-tooling targets
+   (`bobp chat` and `bobp tldr` replace `make chat` and `make tldr`).
 5. No doc or script tells people to run bare `python3`/`pip` against the project.
 6. `.venv/` and `*.egg-info/` are ignored; `requires-python` unchanged or deliberately bumped;
    `git config core.hooksPath` is `.githooks`.
@@ -251,7 +255,6 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-13 at Sprint 9 close (`*devops sdlc-check`, branch `sprint-9`), by Tank —
-from-clean rebuild; lint clean; 127 + 59 tests on Python 3.10, 3.11, 3.12 and 3.13; gitleaks
-clean; `make build` wheel runs in a clean environment; lockfile current; workflows call only
-existing make targets but have not yet run on GitHub.*
+*Last verified: 2026-10-13 on branch `fix/single-makefile`, by Tank — one Makefile, `make help`
+lists the targets in section 3, lint clean. Full gates last run at Sprint 9 close (same day); no
+code has changed since.*

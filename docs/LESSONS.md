@@ -28,6 +28,10 @@ POCs with inherited/pre-written ACs where the original author isn't in the loop 
 
 ## 2026-07-12 — Documentation Pass (User Guide + Demo)
 
+> **Superseded 2026-10-13:** the two-file layout this lesson describes (`Makefile.prj` + stubs
+> routed through `mkf.py`) is gone. The project has one Makefile; add a target there once. The
+> "lesson under the lesson" — read the tool's own documentation before diagnosing — still holds.
+
 **Lesson:** `make demo` failed with "No rule to make target" after adding `demo` only to
 `Makefile.prj`. My first diagnosis (Oracle persona) blamed `_IS_BOB_ENTRY`/`Makefile.bob`
 detection — plausible-looking but wrong. The actual, documented root cause (per the `make`

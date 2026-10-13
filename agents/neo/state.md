@@ -75,6 +75,10 @@
 - 2026-10-13 Sprint 9 P1 done: fingerprint tool lives in packages/fingerprint-sampler/src/fingerprint_sampler (tokenizer, aggregators, warehouse, profile, cli, __main__); cli has build_parser(prog)/merge_main(argv, prog)/default_prog(); fingerling/{tokenizer,aggregators,profile}.py are shims, fingerling/warehouse.py holds TELEMETRY_AGGREGATES + build_whitelist, fingerling/cli.py is the alias. Tests: package tests in packages/fingerprint-sampler/tests, root tests/test_fingerprint_shims.py.
 - 2026-10-13 Sprint 9 closed. bob_protocol has uncommitted chat_report.py + tests changes (owner commits).
 
+- 2026-10-13 SUPERSEDED: every note above about `Makefile.prj`, `mkf.py`, `MKF_ACTIVE` or adding a
+  target as two stubs is obsolete. There is one Makefile; add a target there once and run it with
+  `bobp make <target>` (docs/SDLC.md section 3).
+
 ## Current Task
 **Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
