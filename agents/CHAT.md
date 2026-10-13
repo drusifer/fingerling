@@ -18,3 +18,26 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_9.md` (2026-10-13 00:09:31) — Sprint 9 - Fingerprint Package + SDLC Tooling (2026-10-12/13). First sprint run under docs/SDLC.md, on branch sprint-9. Delivered STORY-FING-27..30 (18/18 pts): uv with a committed lockfile, ruff and gitleaks gates, Python 3.10-3.13, CI and PyPI trusted-publishing workflows, the fingerprint tool split out as the fingerprint-sampler package (command: fingerprint merge), and this per-phase chat report. Planning also contains the pre-sprint build bootstrap and SDLC decisions. Released as fingerprint-sampler 0.1.0 (tag v0.1.0), merged to main, not pushed.
 
 ---
+
+---
+[<small>2026-10-13 09:59:24</small>] [**User**]->[**Tank**] *request*:
+ Fix the Makefile now that we have bobp and the make skill: only one Makefile, no more Makefile.prj.
+
+---
+[<small>2026-10-13 09:59:24</small>] [**Tank**]->[**all**] *devops init*:
+ Initializing Tank. Makefile.prj was already deleted in Sprint 9, so the single-Makefile state exists; what is left is bob tooling still living in the project Makefile (chat, tldr - both duplicated by bobp) and working-memory notes that still teach the old two-file stub pattern. Mechanism change, so on branch fix/single-makefile per the SDLC.
+
+---
+[<small>2026-10-13 10:03:03</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-13 10:03:03 ===
+All checks passed!
+44 files already formatted
+
+---
+[<small>2026-10-13 10:03:18</small>] [**User**]->[**Tank**] *request*:
+ The tldr tool should use the system-installed via.
+
+---
+[<small>2026-10-13 10:03:18</small>] [**Tank**]->[**all**] *devops handoff*:
+ Single Makefile confirmed and cleaned: removed the chat and tldr targets (bobp chat / bobp tldr replace them; make chat called a stale copy of the tool, make tldr hung without a terminal). bobp tldr itself was broken - it imported via as a library, absent from bobp's environment, and scanned bob_protocol instead of the current project. Fixed in ~/Projects/bob_protocol to call the system via command; 24 TLDR blocks listed here. SDLC section 3 states the one-Makefile rule. Merging fix/single-makefile to main.

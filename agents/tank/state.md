@@ -21,13 +21,14 @@ Agents *must* use this for keeping their context.md files organized
 - 2026-10-12 Sprint 9 Phase 0 done: uv 0.13 (pipx), uv.lock, requires-python >=3.10, ruff pinned rules, gitleaks target+hook (.githooks, core.hooksPath), make test-all. SDLC sections 1-5 current.
 - 2026-10-13 Sprint 9 Phase 2 done: make build / release-check; .github/workflows/ci.yml + publish.yml (unexercised until owner pushes); SDLC sections 3,4,7,8 updated; only the chat-report row remains in section 11.
 - 2026-10-13 Sprint 9 sdlc-check passed. After launch: merged sprint-9 into main (--no-ff), tagged v0.1.0, deleted branch; nothing pushed.
+- 2026-10-13 2026-10-13 fix/single-makefile: project Makefile no longer has chat/tldr targets; SDLC section 3 says exactly one Makefile, no team-tooling targets. bob_protocol (uncommitted there): bobp/tools/tldr.py now shells out to the system via CLI (via -mg '*' -tF -oJ -n 0) and uses find_project_root; tests/test_tldr.py added. bobp prep-tldr still imports via as a library and is still broken.
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Sprint 9 complete
+**Task:** single Makefile cleanup (branch fix/single-makefile)
+**Status:** Makefile cleanup merged
 
 ## Next Steps
-Owner must do one-time PyPI setup then push main and the tag. First CI run is the workflows' real test - if it fails, check parked tests (ping/servers) on the runner first.
+No pending work. Known: bobp prep-tldr broken (imports via library); agents/tools/*.py are stale copies of bobp tools.
 
 ---
-*Last updated: 2026-10-13T00:09:31-04:00*
+*Last updated: 2026-10-13T10:03:18-04:00*
