@@ -11,7 +11,7 @@
   },
   "AP-RAW-VENV": {
     "description": "Bash calls .venv/bin/<tool> directly — bypasses make targets and project tooling.",
-    "fix": "Use make <target> — never reference .venv/bin directly. If no make target exists for the tool, add one to Makefile.prj rather than calling .venv/bin."
+    "fix": "Use make <target> — never reference .venv/bin directly. If no make target exists for the tool, add one to the Makefile rather than calling .venv/bin."
   },
   "AP-MAKE-PIPE": {
     "description": "Bash pipes make output (e.g. `make test 2>&1 | tail -30`) — violates the make skill rule. mkf already captures output to build/build.out.",

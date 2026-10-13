@@ -10,7 +10,8 @@ sequenceDiagram
     participant Tank
     participant All
     participant Oracle
-    Note over User,Oracle: 📅 2026-10-13
+    participant Bob
+    Note over User,Bob: 📅 2026-10-13
     User->>Tank: "request"
     Note right of User: "Fix the Makefile now<br/>that we have bobp and<br/>the make skill: only one<br/>Makefile, no more<br/>Makefile.prj."
     Tank->>All: "devops init"
@@ -25,4 +26,8 @@ sequenceDiagram
     Note right of Oracle: "Initializing Oracle.<br/>*ora groom docs:<br/>auditing the<br/>documentation tree after<br/>two sprints that moved a<br/>lot (package split,<br/>SDLC, uv) - lookin…"
     Oracle->>All: "ora groom"
     Note right of Oracle: "Docs groomed. Sprint<br/>stories now live in<br/>docs/sprints/ (9 files,<br/>references updated) so<br/>docs/ holds 6 core<br/>documents. README<br/>carries a full…"
+    User->>Bob: "request"
+    Note right of User: "Remove the redundant<br/>agents/tools/*.py now<br/>that we have bobp, and<br/>update the bob_protocol<br/>setup tool to do this on<br/>future upgrades."
+    Bob->>All: "prompt update"
+    Note right of Bob: "Initializing Bob.<br/>Removed the nine<br/>superseded<br/>agents/tools/*.py copies<br/>by running the updated<br/>bobp setup-agent-links<br/>here (it now does this…"
 ```
