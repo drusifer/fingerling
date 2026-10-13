@@ -7,7 +7,7 @@ name = "fingerling"
 version = "0.8.0"
 description = "Fingerprint and sample JSONL event streams; an adaptive software immune system built on those fingerprints."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
     "PyYAML>=6.0",
     "python-jsonpath>=2.0",
@@ -16,11 +16,24 @@ dependencies = [
 [project.optional-dependencies]
 # The interactive vaccination TUI (examples/demo.py).
 demo = ["rich>=13"]
-# Everything needed to work on the project: `make install` installs this group.
-dev = ["fingerling[demo]"]
 
 [project.scripts]
 fingerling = "fingerling.__main__:main"
 
+[dependency-groups]
+# Development tools; installed by `make install` (uv sync), never shipped.
+dev = ["ruff>=0.6"]
+
 [tool.setuptools.packages.find]
 include = ["fingerling*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# agents/ is BobProtocol tooling, maintained in its own repository.
+extend-exclude = ["agents"]
+
+[tool.ruff.lint]
+# Baseline gate: real errors (pyflakes, syntax/runtime-level pycodestyle) and import order.
+# Kept explicit so a ruff upgrade cannot silently widen the gate.
+select = ["E4", "E7", "E9", "F", "I"]

@@ -124,3 +124,15 @@ Installed into .venv
 ---
 [<small>2026-10-12 23:57:00</small>] [**Mouse**]->[**all**] *phase 0*:
  Build environment (STORY-FING-27): move to uv with a committed lockfile, support Python 3.10-3.13, add ruff lint/format and gitleaks as gates, delete the leftover build files.
+
+---
+[<small>2026-10-12 23:57:11</small>] [**Tank**]->[**all**] *devops init*:
+ Initializing Tank. Phase 0 (STORY-FING-27) per build-env skill: survey done at bootstrap; mechanism change is pip -> uv. Installing uv per-user with pipx (no sudo), since the owner chose uv and it is not on this box.
+
+---
+[<small>2026-10-12 23:57:45</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+----------------------------------------------------------------------
+Ran 178 tests in 4.962s
+
+OK

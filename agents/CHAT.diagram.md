@@ -68,4 +68,6 @@ sequenceDiagram
     Note right of Morpheus: "Sprint plan approved:<br/>order follows the<br/>dependency chain (env -><br/>split -> CI), each phase<br/>leaves lint+test green,<br/>and Phase 3 is<br/>independen…"
     Mouse->>All: "phase 0"
     Note right of Mouse: "Build environment<br/>(STORY-FING-27): move to<br/>uv with a committed<br/>lockfile, support Python<br/>3.10-3.13, add ruff<br/>lint/format and gitleaks<br/>as gat…"
+    Tank->>All: "devops init"
+    Note right of Tank: "Initializing Tank. Phase<br/>0 (STORY-FING-27) per<br/>build-env skill: survey<br/>done at bootstrap,<br/>mechanism change is pip<br/>-> uv. Installing uv<br/>per-…"
 ```
