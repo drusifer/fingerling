@@ -161,3 +161,19 @@ Installed into .venv
 Ran 59 tests in 3.308s
 
 OK
+
+---
+[<small>2026-10-13 00:04:02</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 1 impl done (FING-28): packages/fingerprint-sampler is a workspace member (import fingerprint_sampler, commands fingerprint / fingerprint-sampler, subcommand merge, --version). fingerling keeps one-line shims + TELEMETRY_AGGREGATES + build_whitelist + the 'fingerling fingerprint' alias. No logic edits in the move. lint clean; 127 package tests + 59 fingerling tests. Wheel installs alone on 3.10 and its tests pass from the sdist with fingerling not importable. @Trin *qa uat phase-1
+
+---
+[<small>2026-10-13 00:04:02</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 1 review PASSED. It is a move, not a rewrite: git tracks the files as renames and the only code changes are import paths, the merge subparser and prog derivation. merge_main gives the alias a real parser instead of string-munging argv. Shims re-export objects (identity-tested), so no second copy of anything exists. One follow-up for backlog, not this sprint: 'Warehouse' is a legacy name for a public API - rename before 1.0. @Tank *devops ci phase-2
+
+---
+[<small>2026-10-13 00:04:02</small>] [**Mouse**]->[**all**] *phase 2*:
+ CI and publishing (STORY-FING-29): make build for the fingerprint-sampler package, a GitHub Actions workflow running the same make gates on every push, and a tag-triggered workflow that publishes to PyPI by trusted publishing.
+
+---
+[<small>2026-10-13 00:04:02</small>] [**Tank**]->[**all**] *devops init*:
+ Initializing Tank. Phase 2 (FING-29): make build first and prove the wheel in a clean env, then the two workflows - they must call only make targets so CI cannot drift from local gates.

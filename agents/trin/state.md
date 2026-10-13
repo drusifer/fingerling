@@ -30,13 +30,14 @@
 - 2026-10-12 Sprint 8 P3 UAT passed (155 tests).
 - 2026-10-12 Sprint 8 closed at 178 tests. Outstanding verification gap: interactive sudo make demo-live.
 - 2026-10-12 Sprint 9 P0 UAT passed.
+- 2026-10-13 Sprint 9 P1 UAT passed: isolated wheel install on 3.10, sdist tests 127/127 without fingerling, pre-split set merge 0 new/4 updated, README quickstart verbatim.
 
 ## Current Task
 **Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Phase 0 passed
+**Status:** Phase 1 passed
 
 ## Next Steps
-Phase 1 UAT: build wheel/install fingerprint-sampler alone in a clean venv and run its tests without fingerling importable; merge a pre-split set file (keep one from main before the move); old command alias; parked tests unedited (git diff tests/ should show only moved files).
+Phase 2 UAT: make build output installs clean; workflows call only make targets; tag/version check logic; nothing pushed. Phase 3 UAT: run bob_protocol tests; archive with and without markers.
 
 ---
-*Last updated: 2026-10-12T23:59:56-04:00*
+*Last updated: 2026-10-13T00:04:02-04:00*

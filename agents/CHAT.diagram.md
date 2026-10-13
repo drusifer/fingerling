@@ -82,4 +82,13 @@ sequenceDiagram
     Note right of Mouse: "Package split (STORY-<br/>FING-28): move the<br/>fingerprint tool into<br/>its own installable<br/>package,<br/>packages/fingerprint-<br/>sampler, with the<br/>command '…"
     Neo->>All: "swe init"
     Note right of Neo: "*swe impl phase-1: pure<br/>move into<br/>packages/fingerprint-<br/>sampler as a uv<br/>workspace member, shims<br/>in fingerling, no logic<br/>edits. Saving a pre-…"
+    Note over Oracle,Neo: 📅 2026-10-13
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Phase 1 impl done<br/>(FING-28):<br/>packages/fingerprint-<br/>sampler is a workspace<br/>member (import<br/>fingerprint_sampler,<br/>commands fingerprint /<br/>fingerp…"
+    Morpheus->>Tank: "lead handoff"
+    Note right of Morpheus: "Phase 1 review PASSED.<br/>It is a move, not a<br/>rewrite: git tracks the<br/>files as renames and the<br/>only code changes are<br/>import paths, the merge<br/>s…"
+    Mouse->>All: "phase 2"
+    Note right of Mouse: "CI and publishing<br/>(STORY-FING-29): make<br/>build for the<br/>fingerprint-sampler<br/>package, a GitHub<br/>Actions workflow running<br/>the same make gates on…"
+    Tank->>All: "devops init"
+    Note right of Tank: "Initializing Tank. Phase<br/>2 (FING-29): make build<br/>first and prove the<br/>wheel in a clean env,<br/>then the two workflows -<br/>they must call only mak…"
 ```

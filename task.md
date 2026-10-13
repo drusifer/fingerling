@@ -14,9 +14,9 @@
 - [x] **0.3** From-clean verify, 3.10-3.13 matrix, SDLC sections 1-5 updated; UAT + review. [Tank, Trin, Morpheus]
 
 ## Phase 1: Package split (STORY-FING-28, 5 pts) — Neo
-- [ ] **1.1** Create `packages/fingerprint-sampler` (workspace member); move modules + tests + access-log example; `fingerprint merge` command. [Neo]
-- [ ] **1.2** `fingerling` shims + alias; parked tests untouched and green; package README quickstart. [Neo]
-- [ ] **1.3** UAT (isolated install, pre-split set file merges) + review. [Trin, Morpheus]
+- [x] **1.1** Create `packages/fingerprint-sampler` (workspace member); move modules + tests + access-log example; `fingerprint merge` command. [Neo]
+- [x] **1.2** `fingerling` shims + alias; parked tests untouched and green; package README quickstart. [Neo]
+- [x] **1.3** UAT (isolated install, pre-split set file merges) + review. [Trin, Morpheus]
 
 ## Phase 2: CI and publishing (STORY-FING-29, 4 pts) — Tank
 - [ ] **2.1** `make build`; wheel installs and runs in a clean env. [Tank]

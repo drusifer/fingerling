@@ -26,13 +26,14 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 - 2026-10-12 Sprint 8 P3 review passed.
 - 2026-10-12 Sprint 8 closed.
 - 2026-10-12 Sprint 9 arch D1-D7: uv workspace, packages/fingerprint-sampler (import fingerprint_sampler, command 'fingerprint merge'), re-export shims in fingerling, single version stream 0.1.0, hatchling, ruff+gitleaks, CI matrix + trusted publishing, chat-report phase markers '*phase <label>*'.
+- 2026-10-13 Sprint 9 P0+P1 reviewed. Backlog: rename Warehouse before 1.0.
 
 ## Current Task
 **Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Plan approved; reviewing phases
+**Status:** Phases 0-1 reviewed
 
 ## Next Steps
-Review each phase after Trin. Watch: no logic changes in the move; shims only re-export; parked tests unedited.
+Review phase-2 (workflows call make targets only; publish gated) and phase-3 (no-marker output byte-identical to before).
 
 ---
-*Last updated: 2026-10-12T23:57:00-04:00*
+*Last updated: 2026-10-13T00:04:02-04:00*
