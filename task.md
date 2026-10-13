@@ -19,13 +19,13 @@
 - [x] **1.3** UAT (isolated install, pre-split set file merges) + review. [Trin, Morpheus]
 
 ## Phase 2: CI and publishing (STORY-FING-29, 4 pts) — Tank
-- [ ] **2.1** `make build`; wheel installs and runs in a clean env. [Tank]
-- [ ] **2.2** `ci.yml` and `publish.yml`; SDLC sections 7-8 + owner's one-time PyPI setup. [Tank]
-- [ ] **2.3** UAT + review. [Trin, Morpheus]
+- [x] **2.1** `make build`; wheel installs and runs in a clean env. [Tank]
+- [x] **2.2** `ci.yml` and `publish.yml`; SDLC sections 7-8 + owner's one-time PyPI setup. [Tank]
+- [x] **2.3** UAT + review. [Trin, Morpheus]
 
 ## Phase 3: Per-phase chat report (STORY-FING-30, 4 pts) — Neo (in `~/Projects/bob_protocol`)
-- [ ] **3.1** Phase markers → per-phase sections in `chat-report`; tests. [Neo]
-- [ ] **3.2** Mouse/sprint instructions for markers; UAT + review. [Neo, Trin, Morpheus]
+- [x] **3.1** Phase markers → per-phase sections in `chat-report`; tests. [Neo]
+- [x] **3.2** Mouse/sprint instructions for markers; UAT + review. [Neo, Trin, Morpheus]
 
 ## Close
 - [ ] Tank `*devops sdlc-check` [Tank]

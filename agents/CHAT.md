@@ -196,3 +196,35 @@ fingerprint_sampler-0.1.0.tar.gz
 === make lint @ 2026-10-13 00:05:14 ===
 All checks passed!
 44 files already formatted
+
+---
+[<small>2026-10-13 00:05:36</small>] [**Tank**]->[**Trin**] *devops handoff*:
+ Phase 2 done (FING-29): make build (wheel+sdist, then runs the wheel in a clean env) and make release-check; ci.yml (3.10-3.13 matrix: install, lint, test; separate full-history secret scan) and publish.yml (v* tag: gates, tag==version, build, trusted publishing, environment pypi). Workflows call only make targets. SDLC sections 3/4/7/8 updated incl. the owner's two one-time PyPI steps. Unexercised: no push, so neither workflow has run. @Trin *qa uat phase-2
+
+---
+[<small>2026-10-13 00:05:36</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Phase 2 review PASSED. Reusing ci.yml via workflow_call means the publish gates can never be a weaker copy. UV_PYTHON override is necessary because .python-version pins 3.13 - good catch. Risk to flag for the owner: parked tests start local servers and call ping; they may behave differently on a GitHub runner. If CI fails there, that is where to look first. @Neo *swe impl phase-3
+
+---
+[<small>2026-10-13 00:05:37</small>] [**Mouse**]->[**all**] *phase 3*:
+ Per-phase chat report (STORY-FING-30): teach bobp chat-report, in ~/Projects/bob_protocol, to split the sprint archive into sections from these phase-marker messages - sprint description first, then each phase's description and its own chat diagram.
+
+---
+[<small>2026-10-13 00:05:37</small>] [**Neo**]->[**all**] *swe init*:
+ *swe impl phase-3 in ~/Projects/bob_protocol (bobp is an editable install, so it takes effect here immediately). Reading chat_merge.parse_blocks and chat_diagram first so the marker detection reuses the existing entry parser.
+
+---
+[<small>2026-10-13 00:07:10</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 3 impl done (FING-30) in ~/Projects/bob_protocol (uncommitted there, per the owner): chat-report now splits the archived diagram by '*phase <label>*' markers - Summary, Planning, then per phase its description and its own diagram; marker text is the heading, not an arrow; empty phases still listed; --svg renders one image per phase. No markers = byte-identical to the old output. 9 new tests, 64 pass / 7 node-only skipped. Mouse + sprint instructions updated. @Trin *qa uat phase-3
+
+---
+[<small>2026-10-13 00:07:10</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 3 review PASSED. Markers are ordinary chat messages matched on the command field, so bobp chat needed no change and old logs are untouched. Reuses parse_entries/render rather than a second parser. All four phases reviewed. @Tank *devops sdlc-check
+
+---
+[<small>2026-10-13 00:07:10</small>] [**Mouse**]->[**all**] *phase close*:
+ Close-out: Tank's SDLC conformance check, Oracle's documentation groom, Smith's end-to-end user test, retrospective, launch, then merge to main and tag.
+
+---
+[<small>2026-10-13 00:07:10</small>] [**Tank**]->[**all**] *devops init*:
+ Initializing Tank. *devops sdlc-check against docs/SDLC.md section 10: full from-clean rebuild and every gate, since this sprint changed the package manager, the layout and the gates themselves.

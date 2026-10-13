@@ -10,8 +10,7 @@ webhook server, GitOps, sandbox/vaccine, eBPF capture, TUI demo — is parked: i
 importing and its existing tests must keep passing, but it gets no new gates or manual checks.
 
 Process decisions below were made by the project owner on 2026-10-12. Tooling decisions that
-are agreed but not yet built are listed in section 11; sections 1-5 and 8 describe what exists
-today and are updated as each lands.
+are agreed but not yet built are listed in section 11.
 
 ## 1. Toolchain
 
@@ -159,9 +158,12 @@ There is no `CHANGELOG.md`. The durable, human-readable record of a sprint is on
 2. then, for each phase in order: the phase description followed by the chat diagram for that
    phase.
 
-Mouse posts a phase marker to `agents/CHAT.md` at the start of each phase so the report can be
-split. *(The per-phase format is being built in Sprint 9; until then the report is a single
-undivided diagram.)*
+Mouse posts a phase marker to `agents/CHAT.md` at the start of each phase —
+`bobp chat "<phase description>" --persona Mouse --cmd "phase <N>"`, and `--cmd "phase close"`
+when close-out begins — so the report can be split. Messages before the first marker appear
+under "Planning". The full chat text is archived alongside as `CHAT_<SPRINT>.md`. Oracle runs
+`bobp chat-report` on the sprint branch after Cypher's launch, and the archive is committed
+before the merge.
 
 ### Rules
 
@@ -245,12 +247,8 @@ Run by Tank at sprint close (`*devops sdlc-check`):
 
 ## 11. Agreed changes not yet built
 
-Decided by the project owner on 2026-10-12 and scheduled for Sprint 9. Tank moves each item
-into the sections above, and off this list, when it lands.
-
-| Change | Decision | Lands in |
-|---|---|---|
-| Per-phase chat report | `bobp chat-report` emits sprint description, then per-phase description + diagram, from phase markers | section 6 |
+None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that are agreed but
+not yet built are listed here until they land.
 
 ---
 *Last verified: 2026-10-13 on branch `sprint-9` (Phase 2), by Tank — lint clean, 127 + 59 tests,
