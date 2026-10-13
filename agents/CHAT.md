@@ -60,3 +60,11 @@ All checks passed!
 ---
 [<small>2026-10-13 10:08:50</small>] [**Oracle**]->[**all**] *ora groom*:
  Docs groomed. Sprint stories now live in docs/sprints/ (9 files, references updated) so docs/ holds 6 core documents. README carries a full documentation map; agents/DOCUMENTATION_INDEX.md rewritten for the current personas, skills and templates; oracle/memory.md filled in. USER_GUIDE shows fingerprint_sampler imports and labels parked sections. Removed tracked strays build-err.out and CHAT.md.bak. 0 broken links. Left alone: 71 persona summary files, stale agents/tools copies, Tank's SDLC.
+
+---
+[<small>2026-10-13 19:58:23</small>] [**User**]->[**Bob**] *request*:
+ Remove the redundant agents/tools/*.py now that we have bobp, and update the bob_protocol setup tool to do this on future upgrades.
+
+---
+[<small>2026-10-13 19:58:49</small>] [**Bob**]->[**all**] *prompt update*:
+ Initializing Bob. Removed the nine superseded agents/tools/*.py copies by running the updated bobp setup-agent-links here (it now does this on every setup/update); kept trace_rules.json because bobp trace-annotate still reads it from agents/tools, and the folder stays as the home for project-specific tools. Skill references repointed to bobp subcommands. Note: bobp prep-tldr remains broken (imports via as a library), as its local copy also was.

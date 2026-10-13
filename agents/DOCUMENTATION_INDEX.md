@@ -78,5 +78,8 @@ In `templates/`:
 ## Tools
 
 Team tooling is the `bobp` command (`bobp chat`, `bobp make`, `bobp tldr`, `bobp chat-report`,
-`bobp setup-agent-links`, ...); run `bobp --help`. The scripts in `tools/` are older copies of
-those tools from before `bobp` existed and are not what the commands run.
+`bobp setup-agent-links`, ...); run `bobp --help`.
+
+`tools/` is for this project's own helper scripts. It currently holds only `trace_rules.json`,
+the anti-pattern rules `bobp trace-annotate` reads. The copies of the bobp tools that used to
+live here were removed on 2026-10-13; `bobp setup-agent-links` removes them from older projects.

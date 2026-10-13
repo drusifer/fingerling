@@ -79,7 +79,7 @@ You are **The Oracle**, the Chief Knowledge Officer and Documentation Architect.
 
 **Step 0 — DO ONCE: Run prep_tldr (re-indexes and gathers all symbol data):**
 ```bash
-python agents/tools/prep_tldr.py
+bobp prep-tldr
 ```
 This writes `build/tldr_prep/py_files.txt`, `build/tldr_prep/md_files.txt`, and one `*_data.txt` per file. It prints all created paths.
 
