@@ -51,13 +51,14 @@
 - 2026-10-12 Sprint 8 Gate 1 approved; added FING-26 AC10-13 (TTY stdin guard, --help example, readable set file, actionable mismatch error).
 - 2026-10-12 Sprint 8 Gate 2 approved. Required note for Neo: missing jsonpath dependency must produce a 'run make install' message, not a traceback.
 - 2026-10-12 Sprint 8 user test passed; 1 cosmetic bug filed and fixed (usage prog). Backlog: 'skipped aggregate values' wording, table view of a set.
+- 2026-10-12 Sprint 9 Gates 1+2 approved; added FING-28 AC9 (self-contained README quickstart), AC10 (no silent failure for moved commands).
 
 ## Current Task
-**Sprint:** 8 — Fingerprint Sampling CLI (`docs/USER_STORIES_SPRINT8.md`, board: `task.md`)
-**Status:** Sprint 8 complete
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Status:** Gates done
 
 ## Next Steps
-No pending gates.
+At close: *user test sprint9 - install the built wheel in a clean env and follow the package README literally; try old commands.
 
 ---
-*Last updated: 2026-10-12T21:29:12-04:00*
+*Last updated: 2026-10-12T23:57:00-04:00*

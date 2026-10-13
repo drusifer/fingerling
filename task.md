@@ -1,51 +1,44 @@
-# Task Board — Sprint 8: Fingerprint Sampling CLI
+# Task Board — Sprint 9: Fingerprint Package + SDLC Tooling
 
-**Status:** Sprint 8 complete — launched 2026-10-12 (16/16 pts, 178 tests)
-**Source:** `docs/USER_STORIES_SPRINT8.md` (stories + architecture D1-D8)
-**Sprint Log:** `agents/mouse/sprint_log.md`
-**Points:** 16 · **Tier:** 1
-
-Previous sprints (1-7) are closed; see `agents/mouse/sprint_log.md`.
+**Status:** In progress
+**Branch:** `sprint-9`
+**Source:** `docs/USER_STORIES_SPRINT9.md` (stories + architecture D1-D7)
+**Process:** `docs/SDLC.md` (branch per sprint, Conventional Commits, Tank check at close)
+**Points:** 18 · **Tier:** 1
 
 ---
 
-## Phase 1: JSONPath library (STORY-FING-23, 3 pts)
-- [x] **1.1** `make install` (.venv, `--system-site-packages`) + `python-jsonpath` in `requirements.txt`; Makefile uses the venv interpreter when present. [Neo]
-- [x] **1.2** Replace hand-rolled resolver in `fingerling/tokenizer.py` with `compile_path` / `find_values`; match-count token semantics; tests for filters, slices, unions, descent, invalid paths. [Neo]
-- [x] **1.3** UAT + code review. [Trin, Morpheus]
+## Phase 0: Build environment (STORY-FING-27, 5 pts) — Tank
+- [ ] **0.1** `uv` + `uv.lock`; `requires-python >=3.10`; dev group with ruff; Makefile targets per D5. [Tank]
+- [ ] **0.2** `ruff` config, repo-wide format (own commit), lint clean; `make secrets` + pre-commit hook; delete `Makefile.prj`, `requirements.txt`. [Tank]
+- [ ] **0.3** From-clean verify, 3.10-3.13 matrix, SDLC sections 1-5 updated; UAT + review. [Tank, Trin, Morpheus]
 
-## Phase 2: Aggregators + fingerprint set (STORY-FING-25, 5 pts)
-- [ ] **2.1** `fingerling/aggregators.py`: `AggregateEntry`, spec parsing, `SUM`/`AVG`/`MIN`/`MAX`/`LAST(n)` update. [Neo]
-- [ ] **2.2** Refactor `fingerling/warehouse.py` to the versioned set (tokens, aggregates, profile_id, atomic save); migrate `server.py`, `build_whitelist`, examples and tests off `upsert(duration_ms, raw_record)`. [Neo]
-- [ ] **2.3** UAT + code review. [Trin, Morpheus]
+## Phase 1: Package split (STORY-FING-28, 5 pts) — Neo
+- [ ] **1.1** Create `packages/fingerprint-sampler` (workspace member); move modules + tests + access-log example; `fingerprint merge` command. [Neo]
+- [ ] **1.2** `fingerling` shims + alias; parked tests untouched and green; package README quickstart. [Neo]
+- [ ] **1.3** UAT (isolated install, pre-split set file merges) + review. [Trin, Morpheus]
 
-## Phase 3: Profile file (STORY-FING-24, 3 pts)
-- [x] **3.1** `fingerling/profile.py`: `Profile`, `load_profile`, `profile_id`, load-time validation; example profile in repo. [Neo]
-- [x] **3.2** UAT + code review. [Trin, Morpheus]
+## Phase 2: CI and publishing (STORY-FING-29, 4 pts) — Tank
+- [ ] **2.1** `make build`; wheel installs and runs in a clean env. [Tank]
+- [ ] **2.2** `ci.yml` and `publish.yml`; SDLC sections 7-8 + owner's one-time PyPI setup. [Tank]
+- [ ] **2.3** UAT + review. [Trin, Morpheus]
 
-## Phase 4: `fingerprint` CLI (STORY-FING-26, 5 pts)
-- [ ] **4.1** `fingerling/cli.py` + `__main__.py`: stream merge, `-o`, `--force-profile`, exit codes, stderr summary, TTY guard, friendly missing-dependency message. [Neo]
-- [ ] **4.2** `make fingerprint` target; non-eBPF fixture test; batch-vs-split equivalence test. [Neo]
-- [ ] **4.3** UAT + code review. [Trin, Morpheus]
+## Phase 3: Per-phase chat report (STORY-FING-30, 4 pts) — Neo (in `~/Projects/bob_protocol`)
+- [ ] **3.1** Phase markers → per-phase sections in `chat-report`; tests. [Neo]
+- [ ] **3.2** Mouse/sprint instructions for markers; UAT + review. [Neo, Trin, Morpheus]
 
 ## Close
-- [x] Oracle groom (ARCH / DECISIONS / USER_GUIDE / README / LESSONS) [Oracle]
-- [x] Smith end-to-end user test [Smith]
-- [x] Retro + launch [All, Cypher]
+- [ ] Tank `*devops sdlc-check` [Tank]
+- [ ] Oracle groom [Oracle]
+- [ ] Smith end-to-end user test [Smith]
+- [ ] Retro + launch (states SemVer bump) [All, Cypher]
+- [ ] Merge `--no-ff` to `main`, release commit + tag, chat report [Tank, Oracle]
 
 ## Definition of Done
-- All ACs in `docs/USER_STORIES_SPRINT8.md` verified by Trin.
-- `make test` green; existing fingerprint IDs unchanged for existing paths.
-- No Tank tasks: no deploy/CI scope.
+- All ACs in `docs/USER_STORIES_SPRINT9.md` verified by Trin.
+- `make lint`, `make test`, `make secrets` green on the sprint branch.
+- Nothing pushed, nothing published.
 
-## Backlog (unscheduled, from Sprint 8 retro)
-- Run `sudo make demo-live` on a real TTY — never verified in-session; 3 lines of `examples/demo.py` changed this sprint.
-- `GLOB` / `REGEX` modifiers (spec gap).
-- Table/report view of a fingerprint set; reword "skipped aggregate values".
-- Event-time timestamps via an optional profile path.
-- Set-to-set merge.
-- N-gram baseline / Jaccard scoring stage on top of fingerprint IDs.
-- `examples/demo.py` bracket-markup sweep; scripted smoke test for its step actions.
-- `tests/test_server.py` reaches into `Warehouse._records`.
-- Docs: verify USER_GUIDE GitOps/sandbox sections; `agents/oracle/memory.md` placeholders.
-
+## Backlog (unscheduled)
+- Fingerprint tool: `GLOB`/`REGEX` modifiers; table/report view of a set (`fingerprint show`); reword "skipped aggregate values"; event-time timestamps; set-to-set merge.
+- Parked (not scheduled while the fingerprint tool is the focus): n-gram/Jaccard stage, `examples/demo.py` markup sweep and smoke test, `sudo make demo-live` verification, `tests/test_server.py` private access, USER_GUIDE GitOps/sandbox sections.

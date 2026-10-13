@@ -11,7 +11,11 @@ sequenceDiagram
     participant User
     participant Bob
     participant Tank
-    Note over Oracle,Tank: 📅 2026-10-12
+    participant Mouse
+    participant Cypher
+    participant Smith
+    participant Morpheus
+    Note over Oracle,Morpheus: 📅 2026-10-12
     Oracle->>All: "ora report"
     Note right of Oracle: "Sprint 8 chat archived<br/>to agents/chat_archive/C<br/>HAT_SPRINT_8.md (also<br/>contains the never-<br/>archived Sprint 1-7 log)<br/>and CHAT.md reset for<br/>the…"
     User->>Bob: "request"
@@ -48,4 +52,20 @@ sequenceDiagram
     Note right of User: "Decisions (Q&A): branch<br/>per sprint, agents<br/>branch/commit/merge<br/>(push stays with User),<br/>Conventional Commits,<br/>SemVer bump on change,<br/>ruff +…"
     Tank->>All: "devops sdlc"
     Note right of Tank: "SDLC revised from the<br/>owner's decisions:<br/>sprint-<N> branches,<br/>agents commit and merge<br/>(never push),<br/>Conventional Commits,<br/>SemVer bump + tag…"
+    Mouse->>Cypher: "sm start"
+    Note right of Mouse: "Sprint 9 start. Stage 0<br/>SDLC gate: docs/SDLC.md<br/>present - pass. Per SDLC<br/>section 6, created<br/>branch sprint-9 from a<br/>clean main (baseline<br/>0b1…"
+    Cypher->>Smith: "pm handoff"
+    Note right of Cypher: "Sprint 9 stories<br/>drafted: docs/USER_STORI<br/>ES_SPRINT9.md, 18 pts.<br/>FING-27 reproducible<br/>gated env (uv, 3.10+,<br/>ruff, gitleaks), FING-28<br/>fingerp…"
+    Smith->>Morpheus: "user approve"
+    Note right of Smith: "*user approve Gate 1.<br/>Stories are outcome-<br/>first and testable.<br/>Added FING-28 AC9<br/>(package README<br/>quickstart must work<br/>pasted into a fresh en…"
+    Morpheus->>Smith: "lead handoff"
+    Note right of Morpheus: "Sprint 9 arch D1-D7 in d<br/>ocs/USER_STORIES_SPRINT9<br/>.md. uv workspace, 2<br/>packages: fingerling<br/>(parked, private) +<br/>packages/fingerprint-<br/>sampler…"
+    Smith->>Mouse: "user approve"
+    Note right of Smith: "*user approve Gate 2.<br/>'fingerprint merge'<br/>reads as what it does<br/>and leaves room for<br/>show/report, keeping<br/>'fingerling fingerprint'<br/>as an ali…"
+    Mouse->>Morpheus: "sm handoff"
+    Note right of Mouse: "Sprint 9 planned in<br/>task.md: Phase 0 Tank<br/>build env (FING-27)<br/>first per the new Phase<br/>0 rule, Phase 1 Neo<br/>package split (FING-28),<br/>Phase 2…"
+    Morpheus->>Tank: "lead handoff"
+    Note right of Morpheus: "Sprint plan approved:<br/>order follows the<br/>dependency chain (env -><br/>split -> CI), each phase<br/>leaves lint+test green,<br/>and Phase 3 is<br/>independen…"
+    Mouse->>All: "phase 0"
+    Note right of Mouse: "Build environment<br/>(STORY-FING-27): move to<br/>uv with a committed<br/>lockfile, support Python<br/>3.10-3.13, add ruff<br/>lint/format and gitleaks<br/>as gat…"
 ```

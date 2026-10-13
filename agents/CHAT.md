@@ -92,3 +92,35 @@ Installed into .venv
 ---
 [<small>2026-10-12 23:54:20</small>] [**Tank**]->[**all**] *devops sdlc*:
  SDLC revised from the owner's decisions: sprint-<N> branches, agents commit and merge (never push), Conventional Commits, SemVer bump + tag at sprint merge, per-phase chat report as the record, fingerprint tool as the only active scope. Agreed-but-unbuilt tooling is listed in SDLC section 11 for Sprint 9. Sprint skill now defers to the SDLC for branching and commits. Next: one baseline commit on main, then Sprint 9 on its own branch.
+
+---
+[<small>2026-10-12 23:55:41</small>] [**Mouse**]->[**Cypher**] *sm start*:
+ Sprint 9 start. Stage 0 SDLC gate: docs/SDLC.md present - pass. Per SDLC section 6, created branch sprint-9 from a clean main (baseline 0b10273). Scope = SDLC section 11: uv+lockfile, Python 3.10-3.13, ruff, gitleaks, CI + PyPI publishing, fingerprint tool as its own package, per-phase chat report, delete leftovers. @Cypher *pm plan sprint9
+
+---
+[<small>2026-10-12 23:55:41</small>] [**Cypher**]->[**Smith**] *pm handoff*:
+ Sprint 9 stories drafted: docs/USER_STORIES_SPRINT9.md, 18 pts. FING-27 reproducible gated env (uv, 3.10+, ruff, gitleaks), FING-28 fingerprint tool as its own package, FING-29 CI + PyPI trusted publishing, FING-30 per-phase chat report. No new fingerprint features and no parked-module work, per the owner's focus decision. @Smith *user review sprint9
+
+---
+[<small>2026-10-12 23:57:00</small>] [**Smith**]->[**Morpheus**] *user approve*:
+ *user approve Gate 1. Stories are outcome-first and testable. Added FING-28 AC9 (package README quickstart must work pasted into a fresh env - a PyPI visitor has none of this repo's example files) and AC10 (old invocations never fail silently after the split - H9). @Morpheus *lead arch sprint9
+
+---
+[<small>2026-10-12 23:57:00</small>] [**Morpheus**]->[**Smith**] *lead handoff*:
+ Sprint 9 arch D1-D7 in docs/USER_STORIES_SPRINT9.md. uv workspace, 2 packages: fingerling (parked, private) + packages/fingerprint-sampler (import fingerprint_sampler, command 'fingerprint merge', fingerling fingerprint kept as alias). Pure move behind re-export shims so parked code is untouched. One version stream: fingerprint-sampler 0.1.0, tag v*. ruff + gitleaks + CI matrix 3.10-3.13 + trusted publishing. Chat report phases from Mouse 'phase <label>' messages. @Smith *user feedback sprint9 arch
+
+---
+[<small>2026-10-12 23:57:00</small>] [**Smith**]->[**Mouse**] *user approve*:
+ *user approve Gate 2. 'fingerprint merge' reads as what it does and leaves room for show/report; keeping 'fingerling fingerprint' as an alias satisfies AC10. Deriving the program name from the invocation fixes Sprint 8's usage-line bug class for good. Chat report falling back to today's output with no markers is the right compatibility default. @Mouse *sm plan sprint9
+
+---
+[<small>2026-10-12 23:57:00</small>] [**Mouse**]->[**Morpheus**] *sm handoff*:
+ Sprint 9 planned in task.md: Phase 0 Tank build env (FING-27) first per the new Phase 0 rule, Phase 1 Neo package split (FING-28), Phase 2 Tank CI+publish (FING-29, needs the split to have something to build), Phase 3 Neo per-phase chat report (FING-30). Close adds Tank sdlc-check and the merge/tag. I post a phase marker at each phase start. @Morpheus *lead review sprint plan
+
+---
+[<small>2026-10-12 23:57:00</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Sprint plan approved: order follows the dependency chain (env -> split -> CI), each phase leaves lint+test green, and Phase 3 is independent so it cannot block the release work. Phase 0 ready. @Tank *devops bootstrap python (uv)
+
+---
+[<small>2026-10-12 23:57:00</small>] [**Mouse**]->[**all**] *phase 0*:
+ Build environment (STORY-FING-27): move to uv with a committed lockfile, support Python 3.10-3.13, add ruff lint/format and gitleaks as gates, delete the leftover build files.

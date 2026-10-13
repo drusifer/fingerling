@@ -25,13 +25,14 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 - 2026-10-12 Sprint 8 P1 review passed.
 - 2026-10-12 Sprint 8 P3 review passed.
 - 2026-10-12 Sprint 8 closed.
+- 2026-10-12 Sprint 9 arch D1-D7: uv workspace, packages/fingerprint-sampler (import fingerprint_sampler, command 'fingerprint merge'), re-export shims in fingerling, single version stream 0.1.0, hatchling, ruff+gitleaks, CI matrix + trusted publishing, chat-report phase markers '*phase <label>*'.
 
 ## Current Task
-**Sprint:** 8 — Fingerprint Sampling CLI (`docs/USER_STORIES_SPRINT8.md`, board: `task.md`)
-**Status:** Sprint 8 complete
+**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/USER_STORIES_SPRINT9.md`, board: `task.md`)
+**Status:** Plan approved; reviewing phases
 
 ## Next Steps
-No pending reviews.
+Review each phase after Trin. Watch: no logic changes in the move; shims only re-export; parked tests unedited.
 
 ---
-*Last updated: 2026-10-12T21:29:12-04:00*
+*Last updated: 2026-10-12T23:57:00-04:00*

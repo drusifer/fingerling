@@ -1,5 +1,18 @@
 # Sprint Log
 
+## Sprint: Fingerling Sprint 9 (Fingerprint Package + SDLC Tooling) — 2026-10-12
+
+- **Planning:** Tier 1, on branch `sprint-9`. First sprint under `docs/SDLC.md`.
+- **Velocity target:** 18 story points (5+5+4+4) across 4 stories.
+- **Phase breakdown:**
+  - Phase 0 (Tank): STORY-FING-27 build environment — first, because every later phase builds on it
+  - Phase 1 (Neo): STORY-FING-28 package split
+  - Phase 2 (Tank): STORY-FING-29 CI + publishing — after the split, since it builds the new package
+  - Phase 3 (Neo): STORY-FING-30 per-phase chat report (bob_protocol)
+- **Board:** `task.md` (root). Phase markers posted to CHAT.md as `*phase <label>*`.
+
+---
+
 ## Sprint: Fingerling Sprint 8 (Fingerprint Sampling CLI) — 2026-10-12
 
 - **Planning:** Tier 1. Cypher stories → Smith Gate 1 (4 ACs added) → Morpheus arch D1-D8 →
