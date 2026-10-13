@@ -2,12 +2,18 @@ version = 1
 revision = 5
 requires-python = ">=3.10"
 
+[manifest]
+members = [
+    "fingerling",
+    "fingerprint-sampler",
+]
+
 [[package]]
 name = "fingerling"
 version = "0.8.0"
 source = { editable = "." }
 dependencies = [
-    { name = "python-jsonpath" },
+    { name = "fingerprint-sampler" },
     { name = "pyyaml" },
 ]
 
@@ -23,7 +29,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "python-jsonpath", specifier = ">=2.0" },
+    { name = "fingerprint-sampler", editable = "packages/fingerprint-sampler" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "rich", marker = "extra == 'demo'", specifier = ">=13" },
 ]
@@ -31,6 +37,21 @@ provides-extras = ["demo"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "ruff", specifier = ">=0.6" }]
+
+[[package]]
+name = "fingerprint-sampler"
+version = "0.1.0"
+source = { editable = "packages/fingerprint-sampler" }
+dependencies = [
+    { name = "python-jsonpath" },
+    { name = "pyyaml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "python-jsonpath", specifier = ">=2.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
+]
 
 [[package]]
 name = "markdown-it-py"

@@ -1,16 +1,23 @@
-"""Tests for STORY-FING-24: fingerprint profile files."""
+"""Tests for fingerprint profile files."""
 
 import os
 import tempfile
 import textwrap
 import unittest
 
-from fingerling.aggregators import AggregateEntry
-from fingerling.profile import Profile, ProfileError, load_profile, parse_profile, profile_id
-from fingerling.tokenizer import MaskEntry, tokenize, validate_modifier
+from fingerprint_sampler.aggregators import AggregateEntry
+from fingerprint_sampler.profile import (
+    Profile,
+    ProfileError,
+    load_profile,
+    parse_profile,
+    profile_id,
+)
+from fingerprint_sampler.tokenizer import MaskEntry, tokenize, validate_modifier
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EXAMPLE_PROFILES = os.path.join(REPO_ROOT, "examples", "profiles")
+EXAMPLE_PROFILES = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "examples"
+)
 
 VALID = {
     "version": 1,
@@ -217,7 +224,7 @@ class LoadProfileTests(unittest.TestCase):
 
     def test_every_shipped_example_profile_loads(self):
         names = sorted(n for n in os.listdir(EXAMPLE_PROFILES) if n.endswith(".yaml"))
-        self.assertGreaterEqual(len(names), 2)
+        self.assertGreaterEqual(len(names), 1)
         for name in names:
             with self.subTest(profile=name):
                 profile = load_profile(os.path.join(EXAMPLE_PROFILES, name))

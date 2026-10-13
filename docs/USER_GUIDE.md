@@ -33,10 +33,15 @@ make test       # full suite, offline
 `make install` builds an isolated project virtualenv; nothing is installed into the system
 Python. Dependencies are declared in `pyproject.toml` (`rich`, used only by the TUI demo, is the
 `demo` extra). Every `make` target runs inside `.venv` and tells you to run `make install` if it
-is missing. Installing also creates the `fingerling` command at `.venv/bin/fingerling`
-(`.venv/bin/python -m fingerling` is equivalent). `make distclean` removes the environment.
+is missing. Installing also creates the `fingerprint` command at `.venv/bin/fingerprint`
+(`fingerling fingerprint` remains as an alias for `fingerprint merge`). `make distclean` removes the environment.
 
 ## Fingerprint CLI
+
+The fingerprint tool is its own package, `fingerprint-sampler`, in
+`packages/fingerprint-sampler/` (import name `fingerprint_sampler`, command `fingerprint`). Its
+[README](../packages/fingerprint-sampler/README.md) is the reference for people installing it on
+its own; this section covers using it from a checkout.
 
 `fingerprint` is a general-purpose sampler for JSONL event streams — logs, traces, audit events,
 kernel telemetry, anything with one JSON object per line. It reduces each event to a
@@ -50,13 +55,13 @@ existing set  +  stream of events  ->  updated set
 
 ```sh
 # first run creates the set; every later run merges into it
-make fingerprint ARGS="-p examples/profiles/access_log.yaml -s web.fingerprints.yaml examples/data/access_log.jsonl"
+make fingerprint ARGS="-p packages/fingerprint-sampler/examples/access_log.yaml -s web.fingerprints.yaml packages/fingerprint-sampler/examples/access_log.jsonl"
 
 # read from a pipe ('-' or no EVENTS argument means stdin)
-tail -n 1000 app.jsonl | .venv/bin/python -m fingerling fingerprint -p app.yaml -s app.fingerprints.yaml -
+tail -n 1000 app.jsonl | .venv/bin/fingerprint merge -p app.yaml -s app.fingerprints.yaml -
 
 # trial run: write the merged result elsewhere and leave the set untouched
-.venv/bin/python -m fingerling fingerprint -p app.yaml -s app.fingerprints.yaml -o /tmp/preview.yaml new.jsonl
+.venv/bin/fingerprint merge -p app.yaml -s app.fingerprints.yaml -o /tmp/preview.yaml new.jsonl
 ```
 
 | Option | Meaning |
@@ -71,7 +76,7 @@ A summary goes to stderr; stdout is left empty. Exit status: `0` set written and
 `1` set written but some lines were skipped · `2` nothing written.
 
 ```
-fingerling: 8 events read from examples/data/access_log.jsonl
+fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log.jsonl
   fingerprints: 4 new, 0 updated, 4 total in set
   skipped: 0 malformed lines, 0 aggregate values
   wrote web.fingerprints.yaml (profile 37087e1858c85f7cb976959311d01b65)
@@ -121,8 +126,8 @@ aggregates:
 Profiles are validated before any event is read; an error names the file and the entry, e.g.
 `app.yaml: fields[2] (key 'port'): Unknown modifier: 'GLOB'`.
 
-Two profiles ship as starting points: `examples/profiles/access_log.yaml` (web access logs) and
-`examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).
+Two profiles ship as starting points: `packages/fingerprint-sampler/examples/access_log.yaml`
+(web access logs) and `examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).
 
 ### The fingerprint set file
 
@@ -387,7 +392,7 @@ architecture doc. The continuous Jaccard-based scoring is a next-sprint item.
 
 **"`fingerling: the python-jsonpath package is not installed for this Python`".**
 You ran the system `python3`. Run `make install` once, then use `make fingerprint ARGS="..."` or
-`.venv/bin/python -m fingerling ...`.
+`.venv/bin/fingerprint merge ...`.
 
 **"`... was built with profile X, but the current profile is Y`".**
 The set file belongs to a different profile (its `fields` differ). Keep one set file per profile.

@@ -1,8 +1,8 @@
-"""Tests for STORY-FING-25: mergeable per-fingerprint aggregators."""
+"""Tests: mergeable per-fingerprint aggregators."""
 
 import unittest
 
-from fingerling.aggregators import AggregateEntry, make_entry, parse_fn, update
+from fingerprint_sampler.aggregators import AggregateEntry, make_entry, parse_fn, update
 
 
 def fold(entry, records, state=None):

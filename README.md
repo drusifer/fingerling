@@ -32,8 +32,8 @@ make test
 `fingerprint` folds any JSONL event stream into a fingerprint set that grows across runs:
 
 ```sh
-make fingerprint ARGS="-p examples/profiles/access_log.yaml -s web.fingerprints.yaml examples/data/access_log.jsonl"
-some-producer | .venv/bin/fingerling fingerprint -p my-profile.yaml -s my.fingerprints.yaml -
+make fingerprint ARGS="-p packages/fingerprint-sampler/examples/access_log.yaml -s web.fingerprints.yaml packages/fingerprint-sampler/examples/access_log.jsonl"
+some-producer | .venv/bin/fingerprint merge -p my-profile.yaml -s my.fingerprints.yaml -
 ```
 
 See [docs/USER_GUIDE.md](docs/USER_GUIDE.md#fingerprint-cli) for the profile format and options.

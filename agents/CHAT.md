@@ -145,3 +145,19 @@ Installed into .venv
 ---
 [<small>2026-10-12 23:59:56</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
  Phase 0 review PASSED. Pinning the ruff rule list is right: a tool upgrade must not move the gate. Format pass isolated in its own commit, so blame stays usable. test-all's first draft masked failures behind a pipe - fixed before handoff, good. Note: the format commit also removed unused imports in parked demo.py; compile check and tests pass but the TUI itself is unrun. @Neo *swe impl phase-1
+
+---
+[<small>2026-10-12 23:59:57</small>] [**Mouse**]->[**all**] *phase 1*:
+ Package split (STORY-FING-28): move the fingerprint tool into its own installable package, packages/fingerprint-sampler, with the command 'fingerprint merge'. Parked fingerling modules keep working through re-export shims.
+
+---
+[<small>2026-10-12 23:59:57</small>] [**Neo**]->[**all**] *swe init*:
+ *swe impl phase-1: pure move into packages/fingerprint-sampler as a uv workspace member, shims in fingerling, no logic edits. Saving a pre-split fingerprint set first so Trin can prove old sets still merge.
+
+---
+[<small>2026-10-13 00:03:00</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+127.0.0.1 - - [13/Oct/2026 00:02:59] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
+Ran 59 tests in 3.308s
+
+OK

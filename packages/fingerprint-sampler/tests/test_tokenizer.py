@@ -1,9 +1,9 @@
-"""Tests for STORY-FING-01: eBPF telemetry parser & modifier engine."""
+"""Tests: eBPF telemetry parser & modifier engine."""
 
 import json
 import unittest
 
-from fingerling.tokenizer import (
+from fingerprint_sampler.tokenizer import (
     MaskEntry,
     apply_modifier,
     compile_path,
@@ -142,7 +142,7 @@ class ApplyModifierTests(unittest.TestCase):
         self.assertEqual(apply_modifier("sys_connect", "DEFAULT"), "sys_connect")
 
     def test_default_missing_yields_null(self):
-        from fingerling.tokenizer import _MISSING
+        from fingerprint_sampler.tokenizer import _MISSING
 
         self.assertEqual(apply_modifier(_MISSING, "DEFAULT"), "NULL")
 
@@ -151,12 +151,12 @@ class ApplyModifierTests(unittest.TestCase):
         self.assertEqual(apply_modifier(14205, "IS_PRESENT"), "TRUE")
 
     def test_is_present_false_for_missing(self):
-        from fingerling.tokenizer import _MISSING
+        from fingerprint_sampler.tokenizer import _MISSING
 
         self.assertEqual(apply_modifier(_MISSING, "IS_PRESENT"), "FALSE")
 
     def test_is_null_true_for_missing(self):
-        from fingerling.tokenizer import _MISSING
+        from fingerprint_sampler.tokenizer import _MISSING
 
         self.assertEqual(apply_modifier(_MISSING, "IS_NULL"), "TRUE")
 
@@ -171,7 +171,7 @@ class ApplyModifierTests(unittest.TestCase):
         self.assertEqual(apply_modifier(5, "IN_RANGE(-999, 0)"), "FALSE")
 
     def test_in_range_false_for_missing(self):
-        from fingerling.tokenizer import _MISSING
+        from fingerprint_sampler.tokenizer import _MISSING
 
         self.assertEqual(apply_modifier(_MISSING, "IN_RANGE(-999, 0)"), "FALSE")
 

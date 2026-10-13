@@ -78,4 +78,8 @@ sequenceDiagram
     Note right of Trin: "UAT phase-0 PASSED. AC1<br/>uv.lock committed,<br/>missing uv prints the<br/>pipx hint (checked with<br/>a stripped PATH). AC2<br/>178/178 on 3.10, 3.11,<br/>3.12,…"
     Morpheus->>Neo: "lead handoff"
     Note right of Morpheus: "Phase 0 review PASSED.<br/>Pinning the ruff rule<br/>list is right: a tool<br/>upgrade must not move<br/>the gate. Format pass<br/>isolated in its own<br/>commit,…"
+    Mouse->>All: "phase 1"
+    Note right of Mouse: "Package split (STORY-<br/>FING-28): move the<br/>fingerprint tool into<br/>its own installable<br/>package,<br/>packages/fingerprint-<br/>sampler, with the<br/>command '…"
+    Neo->>All: "swe init"
+    Note right of Neo: "*swe impl phase-1: pure<br/>move into<br/>packages/fingerprint-<br/>sampler as a uv<br/>workspace member, shims<br/>in fingerling, no logic<br/>edits. Saving a pre-…"
 ```

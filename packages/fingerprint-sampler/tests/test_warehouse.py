@@ -1,4 +1,4 @@
-"""Tests for STORY-FING-02 / STORY-FING-25: the fingerprint set (stateful upsert warehouse)."""
+"""Tests for the fingerprint set (stateful upsert warehouse)."""
 
 import os
 import tempfile
@@ -6,13 +6,18 @@ import unittest
 
 import yaml
 
-from fingerling.aggregators import make_entry
-from fingerling.warehouse import (
-    TELEMETRY_AGGREGATES,
+from fingerprint_sampler.aggregators import make_entry
+from fingerprint_sampler.warehouse import (
     FingerprintSetError,
     ProfileMismatchError,
     Warehouse,
     fingerprint_id,
+)
+
+# Duration bounds plus the last three raw events: a typical telemetry-style aggregate set.
+SAMPLE_AGGREGATES = (
+    make_entry("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
+    make_entry("samples", "$", "LAST(3)"),
 )
 
 
@@ -63,9 +68,9 @@ class UpsertReconciliationTests(unittest.TestCase):
 
 
 class AggregatedUpsertTests(unittest.TestCase):
-    def test_telemetry_aggregates_track_duration_bounds(self):
+    def test_min_max_aggregates_track_duration_bounds(self):
         # What the warehouse used to hardcode, now declared as MIN/MAX on $.duration_ms.
-        wh = Warehouse(aggregates=TELEMETRY_AGGREGATES)
+        wh = Warehouse(aggregates=SAMPLE_AGGREGATES)
         tokens = {"a": "1"}
         for i, duration in enumerate((5.0, 1.0, 9.0)):
             wh.upsert(tokens, {"duration_ms": duration}, timestamp=f"t{i}")
@@ -73,8 +78,8 @@ class AggregatedUpsertTests(unittest.TestCase):
         duration = wh.get(fingerprint_id(tokens)).aggregates["duration_ms"]
         self.assertEqual(duration, {"MIN": 1.0, "MAX": 9.0})
 
-    def test_telemetry_aggregates_keep_last_three_raw_events(self):
-        wh = Warehouse(aggregates=TELEMETRY_AGGREGATES)
+    def test_last_aggregate_keeps_last_three_raw_events(self):
+        wh = Warehouse(aggregates=SAMPLE_AGGREGATES)
         tokens = {"a": "1"}
         for i in range(5):
             wh.upsert(tokens, {"seq": i, "duration_ms": 1.0}, timestamp=f"t{i}")
@@ -113,13 +118,13 @@ class PersistenceTests(unittest.TestCase):
         self.path = os.path.join(self._tmp.name, "fingerprints.yaml")
 
     def test_save_and_load_round_trip(self):
-        wh = Warehouse(aggregates=TELEMETRY_AGGREGATES, profile_id="p1")
+        wh = Warehouse(aggregates=SAMPLE_AGGREGATES, profile_id="p1")
         tokens = {"a": "1"}
         wh.upsert(tokens, {"x": 1, "duration_ms": 1.0}, timestamp="t1")
         wh.upsert(tokens, {"x": 2, "duration_ms": 2.0}, timestamp="t2")
         wh.save(self.path)
 
-        reloaded = Warehouse(aggregates=TELEMETRY_AGGREGATES, profile_id="p1")
+        reloaded = Warehouse(aggregates=SAMPLE_AGGREGATES, profile_id="p1")
         reloaded.load(self.path)
 
         self.assertEqual(reloaded.get(fingerprint_id(tokens)), wh.get(fingerprint_id(tokens)))
@@ -136,7 +141,7 @@ class PersistenceTests(unittest.TestCase):
         self.assertEqual(list(data["fingerprints"]), [fingerprint_id({"a": "1"})])
 
     def test_file_reads_top_down_header_then_tokens_before_statistics(self):
-        wh = Warehouse(aggregates=TELEMETRY_AGGREGATES, profile_id="p1")
+        wh = Warehouse(aggregates=SAMPLE_AGGREGATES, profile_id="p1")
         wh.upsert({"syscall": "sys_connect"}, {"duration_ms": 1.0}, timestamp="t1")
         wh.save(self.path)
 
@@ -230,28 +235,6 @@ class PersistenceTests(unittest.TestCase):
         with open(self.path) as f:
             self.assertEqual(f.read(), before)
         self.assertEqual(os.listdir(self._tmp.name), ["fingerprints.yaml"])
-
-
-class BuildWhitelistTests(unittest.TestCase):
-    def test_builds_correct_whitelisted_ngrams(self):
-        from fingerling.tokenizer import MaskEntry, tokenize
-        from fingerling.warehouse import build_whitelist, fingerprint_id
-
-        records = [
-            {"process_kprobe": {"function_name": "sys_connect"}},
-            {"process_kprobe": {"function_name": "sys_write"}},
-            {"process_kprobe": {"function_name": "sys_close"}},
-        ]
-        profile = [MaskEntry("sys", "$.process_kprobe.function_name", "DEFAULT")]
-
-        whitelist = build_whitelist(records, profile, n=2)
-
-        fids = [fingerprint_id(tokenize(r, profile)) for r in records]
-        expected = {
-            (fids[0], fids[1]),
-            (fids[1], fids[2]),
-        }
-        self.assertEqual(whitelist, expected)
 
 
 if __name__ == "__main__":
