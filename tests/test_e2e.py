@@ -39,12 +39,7 @@ class EndToEndPipelineTests(unittest.TestCase):
         records = parse_jsonl(TELEMETRY_JSONL)
         warehouse = Warehouse()
         fingerprint_ids = [
-            warehouse.upsert(
-                tokenize(record, MASK_PROFILE),
-                duration_ms=record["duration_ms"],
-                raw_record=record,
-                timestamp=f"t{i}",
-            )
+            warehouse.upsert(tokenize(record, MASK_PROFILE), record, timestamp=f"t{i}")
             for i, record in enumerate(records)
         ]
 
@@ -60,9 +55,7 @@ class EndToEndPipelineTests(unittest.TestCase):
         records = parse_jsonl(TELEMETRY_JSONL)
         warehouse = Warehouse()
         fingerprint_ids = [
-            warehouse.upsert(
-                tokenize(record, MASK_PROFILE), duration_ms=1.0, raw_record=record, timestamp="t"
-            )
+            warehouse.upsert(tokenize(record, MASK_PROFILE), record, timestamp="t")
             for record in records
         ]
 
@@ -93,12 +86,8 @@ class EndToEndPipelineTests(unittest.TestCase):
         record = parse_jsonl(TELEMETRY_JSONL)[0]
         warehouse = Warehouse()
 
-        fid_1 = warehouse.upsert(
-            tokenize(record, MASK_PROFILE), duration_ms=1.0, raw_record=record, timestamp="t1"
-        )
-        fid_2 = warehouse.upsert(
-            tokenize(record, MASK_PROFILE), duration_ms=2.0, raw_record=record, timestamp="t2"
-        )
+        fid_1 = warehouse.upsert(tokenize(record, MASK_PROFILE), record, timestamp="t1")
+        fid_2 = warehouse.upsert(tokenize(record, MASK_PROFILE), record, timestamp="t2")
 
         self.assertEqual(fid_1, fid_2)
         self.assertEqual(len(warehouse), 1)

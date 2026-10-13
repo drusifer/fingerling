@@ -1,10 +1,19 @@
-"""Tests for STORY-FING-02: stateful append-only upsert warehouse."""
+"""Tests for STORY-FING-02 / STORY-FING-25: the fingerprint set (stateful upsert warehouse)."""
 
 import os
 import tempfile
 import unittest
 
-from fingerling.warehouse import Warehouse, fingerprint_id
+import yaml
+
+from fingerling.aggregators import make_entry
+from fingerling.warehouse import (
+    TELEMETRY_AGGREGATES,
+    FingerprintSetError,
+    ProfileMismatchError,
+    Warehouse,
+    fingerprint_id,
+)
 
 
 class FingerprintIdTests(unittest.TestCase):
@@ -28,64 +37,186 @@ class UpsertReconciliationTests(unittest.TestCase):
         wh = Warehouse()
         tokens = {"hook_syscall": "sys_connect"}
 
-        wh.upsert(tokens, duration_ms=1.0, raw_record={"n": 1}, timestamp="t1")
-        wh.upsert(tokens, duration_ms=2.0, raw_record={"n": 2}, timestamp="t2")
-        wh.upsert(tokens, duration_ms=3.0, raw_record={"n": 3}, timestamp="t3")
+        wh.upsert(tokens, {"n": 1}, timestamp="t1")
+        wh.upsert(tokens, {"n": 2}, timestamp="t2")
+        wh.upsert(tokens, {"n": 3}, timestamp="t3")
 
         self.assertEqual(len(wh), 1)  # entry list count stays flat
         record = wh.get(fingerprint_id(tokens))
         self.assertEqual(record.total_occurrences, 3)
         self.assertEqual(record.last_seen, "t3")
         self.assertEqual(record.first_seen, "t1")
+        self.assertEqual(record.tokens, tokens)  # the set explains what the ID means
 
     def test_drift_state_creates_new_record_block(self):
         wh = Warehouse()
-        wh.upsert({"a": "1"}, duration_ms=1.0, raw_record={}, timestamp="t1")
-        wh.upsert({"a": "2"}, duration_ms=1.0, raw_record={}, timestamp="t1")
+        wh.upsert({"a": "1"}, {}, timestamp="t1")
+        wh.upsert({"a": "2"}, {}, timestamp="t1")
 
         self.assertEqual(len(wh), 2)
 
-    def test_updates_moving_min_max_duration_bounds(self):
+    def test_no_aggregators_keeps_only_built_in_counters(self):
         wh = Warehouse()
+        wh.upsert({"a": "1"}, {"duration_ms": 5.0}, timestamp="t1")
+        self.assertEqual(wh.get(fingerprint_id({"a": "1"})).aggregates, {})
+        self.assertEqual(wh.skipped_values, 0)
+
+
+class AggregatedUpsertTests(unittest.TestCase):
+    def test_telemetry_aggregates_track_duration_bounds(self):
+        # What the warehouse used to hardcode, now declared as MIN/MAX on $.duration_ms.
+        wh = Warehouse(aggregates=TELEMETRY_AGGREGATES)
         tokens = {"a": "1"}
-        wh.upsert(tokens, duration_ms=5.0, raw_record={}, timestamp="t1")
-        wh.upsert(tokens, duration_ms=1.0, raw_record={}, timestamp="t2")
-        wh.upsert(tokens, duration_ms=9.0, raw_record={}, timestamp="t3")
+        for i, duration in enumerate((5.0, 1.0, 9.0)):
+            wh.upsert(tokens, {"duration_ms": duration}, timestamp=f"t{i}")
 
-        record = wh.get(fingerprint_id(tokens))
-        self.assertEqual(record.min_duration_ms, 1.0)
-        self.assertEqual(record.max_duration_ms, 9.0)
+        duration = wh.get(fingerprint_id(tokens)).aggregates["duration_ms"]
+        self.assertEqual(duration, {"MIN": 1.0, "MAX": 9.0})
 
-    def test_sample_ring_caps_at_three_and_rotates_oldest(self):
-        wh = Warehouse()
+    def test_telemetry_aggregates_keep_last_three_raw_events(self):
+        wh = Warehouse(aggregates=TELEMETRY_AGGREGATES)
         tokens = {"a": "1"}
         for i in range(5):
-            wh.upsert(tokens, duration_ms=1.0, raw_record={"seq": i}, timestamp=f"t{i}")
+            wh.upsert(tokens, {"seq": i, "duration_ms": 1.0}, timestamp=f"t{i}")
 
-        record = wh.get(fingerprint_id(tokens))
-        self.assertEqual(len(record.samples), 3)
+        samples = wh.get(fingerprint_id(tokens)).aggregates["samples"]["LAST"]
         # oldest (seq 0, 1) rotated out; newest 3 retained in order
-        self.assertEqual([s["seq"] for s in record.samples], [2, 3, 4])
+        self.assertEqual([s["seq"] for s in samples], [2, 3, 4])
+
+    def test_aggregates_are_kept_per_fingerprint(self):
+        wh = Warehouse(aggregates=[make_entry("size", "$.size", ["SUM", "AVG"])])
+        wh.upsert({"kind": "a"}, {"size": 10}, timestamp="t")
+        wh.upsert({"kind": "a"}, {"size": 30}, timestamp="t")
+        wh.upsert({"kind": "b"}, {"size": 7}, timestamp="t")
+
+        a = wh.get(fingerprint_id({"kind": "a"})).aggregates["size"]
+        b = wh.get(fingerprint_id({"kind": "b"})).aggregates["size"]
+        self.assertEqual(a, {"SUM": 40, "AVG": {"avg": 20.0, "sum": 40, "count": 2}})
+        self.assertEqual(b["SUM"], 7)
+
+    def test_unusable_values_are_counted_not_fatal(self):
+        wh = Warehouse(aggregates=[make_entry("size", "$.size", "SUM")])
+        wh.upsert({"k": "1"}, {"size": "big"}, timestamp="t")
+        wh.upsert({"k": "1"}, {}, timestamp="t")
+        wh.upsert({"k": "1"}, {"size": 2}, timestamp="t")
+
+        record = wh.get(fingerprint_id({"k": "1"}))
+        self.assertEqual(record.total_occurrences, 3)
+        self.assertEqual(record.aggregates["size"], {"SUM": 2})
+        self.assertEqual(wh.skipped_values, 2)
 
 
 class PersistenceTests(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.path = os.path.join(self._tmp.name, "fingerprints.yaml")
+
     def test_save_and_load_round_trip(self):
-        wh = Warehouse()
+        wh = Warehouse(aggregates=TELEMETRY_AGGREGATES, profile_id="p1")
         tokens = {"a": "1"}
-        wh.upsert(tokens, duration_ms=1.0, raw_record={"x": 1}, timestamp="t1")
-        wh.upsert(tokens, duration_ms=2.0, raw_record={"x": 2}, timestamp="t2")
+        wh.upsert(tokens, {"x": 1, "duration_ms": 1.0}, timestamp="t1")
+        wh.upsert(tokens, {"x": 2, "duration_ms": 2.0}, timestamp="t2")
+        wh.save(self.path)
 
-        with tempfile.TemporaryDirectory() as tmp:
-            path = os.path.join(tmp, "fingerprints.yaml")
-            wh.save(path)
+        reloaded = Warehouse(aggregates=TELEMETRY_AGGREGATES, profile_id="p1")
+        reloaded.load(self.path)
 
-            reloaded = Warehouse()
-            reloaded.load(path)
+        self.assertEqual(reloaded.get(fingerprint_id(tokens)), wh.get(fingerprint_id(tokens)))
 
-        original = wh.get(fingerprint_id(tokens))
-        restored = reloaded.get(fingerprint_id(tokens))
-        self.assertEqual(restored.total_occurrences, original.total_occurrences)
-        self.assertEqual(restored.samples, original.samples)
+    def test_file_is_versioned_and_records_profile_id(self):
+        wh = Warehouse(profile_id="p1")
+        wh.upsert({"a": "1"}, {}, timestamp="t1")
+        wh.save(self.path)
+
+        with open(self.path) as f:
+            data = yaml.safe_load(f)
+        self.assertEqual(data["version"], 1)
+        self.assertEqual(data["profile_id"], "p1")
+        self.assertEqual(list(data["fingerprints"]), [fingerprint_id({"a": "1"})])
+
+    def test_file_reads_top_down_header_then_tokens_before_statistics(self):
+        wh = Warehouse(aggregates=TELEMETRY_AGGREGATES, profile_id="p1")
+        wh.upsert({"syscall": "sys_connect"}, {"duration_ms": 1.0}, timestamp="t1")
+        wh.save(self.path)
+
+        with open(self.path) as f:
+            text = f.read()
+        order = ["version:", "profile_id:", "fingerprints:", "tokens:", "total_occurrences:",
+                 "first_seen:", "last_seen:", "aggregates:"]
+        positions = [text.index(key) for key in order]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_folding_across_a_save_load_boundary_equals_one_pass(self):
+        aggs = [make_entry("d", "$.d", ["SUM", "AVG", "MIN", "MAX"]), make_entry("s", "$", "LAST(2)")]
+        events = [({"k": str(i % 2)}, {"d": i * 0.1, "i": i}) for i in range(9)]
+
+        one_pass = Warehouse(aggregates=aggs)
+        for i, (tokens, event) in enumerate(events):
+            one_pass.upsert(tokens, event, timestamp=f"t{i}")
+
+        first = Warehouse(aggregates=aggs)
+        for i, (tokens, event) in enumerate(events[:4]):
+            first.upsert(tokens, event, timestamp=f"t{i}")
+        first.save(self.path)
+        second = Warehouse(aggregates=aggs)
+        second.load(self.path)
+        for i, (tokens, event) in enumerate(events[4:], start=4):
+            second.upsert(tokens, event, timestamp=f"t{i}")
+
+        self.assertEqual(len(second), len(one_pass))
+        for fid in one_pass:
+            self.assertEqual(second.get(fid), one_pass.get(fid))
+
+    def test_load_refuses_a_set_built_with_another_profile(self):
+        Warehouse(profile_id="old").save(self.path)
+        wh = Warehouse(profile_id="new")
+        with self.assertRaises(ProfileMismatchError) as ctx:
+            wh.load(self.path)
+        self.assertEqual((ctx.exception.set_profile_id, ctx.exception.current_profile_id), ("old", "new"))
+
+    def test_load_with_force_adopts_a_mismatched_set(self):
+        old = Warehouse(profile_id="old")
+        old.upsert({"a": "1"}, {}, timestamp="t1")
+        old.save(self.path)
+
+        wh = Warehouse(profile_id="new")
+        wh.load(self.path, force=True)
+        self.assertEqual(len(wh), 1)
+        self.assertEqual(wh.profile_id, "new")
+
+    def test_load_rejects_pre_aggregator_format_with_clear_error(self):
+        with open(self.path, "w") as f:
+            yaml.safe_dump({"abc": {"total_occurrences": 1, "min_duration_ms": 1.0}}, f)
+        with self.assertRaises(FingerprintSetError) as ctx:
+            Warehouse().load(self.path)
+        self.assertIn("not a fingerprint set", str(ctx.exception))
+
+    def test_load_rejects_unknown_version_and_invalid_yaml(self):
+        with open(self.path, "w") as f:
+            yaml.safe_dump({"version": 99, "fingerprints": {}}, f)
+        with self.assertRaises(FingerprintSetError):
+            Warehouse().load(self.path)
+        with open(self.path, "w") as f:
+            f.write("fingerprints: [unclosed")
+        with self.assertRaises(FingerprintSetError):
+            Warehouse().load(self.path)
+
+    def test_failed_save_leaves_previous_file_intact_and_no_temp_files(self):
+        wh = Warehouse(profile_id="p1")
+        wh.upsert({"a": "1"}, {}, timestamp="t1")
+        wh.save(self.path)
+        with open(self.path) as f:
+            before = f.read()
+
+        wh.upsert({"a": "2"}, {"bad": object()}, timestamp="t2")
+        wh._records[fingerprint_id({"a": "2"})].aggregates["x"] = {"LAST": [object()]}
+        with self.assertRaises(yaml.YAMLError):
+            wh.save(self.path)
+
+        with open(self.path) as f:
+            self.assertEqual(f.read(), before)
+        self.assertEqual(os.listdir(self._tmp.name), ["fingerprints.yaml"])
 
 
 class BuildWhitelistTests(unittest.TestCase):

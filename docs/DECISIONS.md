@@ -231,21 +231,45 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** Updated Narrative text spatial references from above to below.
 **Consequences:** Since the narrative guide was promoted to the top of the body layout to establish visual priority, spatial descriptions inside the text segments (Steps 2 and 5) were updated from "(displayed above)" to "(displayed below)" to match their new relative placement.
 
+## 2026-08-08 — Sprint 7: Comprehensive Input-Validation Policy Demo
 
+**Decision:** `compile_policy(..., block_pattern=None)` as an additive optional parameter emitting `spec.process.matchPattern`.
+**Consequences:** Content-based blocking sits alongside the exact-fingerprint block with no schema rewrite; existing callers are unaffected. Block was chosen over silent sanitisation so the demo visibly rejects `;` payloads.
 
+## 2026-10-12 — Sprint 8: Fingerprint Sampling CLI
 
+**Decision:** Replace the hand-rolled JSONPath resolver with the `python-jsonpath` library. **Supersedes** the 2026-07-12 and 2026-07-21 "no third-party JSONPath library" decisions.
+**Consequences:** Full syntax (filters, slices, unions, negative indexes) for complex events; a second third-party dependency. A differential run of the old and new tokenizers over every path in the repo showed no token changes, so existing fingerprint IDs are stable.
 
+**Decision:** Install dependencies into a project `.venv` created with `--system-site-packages` (`make install`); the Makefile uses it when present.
+**Consequences:** No change to the externally-managed system Python. Running `python3 -m fingerling` outside the venv prints a "run make install" hint rather than a traceback. `sudo python3 -m examples.demo` no longer works directly — use `sudo make demo-live`, which goes through the venv interpreter.
 
+**Decision:** The fingerprint tool is a general-purpose sampler for any JSONL event stream, independent of eBPF capture and of sequence analysis (user direction).
+**Consequences:** `fingerling/cli.py` reads only JSONL + a profile. N-gram baselines and anomaly scoring remain a later stage that consumes fingerprint IDs; `ringbuffer.py` was not touched.
 
+**Decision:** Per-fingerprint statistics are declared as aggregators (`SUM`, `AVG`, `MIN`, `MAX`, `LAST(n)`) over JSONPath-selected values, across events. The warehouse's hardcoded `duration_ms` min/max and 3-sample ring were removed outright, not shimmed.
+**Consequences:** **Breaking:** `Warehouse.upsert(tokens, duration_ms, raw_record)` is now `upsert(tokens, record)`, and `FingerprintRecord` carries `tokens` and `aggregates`. Telemetry callers pass `TELEMETRY_AGGREGATES` to keep the old data. Only one production caller existed, so a shim would have cost more than the migration.
 
+**Decision:** Aggregator state is keyed by function name (`LAST`, not `LAST(3)`) and `AVG` stores `{avg, sum, count}`.
+**Consequences:** State continues to fold after a reload, so batch and split runs produce equal sets; changing `n` keeps collected samples; the file shows the average directly. One `LAST` per aggregate.
 
+**Decision:** Fingerprint set files are versioned and record the `profile_id` (MD5 of the profile's `fields`); merging under a different profile is refused unless `--force-profile`.
+**Consequences:** Prevents silently mixing incomparable fingerprints. Editing only `aggregates` does not invalidate a set. Pre-Sprint-8 warehouse files are not migrated.
 
+**Decision:** Sets also store each fingerprint's tokens, and are written header-first in insertion order rather than alphabetically.
+**Consequences:** A person can read what a 32-character ID means. Slightly larger files.
 
+**Decision:** CLI entry point is `python -m fingerling` plus `make fingerprint`; exit codes 0 (clean) / 1 (written, lines skipped) / 2 (nothing written).
+**Consequences:** No packaging metadata needed. A `fingerling` console script is deferred to the backlog.
 
+## 2026-10-12 — Build environment bootstrap (Tank, `build-env` skill)
 
+**Decision:** `pyproject.toml` (PEP 621, setuptools backend) is the dependency manifest; `requirements.txt` is reduced to a pointer (`-e .[dev]`). **Supersedes** the Sprint 8 "`.venv` created with `--system-site-packages`" detail: the venv is now isolated.
+**Consequences:** Every dependency, including `rich` (the `demo` extra), comes from the manifest, so a clean checkout is reproducible with `make install`. The apt copies of PyYAML and rich are no longer used by the project. `requires-python` is `>=3.13`, the only version it has been run on.
 
+**Decision:** `[project.scripts]` provides a `fingerling` command (`.venv/bin/fingerling`).
+**Consequences:** Closes the Sprint 8 "no console script" gap. `python -m fingerling` still works.
 
-
-
-
+**Decision:** Standard Makefile targets `install`, `test`, `check`, `run`, `clean`, `distclean`, `help`; targets fail with "run 'make install' first" when `.venv` is missing instead of falling back to the system Python.
+**Consequences:** One failure mode instead of import errors. No `lint`/`format`/`build` targets yet: the project has no linter configured and ships no artifact.
 

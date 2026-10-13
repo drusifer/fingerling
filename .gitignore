@@ -220,3 +220,6 @@ __marimo__/
 # Bob Protocol / via — machine-local config and index, not portable
 .mcp.json
 .via/
+
+# Local, per-user Claude Code settings
+.claude/settings.local.json

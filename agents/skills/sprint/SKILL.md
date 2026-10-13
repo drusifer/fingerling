@@ -8,7 +8,8 @@ requires: ["bob-protocol", "bloop", "chat", "make"]
 Full sprint cycle from planning through launch, including all review gates, phase Bloops, and handoff templates.
 
 TLDR:
-    Sprints have three stages: Planning (Cypher→Smith→Morpheus→Mouse), Phase Bloop (*impl per phase), and Close (Oracle→Smith→All retro→Cypher launch).
+    Sprints have three stages: Planning (Cypher→Smith→Morpheus→Mouse), Phase Bloop (*impl per phase), and Close (Tank SDLC check→Oracle→Smith→All retro→Cypher launch).
+    No sprint starts without docs/SDLC.md — if it is missing, stop and ask Tank to write it.
     Smith gates after Cypher and Morpheus are mandatory — do not auto-proceed without explicit `*user approve`.
     Keep phases small: 1-3 tasks each. Large phases cause context overflow.
 
@@ -17,11 +18,45 @@ TLDR:
 ## Sprint Stages
 
 ```
+Stage 0: SDLC gate     → docs/SDLC.md must exist (else Tank writes it) — blocker
 Stage 1: Planning      → Cypher → Smith gate → Morpheus → Smith gate → Mouse → Morpheus review
-Stage 2: Phase Bloop   → (Neo → Trin → Morpheus) × N phases
-Stage 3: Close         → Oracle → Smith → All retro → Cypher launch
+Stage 2: Phase Bloop   → [Tank Phase 0 if build env changes] → (Neo → Trin → Morpheus) × N phases
+Stage 3: Close         → Tank SDLC check → Oracle → Smith → All retro → Cypher launch
 ```
 
+
+---
+
+## Stage 0: SDLC Gate (blocker)
+
+Before any story is written, check that `docs/SDLC.md` exists. It is Tank's definition of how
+this project is built, tested, changed and released (see the `build-env` skill) — the source of
+truth for change management. Every later step assumes it, and where this skill's generic steps
+differ from what the SDLC says for this repository, follow the SDLC.
+
+- **Present** → proceed to Stage 1.
+- **Missing** → stop. Do not plan. Ask Tank to create it and wait for Tank's confirmation:
+
+```bash
+bobp chat "Sprint blocked: docs/SDLC.md is missing. @Tank *devops sdlc" --persona <Name> --cmd blocked --to Tank
+```
+
+This only checks that the document exists. Whether the project still matches it is checked at
+close (Step 6a).
+
+### Source control follows the SDLC
+
+How a sprint uses git is defined by the project's `docs/SDLC.md` (change-management section),
+not by this skill. Read it before the first change and apply it at three points:
+
+- **Start** — if the SDLC calls for a sprint branch, create it before Cypher writes stories.
+- **During** — commit as the SDLC says (who, how often, message convention), normally as each
+  phase passes Morpheus's review. Mouse posts a phase marker to CHAT.md at the start of each
+  phase: `bobp chat "<phase description>" --persona Mouse --cmd "phase <N>"`.
+- **Close** — after Cypher's launch, integrate, version and tag as the SDLC says. Push only if
+  the SDLC explicitly gives agents that right.
+
+If the SDLC is silent on source control, do not commit; ask the user.
 
 ---
 
@@ -37,7 +72,7 @@ Cypher *pm plan sprint
 
 **Handoff:**
 ```bash
-make chat MSG="Stories ready for user review. @Smith *user review <sprint>" PERSONA="Cypher" CMD="pm handoff" TO="Smith"
+bobp chat "Stories ready for user review. @Smith *user review <sprint>" --persona Cypher --cmd "pm handoff" --to Smith
 ```
 
 ### Gate 1 — Smith: User Story Review
@@ -50,10 +85,10 @@ Smith *user review <stories>
 
 ```bash
 # Approve → proceed to Morpheus
-make chat MSG="*user approve. Stories approved. @Morpheus *lead arch sprint" PERSONA="Smith" CMD="user approve" TO="Morpheus"
+bobp chat "*user approve. Stories approved. @Morpheus *lead arch sprint" --persona Smith --cmd "user approve" --to Morpheus
 
 # Reject → back to Cypher
-make chat MSG="*user reject REASON: <reason> | FIX: <fix>. @Cypher revise stories." PERSONA="Smith" CMD="user reject" TO="Cypher"
+bobp chat "*user reject REASON: <reason> | FIX: <fix>. @Cypher revise stories." --persona Smith --cmd "user reject" --to Cypher
 ```
 
 ### Step 2 — Morpheus: Architecture
@@ -61,12 +96,17 @@ make chat MSG="*user reject REASON: <reason> | FIX: <fix>. @Cypher revise storie
 Morpheus *lead arch sprint
 ```
 - Define architecture decisions and technical design
+- **Build-environment check:** read `docs/SDLC.md`. If the design adds a language, a new
+  third-party dependency mechanism, a different package manager, a runtime version change, or a
+  new standard make target, say so explicitly in the handoff — Mouse schedules it as a Tank
+  Phase 0. Adding an ordinary dependency through the process the SDLC already describes is not a
+  mechanism change.
 - Record decisions via `@Oracle *ora record decision`
 - Hand off to Smith for architecture review gate
 
 **Handoff:**
 ```bash
-make chat MSG="Architecture complete. @Smith *user feedback <arch summary>" PERSONA="Morpheus" CMD="lead handoff" TO="Smith"
+bobp chat "Architecture complete. @Smith *user feedback <arch summary>" --persona Morpheus --cmd "lead handoff" --to Smith
 ```
 
 ### Gate 2 — Smith: Architecture Review
@@ -78,10 +118,10 @@ Smith *user feedback <arch>
 
 ```bash
 # Approve → proceed to Mouse
-make chat MSG="*user approve. Architecture approved. @Mouse *sm plan sprint" PERSONA="Smith" CMD="user approve" TO="Mouse"
+bobp chat "*user approve. Architecture approved. @Mouse *sm plan sprint" --persona Smith --cmd "user approve" --to Mouse
 
 # Reject → back to Morpheus
-make chat MSG="*user reject REASON: <reason> | FIX: <fix>. @Morpheus revise arch." PERSONA="Smith" CMD="user reject" TO="Morpheus"
+bobp chat "*user reject REASON: <reason> | FIX: <fix>. @Morpheus revise arch." --persona Smith --cmd "user reject" --to Morpheus
 ```
 
 ### Step 3 — Mouse: Phase Breakdown
@@ -89,12 +129,16 @@ make chat MSG="*user reject REASON: <reason> | FIX: <fix>. @Morpheus revise arch
 Mouse *sm plan sprint
 ```
 - Break sprint into phases of **1-3 tasks each** (no larger — context overflow risk)
-- Record phases in `agents/mouse.docs/sprint_log.md`
+- If Morpheus flagged a build-environment change, make it **Phase 0**, assigned to Tank
+  (`*devops bootstrap` or `*devops sdlc`), before any Neo phase — Neo cannot build on an
+  environment that does not exist yet. Deploy tasks, by contrast, stay last.
+- Always include the close-out task "Tank `*devops sdlc-check`"
+- Record phases in `agents/mouse/sprint_log.md`
 - Hand off to Morpheus for plan review
 
 **Handoff:**
 ```bash
-make chat MSG="Sprint planned. Phases ready for review. @Morpheus *lead review sprint plan" PERSONA="Mouse" CMD="sm handoff" TO="Morpheus"
+bobp chat "Sprint planned. Phases ready for review. @Morpheus *lead review sprint plan" --persona Mouse --cmd "sm handoff" --to Morpheus
 ```
 
 ### Step 3a — Morpheus: Sprint Plan Review
@@ -106,7 +150,7 @@ Morpheus *lead review sprint plan
 
 **Handoff (approved):**
 ```bash
-make chat MSG="Sprint plan approved. Phase 1 ready. @Neo *swe impl phase-1" PERSONA="Morpheus" CMD="lead handoff" TO="Neo"
+bobp chat "Sprint plan approved. Phase 1 ready. @Neo *swe impl phase-1" --persona Morpheus --cmd "lead handoff" --to Neo
 ```
 
 ---
@@ -124,7 +168,7 @@ Neo *swe impl <phase N>
 
 **Handoff:**
 ```bash
-make chat MSG="Phase N impl complete. @Trin *qa uat phase-N" PERSONA="Neo" CMD="swe handoff" TO="Trin"
+bobp chat "Phase N impl complete. @Trin *qa uat phase-N" --persona Neo --cmd "swe handoff" --to Trin
 ```
 
 ### Step 5 — Trin: UAT
@@ -136,12 +180,12 @@ Trin *qa uat <phase N>
 
 **Handoff (pass):**
 ```bash
-make chat MSG="UAT phase N passed. @Morpheus *lead review phase-N" PERSONA="Trin" CMD="qa handoff" TO="Morpheus"
+bobp chat "UAT phase N passed. @Morpheus *lead review phase-N" --persona Trin --cmd "qa handoff" --to Morpheus
 ```
 
 **Handoff (fail):**
 ```bash
-make chat MSG="UAT phase N FAILED. @Neo *swe fix <issues>" PERSONA="Trin" CMD="qa reject" TO="Neo"
+bobp chat "UAT phase N FAILED. @Neo *swe fix <issues>" --persona Trin --cmd "qa reject" --to Neo
 ```
 
 ### Step 6 — Morpheus: Code Review
@@ -152,17 +196,17 @@ Morpheus *lead review <phase N>
 
 **Handoff (pass — more phases):**
 ```bash
-make chat MSG="Phase N review passed. @Neo *swe impl phase-N+1" PERSONA="Morpheus" CMD="lead handoff" TO="Neo"
+bobp chat "Phase N review passed. @Neo *swe impl phase-N+1" --persona Morpheus --cmd "lead handoff" --to Neo
 ```
 
 **Handoff (pass — last phase):**
 ```bash
-make chat MSG="All phases reviewed. @Oracle *ora groom" PERSONA="Morpheus" CMD="lead handoff" TO="Oracle"
+bobp chat "All phases reviewed. @Tank *devops sdlc-check" --persona Morpheus --cmd "lead handoff" --to Tank
 ```
 
 **Handoff (fail):**
 ```bash
-make chat MSG="Phase N review FAILED. Issues: <issues>. @Neo *swe fix <issues>" PERSONA="Morpheus" CMD="lead reject" TO="Neo"
+bobp chat "Phase N review FAILED. Issues: <issues>. @Neo *swe fix <issues>" --persona Morpheus --cmd "lead reject" --to Neo
 ```
 
 **Fix loop rule:** If Neo fails to fix after one retry → Anti-Loop Protocol applies (Oracle consult + user escalation required).
@@ -171,16 +215,42 @@ make chat MSG="Phase N review FAILED. Issues: <issues>. @Neo *swe fix <issues>" 
 
 ## Stage 3: Sprint Close
 
+### Step 6a — Tank: SDLC Conformance Check
+```
+Tank *devops sdlc-check
+```
+- Rebuild from clean and confirm the project still matches `docs/SDLC.md` (full checklist in the
+  `build-env` skill): manifest matches imports, documented targets exist, no installs or
+  instructions that bypass `make`
+- Conforms → update the "Last verified" line. Legitimate mechanism change → update the SDLC
+- Runs before Oracle so any SDLC correction is included in the documentation pass
+
+**Handoff (conforms):**
+```bash
+bobp chat "SDLC check passed. @Oracle *ora groom" --persona Tank --cmd "devops handoff" --to Oracle
+```
+
+**Handoff (regression):**
+```bash
+bobp chat "SDLC check FAILED: <drift>. @Neo *swe fix <issue>" --persona Tank --cmd "devops reject" --to Neo
+```
+→ fix → Tank re-checks. The sprint does not close on a failed check.
+
 ### Step 7 — Oracle: Groom
 ```
 Oracle *ora groom
 ```
 - Update docs, record decisions, archive sprint artifacts
-- Ensure CHAT.md is archived if over 50-100 messages
+- Ensure CHAT.md is archived if over 50-100 messages (rolling `*ora archive`)
+- **Sprint-close chat report:** write a short summary of the sprint's CHAT.md conversation, then run
+  `bobp chat-report --moniker <SPRINT_MONIKER> --summary "<summary>"` (`*ora report <SPRINT_MONIKER>`).
+  This archives CHAT.md + CHAT.diagram.md to `agents/chat_archive/CHAT_<SPRINT_MONIKER>.md`/`.diagram.md`
+  and resets CHAT.md for the next sprint — all file I/O is handled by the command; Oracle supplies only
+  the summary text. Run `bobp chat-report --combine` afterward if a consolidated `CHAT_FULL.md` is needed.
 
 **Handoff:**
 ```bash
-make chat MSG="Docs groomed. @Smith *user test <sprint>" PERSONA="Oracle" CMD="ora handoff" TO="Smith"
+bobp chat "Docs groomed. @Smith *user test <sprint>" --persona Oracle --cmd "ora handoff" --to Smith
 ```
 
 ### Step 8 — Smith: End-to-End User Testing
@@ -193,12 +263,12 @@ Smith *user feedback
 
 **Handoff (pass):**
 ```bash
-make chat MSG="User testing passed. @all *sprint retro" PERSONA="Smith" CMD="user approve" TO="all"
+bobp chat "User testing passed. @all *sprint retro" --persona Smith --cmd "user approve" --to all
 ```
 
 **Handoff (bug found):**
 ```bash
-make chat MSG="*user bug CMD: <cmd> | EXPECTED: <x> | ACTUAL: <y> | UX ISSUE: <z>. @Trin triage." PERSONA="Smith" CMD="user bug" TO="Trin"
+bobp chat "*user bug CMD: <cmd> | EXPECTED: <x> | ACTUAL: <y> | UX ISSUE: <z>. @Trin triage." --persona Smith --cmd "user bug" --to Trin
 ```
 → Trin triages → fix loop → re-test before retro
 
@@ -222,7 +292,7 @@ Output feeds Cypher's backlog before launch.
 
 ```bash
 # Each persona posts:
-make chat MSG="<persona> retro: <findings>. Backlog items: <items>" PERSONA="<Name>" CMD="retro" TO="Cypher"
+bobp chat "<persona> retro: <findings>. Backlog items: <items>" --persona <Name> --cmd retro --to Cypher
 ```
 
 ### Step 10 — Cypher: Launch
@@ -236,7 +306,7 @@ Cypher *pm launch <sprint>
 
 **Handoff:**
 ```bash
-make chat MSG="*pm launch <sprint>. Sprint complete." PERSONA="Cypher" CMD="pm launch" TO="all"
+bobp chat "*pm launch <sprint>. Sprint complete." --persona Cypher --cmd "pm launch" --to all
 ```
 
 **Sprint is complete** when Cypher posts `*pm launch`.
@@ -247,6 +317,7 @@ make chat MSG="*pm launch <sprint>. Sprint complete." PERSONA="Cypher" CMD="pm l
 
 | Step | Persona | Command | Gate |
 |------|---------|---------|------|
+| 0 | (starter) | check `docs/SDLC.md` exists | Missing → `@Tank *devops sdlc`, blocked until written |
 | 1 | Cypher | `*pm plan sprint` | → Smith `*user review` |
 | 1a | Smith | `*user approve` / `*user reject` | Must approve to proceed |
 | 2 | Morpheus | `*lead arch sprint` | → Smith `*user feedback` |
@@ -255,7 +326,8 @@ make chat MSG="*pm launch <sprint>. Sprint complete." PERSONA="Cypher" CMD="pm l
 | 3a | Morpheus | `*lead review sprint plan` | Approve to start phase Bloop |
 | 4 | Neo | `*swe impl <phase N>` | → Trin UAT |
 | 5 | Trin | `*qa uat <phase N>` | → Morpheus review |
-| 6 | Morpheus | `*lead review <phase N>` | Pass → next phase or Oracle |
+| 6 | Morpheus | `*lead review <phase N>` | Pass → next phase or Tank |
+| 6a | Tank | `*devops sdlc-check` | Pass → Oracle; regression → fix Bloop |
 | 7 | Oracle | `*ora groom` | → Smith testing |
 | 8 | Smith | `*user test` + `*user feedback` | Pass → retro; bug → fix Bloop |
 | 9 | All | `*sprint retro` | Feed backlog to Cypher |
@@ -267,7 +339,8 @@ make chat MSG="*pm launch <sprint>. Sprint complete." PERSONA="Cypher" CMD="pm l
 
 - **Short phases**: 1-3 tasks each. Large phases cause context overflow.
 - **No skipping gates**: Smith's gates after steps 1 and 2 are mandatory. Never auto-proceed.
+- **SDLC bookends**: no planning without `docs/SDLC.md` (Stage 0); no close without Tank's `*devops sdlc-check` (Step 6a). Only Tank edits the SDLC.
 - **Fix Bloop scope**: Fix Bloop targets the failing phase only — never restart the full sprint.
 - **State saves**: Every persona saves state before every handoff (see bob-protocol State Management).
-- **Chat first**: Post the handoff `make chat` call BEFORE switching. The next persona reads CHAT.md on entry.
+- **Chat first**: Post the handoff `bobp chat` call BEFORE switching. The next persona reads CHAT.md on entry.
 - **Retro is required**: Step 9 is not optional. Retro output is the input to the next sprint's backlog.

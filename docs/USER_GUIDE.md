@@ -1,38 +1,152 @@
-# Project Fingerling — POC User Guide
+# Project Fingerling — User Guide
 
-This guide covers the 4 library modules delivered in the POC Fingerling sprint (see
-`docs/USER_STORIES.md` and `docs/ARCH.md`) and walks through a real, runnable end-to-end demo.
+This guide covers the fingerprint sampling CLI, the library modules behind it, and the
+detection/vaccination pipeline built on top (see `docs/ARCH.md` for the module map).
 
-**Scope reminder:** this is the pure-logic fingerprinting core only. There is no webhook
-server, no live Kubernetes cluster, and no automated Git commit/PR flow yet — those are
-next-sprint work (see the backlog in `docs/USER_STORIES.md` and `agents/CHAT.md`'s launch
-message). Everything below runs offline, no infrastructure required.
+The fingerprint tool and its library run fully offline. The vaccination TUI demo additionally
+needs Linux, root and `bpftrace`. There is still no live Kubernetes/KubeArmor integration —
+policy enforcement is simulated.
 
 ## Contents
 
 1. [Install](#install)
-2. [The Pipeline at a Glance](#the-pipeline-at-a-glance)
-3. [Module Reference](#module-reference)
+2. [Fingerprint CLI](#fingerprint-cli)
+3. [The Pipeline at a Glance](#the-pipeline-at-a-glance)
+4. [Module Reference](#module-reference)
    - [`fingerling.tokenizer`](#fingerlingtokenizer)
    - [`fingerling.warehouse`](#fingerlingwarehouse)
    - [`fingerling.ringbuffer`](#fingerlingringbuffer)
    - [`fingerling.policy`](#fingerlingpolicy)
-4. [End-to-End Demo](#end-to-end-demo)
-5. [Live Capture (Real eBPF)](#live-capture-real-ebpf)
-6. [Known Gaps](#known-gaps-see-backlog)
-7. [Troubleshooting / FAQ](#troubleshooting--faq)
+5. [End-to-End Pipeline](#end-to-end-pipeline)
+6. [Interactive Vaccination TUI Demo](#interactive-closed-loop-vaccination-tui-demo)
+7. [Known Gaps](#known-gaps-see-backlog)
+8. [Troubleshooting / FAQ](#troubleshooting--faq)
 
 ## Install
 
 ```sh
-pip install -r requirements.txt   # PyYAML is the only dependency
+make install    # creates .venv and installs the project + dev dependencies from pyproject.toml
+make test       # full suite, offline
 ```
 
-Run the test suite to confirm your environment is set up correctly:
+`make install` builds an isolated project virtualenv; nothing is installed into the system
+Python. Dependencies are declared in `pyproject.toml` (`rich`, used only by the TUI demo, is the
+`demo` extra). Every `make` target runs inside `.venv` and tells you to run `make install` if it
+is missing. Installing also creates the `fingerling` command at `.venv/bin/fingerling`
+(`.venv/bin/python -m fingerling` is equivalent). `make distclean` removes the environment.
+
+## Fingerprint CLI
+
+`fingerprint` is a general-purpose sampler for JSONL event streams — logs, traces, audit events,
+kernel telemetry, anything with one JSON object per line. It reduces each event to a
+**fingerprint** (a stable ID for "this shape of event") and maintains a **fingerprint set**: one
+entry per distinct fingerprint with a count, first/last seen, and whatever statistics and samples
+you ask for. The set grows across runs:
+
+```
+existing set  +  stream of events  ->  updated set
+```
 
 ```sh
-make test    # 60/60 tests, fully offline
+# first run creates the set; every later run merges into it
+make fingerprint ARGS="-p examples/profiles/access_log.yaml -s web.fingerprints.yaml examples/data/access_log.jsonl"
+
+# read from a pipe ('-' or no EVENTS argument means stdin)
+tail -n 1000 app.jsonl | .venv/bin/python -m fingerling fingerprint -p app.yaml -s app.fingerprints.yaml -
+
+# trial run: write the merged result elsewhere and leave the set untouched
+.venv/bin/python -m fingerling fingerprint -p app.yaml -s app.fingerprints.yaml -o /tmp/preview.yaml new.jsonl
 ```
+
+| Option | Meaning |
+|---|---|
+| `-p`, `--profile PROFILE` | YAML profile (below). Required. |
+| `-s`, `--set SET` | Fingerprint set to merge into. Created if missing, **updated in place**. Required. |
+| `EVENTS` | JSONL file; `-` or omitted reads stdin. |
+| `-o`, `--output OUTPUT` | Write the merged set here instead; `SET` is left unchanged. |
+| `--force-profile` | Merge even though `SET` was built with a different profile. |
+
+A summary goes to stderr; stdout is left empty. Exit status: `0` set written and every line used ·
+`1` set written but some lines were skipped · `2` nothing written.
+
+```
+fingerling: 8 events read from examples/data/access_log.jsonl
+  fingerprints: 4 new, 0 updated, 4 total in set
+  skipped: 0 malformed lines, 0 aggregate values
+  wrote web.fingerprints.yaml (profile 37087e1858c85f7cb976959311d01b65)
+```
+
+### Profiles
+
+A profile says how to fingerprint one kind of event:
+
+```yaml
+version: 1
+
+# fields define identity: events with the same tokens share one fingerprint
+fields:
+  - key: method
+    path: "$.request.method"                 # modifier defaults to DEFAULT
+  - key: status_class
+    path: "$.response.status"
+    modifier: "IN_RANGE(200, 399)"
+  - key: slow_upstreams
+    path: "$.upstreams[?(@.ms > 500)].name"  # full JSONPath, including filters
+
+# aggregates are tracked per fingerprint and never affect identity
+aggregates:
+  - key: latency_ms
+    path: "$.response.ms"
+    fn: [MIN, MAX, AVG]
+  - key: recent_paths
+    path: "$.request.path"
+    fn: "LAST(3)"
+```
+
+- **`fields`** — each entry extracts values with a JSONPath and turns them into one token with a
+  modifier (see [`fingerling.tokenizer`](#fingerlingtokenizer)). Choose modifiers that collapse
+  high-cardinality values (IDs, timestamps, sizes) so that similar events share a fingerprint.
+- **`aggregates`** — computed across every event that lands on the same fingerprint, over all runs:
+
+  | Function | Keeps |
+  |---|---|
+  | `SUM`, `MIN`, `MAX` | running sum / smallest / largest value |
+  | `AVG` | the average, plus the sum and count that make it mergeable |
+  | `LAST(n)` | the `n` most recent values — use path `$` to keep whole events as samples |
+
+  Numeric functions accept numbers and numeric strings. An event where the path matches nothing,
+  or a value isn't numeric, is skipped for that aggregate and counted in the summary.
+
+Profiles are validated before any event is read; an error names the file and the entry, e.g.
+`app.yaml: fields[2] (key 'port'): Unknown modifier: 'GLOB'`.
+
+Two profiles ship as starting points: `examples/profiles/access_log.yaml` (web access logs) and
+`examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).
+
+### The fingerprint set file
+
+```yaml
+version: 1
+profile_id: 37087e1858c85f7cb976959311d01b65
+fingerprints:
+  cc986aed647e7d173dcc791d402d3e89:
+    tokens: {method: GET, route: "/items/{id}", status_class: 'TRUE'}
+    total_occurrences: 3
+    first_seen: '2026-10-13T01:25:42.821783+00:00'
+    last_seen: '2026-10-13T01:25:42.822552+00:00'
+    aggregates:
+      latency_ms: {MIN: 9.0, MAX: 12.5, AVG: {avg: 10.83, sum: 32.5, count: 3}}
+      recent_paths: {LAST: [/items/17, /items/42, /items/3]}
+```
+
+- `tokens` shows what the ID stands for.
+- `first_seen` / `last_seen` are the times the tool ingested the events, not times from the events.
+- `profile_id` is derived from the profile's `fields`. A set can only be merged under the profile
+  that built it, because fingerprints from different field definitions aren't comparable. Changing
+  `aggregates` is always allowed: a new aggregate starts accumulating from that run, and changing
+  `n` in `LAST(n)` keeps the samples already collected.
+- Splitting a stream over several runs gives the same set as one run over all of it.
+- The file is replaced atomically; a failed or interrupted run leaves the previous set intact.
 
 ## The Pipeline at a Glance
 
@@ -88,27 +202,48 @@ tokens = tokenize(records[0], mask_profile)  # {"hook_syscall": "sys_connect", "
 A missing or `null` field never raises — every modifier degrades to a stable `"FALSE"`/`"NULL"`
 token instead.
 
+**Paths** are full JSONPath, resolved by the `python-jsonpath` library: dot and bracket access,
+`[*]`, slices (`[0:2]`), negative indexes, unions (`['a','b']`), recursive descent (`..`) and
+filters (`[?(@.type == 'sock')]`). The token depends on how many values the path selects: none is
+treated as missing; one is tokenized as-is; several are tokenized individually, deduplicated,
+sorted and comma-joined, so array order can't change a fingerprint. An invalid path raises
+`ValueError` from `compile_path()` (and at profile load time).
+
 ### `fingerling.warehouse`
 
-Hashes a token dict into a stable fingerprint ID and tracks how often each one has been seen.
+The fingerprint set as a library: hashes a token dict into a stable fingerprint ID and tracks
+each one, with the aggregators you declare.
 
 ```python
+from fingerling.aggregators import make_entry
 from fingerling.warehouse import Warehouse
 
-warehouse = Warehouse()
-fingerprint_id = warehouse.upsert(tokens, duration_ms=1.84, raw_record=records[0])
+warehouse = Warehouse(aggregates=[
+    make_entry("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
+    make_entry("samples", "$", "LAST(3)"),
+])
+fingerprint_id = warehouse.upsert(tokens, records[0])
 
 record = warehouse.get(fingerprint_id)
-record.total_occurrences   # grows each time the same token set is seen again
-record.samples             # up to 3 raw records, most recent last
+record.tokens                               # the tokens behind the ID
+record.total_occurrences                    # grows each time the same token set is seen again
+record.aggregates["duration_ms"]["MAX"]
+record.aggregates["samples"]["LAST"]        # up to 3 raw events, most recent last
 
-warehouse.save("fingerprints.yaml")   # persist
-warehouse.load("fingerprints.yaml")   # reload into a fresh Warehouse()
+warehouse.save("fingerprints.yaml")         # atomic
+warehouse.load("fingerprints.yaml")         # continue folding from stored state
 ```
 
 Two calls with the same tokens produce the same `fingerprint_id` and reuse one record (a
-"match"); different tokens create a new record (a "drift"). See `docs/DECISIONS.md` for why the
-sample ring grows on every call, not just on drift.
+"match"); different tokens create a new record (a "drift"). `Warehouse()` with no aggregators
+keeps only the count and first/last seen. `fingerling.warehouse.TELEMETRY_AGGREGATES` is the
+duration-bounds-plus-last-3-events set the telemetry pipeline uses. To load a profile file
+instead of building entries in Python, use `fingerling.profile.load_profile(path)` and pass its
+`.aggregates` and `.profile_id` to `Warehouse`.
+
+> **Changed in Sprint 8:** `upsert(tokens, duration_ms=..., raw_record=...)` is now
+> `upsert(tokens, record)`, and `record.min_duration_ms` / `max_duration_ms` / `samples` moved
+> under `record.aggregates`. Set files written before this change are not readable.
 
 ### `fingerling.ringbuffer`
 
@@ -146,7 +281,7 @@ from fingerling.policy import compile_policy
 manifest_yaml = compile_policy(
     workload_name="checkout-backend",
     match_labels={"app": "checkout-backend"},
-    anomalous_trajectory="fp_x,fp_y",   # a string; join a tuple of IDs yourself (see Known Gaps)
+    anomalous_trajectory=("fp_x", "fp_y"),  # a tuple of fingerprint IDs, or a comma-joined string
     namespace="default",                 # optional, defaults to "default"
     action="Block",                      # optional, "Block" (default) or "Post"
     block_pattern=None,                  # optional; e.g. ";" adds a comprehensive
@@ -158,59 +293,15 @@ manifest_yaml = compile_policy(
 `action` is always explicit — the compiler never infers Block vs. Post from workload metadata
 (see `docs/DECISIONS.md` for why).
 
-## End-to-End Demo
+## End-to-End Pipeline
 
-A complete, runnable script lives at `examples/demo.py`. It simulates a "checkout-backend"
-workload: a clean baseline window teaches the system what normal looks like, then a live
-session with one unexpected syscall (`sys_execve`) gets flagged and turned into a policy.
+The whole detection flow — telemetry → tokens → fingerprint → sequence score → policy — is
+asserted in `tests/test_e2e.py`, which runs in `make test` on every change. A clean baseline
+teaches the matcher what normal looks like; one unexpected syscall then scores `1.0` and is
+compiled into a `KubeArmorPolicy`. Note that the syscall *after* an anomalous one also scores
+`1.0`, because its window still contains the anomalous fingerprint.
 
-Run it yourself:
-
-```sh
-make demo                    # preferred — routes through mkf, logs to build/build.out
-python3 -m examples.demo     # equivalent, direct
-```
-
-**Actual output** (captured from a real run — nothing below is hand-written):
-
-```
-=== Stage 1: Baseline (training) telemetry ===
-Warehouse learned 3 distinct fingerprints from the baseline.
-Compiled whitelist of 3 whitelisted 2-grams.
-
-=== Stage 2: Live telemetry, scored against the baseline ===
-  syscall=sys_connect  fingerprint=55976bf9...  score=0.0  [clean/warm-up]
-  syscall=sys_read     fingerprint=9605acfd...  score=0.0  [clean/warm-up]
-  syscall=sys_execve   fingerprint=cb4b332e...  score=1.0  [ANOMALOUS]
-  syscall=sys_write    fingerprint=d90c9f67...  score=1.0  [ANOMALOUS]
-
-=== Stage 3: Compile a KubeArmorPolicy for the anomalous trajectory ===
-apiVersion: security.kubearmor.com/v1
-kind: KubeArmorPolicy
-metadata:
-  name: fingerling-checkout-backend
-  namespace: default
-  annotations:
-    fingerling.io/anomalous-trajectory: cb4b332ec907fffa6326a078d2d2339f,d90c9f679e4c2102fb27e53f983d08fb
-spec:
-  selector:
-    matchLabels:
-      app: checkout-backend
-  process:
-    matchPaths: []
-  action: Block
-```
-
-**Reading the output:** `sys_connect` and `sys_read` score `0.0` because the window hasn't
-filled to depth 2 yet (warm-up). `sys_execve` was never in the baseline, so its 2-gram
-(`sys_read → sys_execve`) scores `1.0`. `sys_write` also scores `1.0` — not because `sys_write`
-itself is unusual, but because the window it's evaluated in (`sys_execve → sys_write`) still
-contains the anomalous fingerprint. The two anomalous fingerprint IDs get joined and handed to
-`compile_policy()`, producing the manifest in Stage 3.
-
-The exact same flow, asserted rather than printed, lives in `tests/test_e2e.py` — that's what
-runs in `make test` on every change, so this demo can't silently drift out of sync with the
-real API.
+To watch the same flow live, use the TUI demo below.
 
 ## Interactive Closed-Loop Vaccination TUI Demo
 
@@ -218,8 +309,11 @@ Project Fingerling provides a single, unified, flagship interactive TUI dashboar
 
 **Run Command (Requires Linux, root, & bpftrace)**:
 ```sh
-sudo make demo
+make install          # once
+sudo make demo-live
 ```
+Run it through `make` so the project virtualenv is used; `sudo python3 -m examples.demo` will not
+find `python-jsonpath`.
 
 **Features & Layout**:
 - **Target App Source Code**: Displays the vulnerable Python function and highlights the CWE-78 command execution bug line.
@@ -278,7 +372,9 @@ These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_S
   sockaddr argument — raw pointer arithmetic on the user pointer was tested and reads back 0.
   Fixable later via `buf()` + Python-side byte parsing of the sockaddr layout, or by rebuilding
   the kernel with `CONFIG_DEBUG_INFO_BTF=y` (a multi-hour undertaking on a Pi, not attempted).
-  Not a blocker: `examples/demo_live_exploit.py`'s anomaly signal is entirely execve-based.
+  Not a blocker: `examples/demo.py`'s anomaly signal is entirely execve-based.
+- **No `GLOB` / `REGEX` modifiers** yet, though `docs/SOURCE_SPEC.md` lists them.
+- **No event-time timestamps.** `first_seen` / `last_seen` record ingestion time.
 - **Mock/Simulated cgroup limitations** — while cgroup assignments are attempted, full cgroup-level container runtime policies (like namespace restrictions or root filesystem mounts) are deferred.
 
 ## Troubleshooting / FAQ
@@ -287,6 +383,18 @@ These are intentional POC-scope boundaries, not bugs — tracked in `docs/USER_S
 That's the STORY-FING-03 contract as written — a binary in-whitelist/not-in-whitelist check for
 the POC, not the full Jaccard-similarity scoring described in `docs/SOURCE_SPEC.md`'s
 architecture doc. The continuous Jaccard-based scoring is a next-sprint item.
+
+**"`fingerling: the python-jsonpath package is not installed for this Python`".**
+You ran the system `python3`. Run `make install` once, then use `make fingerprint ARGS="..."` or
+`.venv/bin/python -m fingerling ...`.
+
+**"`... was built with profile X, but the current profile is Y`".**
+The set file belongs to a different profile (its `fields` differ). Keep one set file per profile.
+`--force-profile` merges anyway and stamps the set with the new profile, but the old and new
+fingerprints in it will not be comparable.
+
+**The command exits 1 but wrote the set.**
+Some input lines weren't valid JSON objects; they are listed on stderr by line number and skipped.
 
 **"`ValueError: Unknown modifier"` when calling `tokenize()`.**
 Your `MaskEntry.modifier` string doesn't match one of `DEFAULT`, `IS_PRESENT`, `IS_NULL`,

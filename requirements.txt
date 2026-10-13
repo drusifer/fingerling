@@ -1,1 +1,3 @@
-PyYAML>=6.0
+# Dependencies are declared in pyproject.toml. This file only keeps
+# `pip install -r requirements.txt` working; prefer `make install`.
+-e .[dev]

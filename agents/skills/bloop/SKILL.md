@@ -56,7 +56,7 @@ Chain: Neo → Trin → Morpheus → [Tank if deploy in scope] → [Smith if UX/
 
 | Step | Persona | Action |
 |------|---------|--------|
-| 0 | (bloop) | If `<phase>` is "next phase": read `agents/mouse.docs/current_task.md` and echo "Resolved: next phase = Phase N. Proceeding." before starting chain |
+| 0 | (bloop) | If `<phase>` is "next phase": read `agents/mouse/state.md` (Current Task section) and echo "Resolved: next phase = Phase N. Proceeding." before starting chain |
 | 1 | Neo | TDD implementation: `*swe impl <phase>` |
 | 2 | Trin | UAT — run tests, verify acceptance criteria: `*qa uat <phase>` (unit + integration only; E2E requires a separate `@Trin *qa e2e` invocation) |
 | 3 | Morpheus | Code review — quality and architecture: `*lead review <phase>` |
@@ -112,20 +112,21 @@ Chain: Morpheus → Trin (optional)
 **Sprint planning loop** — full planning sequence from stories through phase breakdown.
 
 ```
-Chain: Cypher → [Smith gate] → Morpheus → [Smith gate] → Mouse → Morpheus review → [Tank if deploy in scope]
+Chain: [SDLC gate] → Cypher → [Smith gate] → Morpheus → [Smith gate] → Mouse → Morpheus review → [Tank if deploy or build-env in scope]
 ```
 
 | Step | Persona | Action | Gate |
 |------|---------|--------|------|
+| 0 | (starter) | **SDLC gate**: confirm `docs/SDLC.md` exists. Missing → `@Tank *devops sdlc` and stop until Tank confirms it is written. | Blocker |
 | 1 | Cypher | Write stories + acceptance criteria: `*pm plan sprint` | Smith review |
 | 1a | Smith | `*user review <stories>` → `*user approve` or `*user reject` | Must approve |
 | 2 | Morpheus | Architecture decisions: `*lead arch sprint` | Smith review |
 | 2a | Smith | `*user feedback <arch>` → `*user approve` or `*user reject` | Must approve |
 | 3 | Mouse | Break into short phases (1-3 tasks each): `*sm plan sprint` | Morpheus review |
 | 3a | Morpheus | Review sprint plan vs. architecture: `*lead review sprint plan` | |
-| 3b | Tank | **DevOps planning gate** (if sprint includes deployment, env, or infra work): `*devops infra <sprint>` — Tank reviews sprint for infra impact, adds any deployment tasks to the plan, and confirms pipeline readiness. Skip if sprint is app-only. | |
+| 3b | Tank | **DevOps planning gate** (if sprint includes deployment, env, infra, or build-environment work — a new language, package manager, runtime version, or dependency mechanism): `*devops infra <sprint>` — Tank reviews sprint for infra impact, adds deployment tasks (sequenced last) and build-environment tasks (sequenced as Phase 0, before Neo) to the plan, and confirms pipeline readiness. Skip if neither applies. | |
 
-**Gates are hard stops** — Smith must explicitly `*user approve` before the chain continues. Tank's 3b step is required (not optional) whenever Cypher's stories include env var changes, new services, or deployment work.
+**Gates are hard stops** — Smith must explicitly `*user approve` before the chain continues. Step 0 is a hard stop too: no stories are written until `docs/SDLC.md` exists. Tank's 3b step is required (not optional) whenever Cypher's stories include env var changes, new services, or deployment work, or Morpheus's architecture changes the build environment. Sprint close adds Tank's `*devops sdlc-check` before Oracle's groom (see the `sprint` skill, Step 6a).
 
 **Example:** `*plan sprint`
 
@@ -171,7 +172,7 @@ Chain: Tank → Trin (smoke) → report
 Every persona in a loop posts a handoff before switching:
 
 ```bash
-make chat MSG="<summary> @NextPersona *command" PERSONA="<Name>" CMD="<prefix> handoff" TO="<next>"
+bobp chat "<summary> @NextPersona *command" --persona <Name> --cmd "<prefix> handoff" --to <next>
 ```
 
 The next persona reads CHAT.md on entry — if the handoff isn't there, they start blind.
@@ -186,6 +187,6 @@ To minimize token usage and prevent coordination overhead:
 3. **Active Anti-Loop Guard**: If any loop iteration (e.g. Neo fix → Trin test fail → Neo fix) repeats **more than twice** for the same issue without resolution, the loop must be paused. The active agent must post logs, describe the blocker to the user, and request manual intervention rather than attempting a third cycle.
 4. **Fast-Track Sprint Planning**: If a sprint plan consists only of small maintenance items, bypass the full 6-step planning chain. Cypher and Morpheus should compile stories and architecture details into a single document for unified approval by Smith, reducing the transition count.
 5. **No Protocol Re-Load**: Do NOT invoke `bob-protocol` at bloop entry. The protocol is already active when bloop is triggered. Re-loading it wastes ~6k tokens per invocation.
-6. **No Sub-Skill Re-Invocation**: Do not call `Skill(make, ...)` or `Skill(chat, ...)` more than once per session. Each call reloads the full SKILL.md body unnecessarily. After the first load, run `make <target>` and `make chat MSG=...` via the Bash tool directly — always through make, never bypassing it. **This has actually been violated** (Sprint 1, Project Scalene: `Skill(make)` was called for `setup`, then called again later in the same session for `test` — the second call should have been a plain `Bash("make test")`). Before calling `Skill(make)` or `Skill(chat)`, check whether you already loaded it earlier in this same session — if so, use Bash directly instead.
+6. **No Sub-Skill Re-Invocation**: Do not call `Skill(make, ...)` or `Skill(chat, ...)` more than once per session. Each call reloads the full SKILL.md body unnecessarily. After the first load, run `bobp make <target>` and `bobp chat "..." --persona ... --cmd ... --to ...` via the Bash tool directly — always through `bobp`, never bypassing it. **This has actually been violated** (Sprint 1, Project Scalene: `Skill(make)` was called for `setup`, then called again later in the same session for `test` — the second call should have been a plain `Bash("bobp make test")`). Before calling `Skill(make)` or `Skill(chat)`, check whether you already loaded it earlier in this same session — if so, use Bash directly instead.
 7. **Context Budget Between Phases**: After each bloop phase completes, check the context percentage. If > 60%, explicitly warn the user and recommend `/clear` before the next phase. Ensure all state files are written before clearing.
 

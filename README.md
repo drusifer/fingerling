@@ -8,7 +8,8 @@ Project Fingerling provides an automated, self-learning, adaptive software immun
 | [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | **Start here** — module reference + end-to-end demo |
 | [docs/SOURCE_SPEC.md](docs/SOURCE_SPEC.md) | Original BRD/PRD/ARCH + source user stories |
 | [docs/USER_STORIES.md](docs/USER_STORIES.md) | POC sprint backlog (STORY-FING-01..04) |
-| [docs/ARCH.md](docs/ARCH.md) | POC architecture: modules, data structures, decisions log |
+| [docs/ARCH.md](docs/ARCH.md) | Architecture: modules, data structures, decisions log |
+| [docs/SDLC.md](docs/SDLC.md) | How the project is built, tested, changed and released — source of truth for change management |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Chronological record of architectural/product decisions |
 | [docs/LESSONS.md](docs/LESSONS.md) | Lessons learned during sprint execution |
 | [task.md](task.md) | Current sprint task board |
@@ -18,16 +19,26 @@ Project Fingerling provides an automated, self-learning, adaptive software immun
 Multi-persona coordination lives under `agents/` — see [AGENTS.md](AGENTS.md) for the protocol
 and [agents/CHAT.md](agents/CHAT.md) for the team's live coordination log.
 
-## Running Tests
+## Setup
 
 ```sh
+make install     # creates .venv and installs the project + dev dependencies from pyproject.toml
 make test
 ```
 
-## Try It
+## Fingerprint an event stream
+
+`fingerprint` folds any JSONL event stream into a fingerprint set that grows across runs:
 
 ```sh
-python3 -m examples.demo
+make fingerprint ARGS="-p examples/profiles/access_log.yaml -s web.fingerprints.yaml examples/data/access_log.jsonl"
+some-producer | .venv/bin/fingerling fingerprint -p my-profile.yaml -s my.fingerprints.yaml -
 ```
 
-See [docs/USER_GUIDE.md](docs/USER_GUIDE.md) for a walkthrough of the output.
+See [docs/USER_GUIDE.md](docs/USER_GUIDE.md#fingerprint-cli) for the profile format and options.
+
+## Vaccination demo
+
+```sh
+sudo make demo-live     # interactive TUI; needs Linux, root and bpftrace
+```

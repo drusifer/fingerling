@@ -1,19 +1,49 @@
-"""Stateful append-only upsert data warehouse (STORY-FING-02).
+"""The fingerprint set: a stateful, mergeable inventory of fingerprints (STORY-FING-02, -25).
 
-Serializes tokenized fingerprints into a stable MD5 ID and continuously
-reconciles occurrences against a bounded-size historical record, so
-multi-day production traces don't bloat the tracking manifest.
+Serializes tokenized events into a stable MD5 fingerprint ID and reconciles
+every observation against one bounded-size record per fingerprint. Which
+statistics and samples a record keeps is declared by the caller as a list of
+aggregators, so the set works for any event stream, not just eBPF telemetry.
 """
 
 from __future__ import annotations
 
 import hashlib
+import os
+import tempfile
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+from typing import Any, Iterator, Sequence
 
 import yaml
 
-_SAMPLE_RING_CAP = 3
+from fingerling import aggregators
+from fingerling.aggregators import AggregateEntry, make_entry
+from fingerling.tokenizer import MaskEntry, tokenize
+
+SET_VERSION = 1
+
+TELEMETRY_AGGREGATES: tuple[AggregateEntry, ...] = (
+    make_entry("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
+    make_entry("samples", "$", "LAST(3)"),
+)
+"""What the pre-aggregator warehouse hardcoded: duration bounds and the last 3 raw events."""
+
+
+class FingerprintSetError(ValueError):
+    """A fingerprint set file can't be used (unreadable, wrong format, wrong version)."""
+
+
+class ProfileMismatchError(FingerprintSetError):
+    """The set file was built with a different profile than the one now in use."""
+
+    def __init__(self, path: str, set_profile_id: str, current_profile_id: str) -> None:
+        self.set_profile_id = set_profile_id
+        self.current_profile_id = current_profile_id
+        super().__init__(
+            f"{path} was built with profile {set_profile_id}, "
+            f"but the current profile is {current_profile_id}"
+        )
 
 
 def fingerprint_id(tokens: dict[str, str]) -> str:
@@ -24,53 +54,51 @@ def fingerprint_id(tokens: dict[str, str]) -> str:
 
 @dataclass
 class FingerprintRecord:
+    tokens: dict[str, str]
     total_occurrences: int
     first_seen: str
     last_seen: str
-    min_duration_ms: float
-    max_duration_ms: float
-    samples: list = field(default_factory=list)
+    aggregates: dict[str, dict] = field(default_factory=dict)
 
 
 class Warehouse:
-    """In-memory fingerprint inventory with YAML load/save."""
+    """In-memory fingerprint set with versioned YAML load/save."""
 
-    def __init__(self) -> None:
-        self._records: dict[str, FingerprintRecord] = {}
-
-    def upsert(
+    def __init__(
         self,
-        tokens: dict[str, str],
-        duration_ms: float,
-        raw_record: dict,
-        timestamp: str | None = None,
-    ) -> str:
-        """Upsert one telemetry observation. Returns the fingerprint_id.
+        aggregates: Sequence[AggregateEntry] = (),
+        profile_id: str | None = None,
+    ) -> None:
+        self._records: dict[str, FingerprintRecord] = {}
+        self._aggregates = tuple(aggregates)
+        self.profile_id = profile_id
+        self.skipped_values = 0
+        """Running count of values the aggregators could not use (see `aggregators.update`)."""
 
-        Match: increments total_occurrences, updates last_seen and the
-        min/max duration bounds — no new record block.
-        Drift: creates a new record block seeded from this observation.
-        Both states append `raw_record` to the fixed-capacity sample ring.
+    def upsert(self, tokens: dict[str, str], record: Any, timestamp: str | None = None) -> str:
+        """Fold one event into the set. Returns its fingerprint_id.
+
+        Match: increments total_occurrences and updates last_seen — no new
+        record block. Drift: creates a new record block. Either way every
+        configured aggregator is folded over `record`.
         """
         fid = fingerprint_id(tokens)
         ts = timestamp or datetime.now(timezone.utc).isoformat()
         existing = self._records.get(fid)
 
         if existing is None:
-            self._records[fid] = FingerprintRecord(
-                total_occurrences=1,
-                first_seen=ts,
-                last_seen=ts,
-                min_duration_ms=duration_ms,
-                max_duration_ms=duration_ms,
-                samples=[raw_record],
+            existing = self._records[fid] = FingerprintRecord(
+                tokens=dict(tokens), total_occurrences=1, first_seen=ts, last_seen=ts
             )
         else:
             existing.total_occurrences += 1
             existing.last_seen = ts
-            existing.min_duration_ms = min(existing.min_duration_ms, duration_ms)
-            existing.max_duration_ms = max(existing.max_duration_ms, duration_ms)
-            existing.samples = (existing.samples + [raw_record])[-_SAMPLE_RING_CAP:]
+
+        for entry in self._aggregates:
+            state = existing.aggregates.setdefault(entry.key, {})
+            self.skipped_values += aggregators.update(state, entry, record)
+            if not state:
+                del existing.aggregates[entry.key]
 
         return fid
 
@@ -80,15 +108,73 @@ class Warehouse:
     def __len__(self) -> int:
         return len(self._records)
 
-    def save(self, path: str) -> None:
-        data = {fid: asdict(rec) for fid, rec in self._records.items()}
-        with open(path, "w") as f:
-            yaml.safe_dump(data, f, sort_keys=True)
+    def __contains__(self, fingerprint_id_: str) -> bool:
+        return fingerprint_id_ in self._records
 
-    def load(self, path: str) -> None:
-        with open(path) as f:
-            data = yaml.safe_load(f) or {}
-        self._records = {fid: FingerprintRecord(**rec) for fid, rec in data.items()}
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._records)
+
+    def save(self, path: str) -> None:
+        """Write the set to `path` atomically: a failed write leaves any existing file intact."""
+        data = {
+            "version": SET_VERSION,
+            "profile_id": self.profile_id,
+            "fingerprints": {fid: asdict(rec) for fid, rec in self._records.items()},
+        }
+        directory = os.path.dirname(os.path.abspath(path))
+        fd, tmp_path = tempfile.mkstemp(dir=directory, prefix=".fingerprints-", suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w") as f:
+                # Insertion order, not alphabetical: header first, and each record
+                # leads with the tokens that explain its ID.
+                yaml.safe_dump(data, f, sort_keys=False)
+            os.replace(tmp_path, path)
+        except BaseException:
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+            raise
+
+    def load(self, path: str, force: bool = False) -> None:
+        """Replace the in-memory set with the one stored at `path`.
+
+        Raises ProfileMismatchError if the file records a different profile
+        than this warehouse was created with, unless `force` is set (the file's
+        fingerprints are then adopted under the current profile).
+        """
+        try:
+            with open(path) as f:
+                data = yaml.safe_load(f)
+        except yaml.YAMLError as exc:
+            raise FingerprintSetError(f"{path} is not valid YAML: {exc}") from exc
+
+        if data is None:
+            data = {"version": SET_VERSION, "profile_id": None, "fingerprints": {}}
+        if not isinstance(data, dict) or "fingerprints" not in data or "version" not in data:
+            raise FingerprintSetError(
+                f"{path} is not a fingerprint set (expected top-level 'version' and "
+                f"'fingerprints'); sets written before the aggregator format are not supported"
+            )
+        if data["version"] != SET_VERSION:
+            raise FingerprintSetError(
+                f"{path} is fingerprint set version {data['version']}; "
+                f"this tool reads version {SET_VERSION}"
+            )
+
+        stored_profile = data.get("profile_id")
+        if (
+            not force
+            and stored_profile is not None
+            and self.profile_id is not None
+            and stored_profile != self.profile_id
+        ):
+            raise ProfileMismatchError(path, stored_profile, self.profile_id)
+
+        try:
+            self._records = {
+                fid: FingerprintRecord(**rec) for fid, rec in (data["fingerprints"] or {}).items()
+            }
+        except TypeError as exc:
+            raise FingerprintSetError(f"{path} has a malformed fingerprint entry: {exc}") from exc
 
 
 def build_whitelist(
@@ -98,19 +184,15 @@ def build_whitelist(
     warehouse: Warehouse | None = None,
 ) -> set[tuple[str, ...]]:
     """Observe a clean baseline telemetry stream and compile a whitelist of N-gram fingerprint trajectories."""
-    from fingerling.tokenizer import tokenize
-
     if warehouse is None:
         warehouse = Warehouse()
     fingerprint_ids = []
     for r in records:
         tokens = tokenize(r, mask_profile)
-        fid = warehouse.upsert(tokens, duration_ms=0.0, raw_record=r)
+        fid = warehouse.upsert(tokens, r)
         fingerprint_ids.append(fid)
 
     whitelist = set()
     for i in range(len(fingerprint_ids) - n + 1):
         whitelist.add(tuple(fingerprint_ids[i : i + n]))
     return whitelist
-
-

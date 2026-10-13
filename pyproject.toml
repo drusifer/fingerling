@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fingerling"
+version = "0.8.0"
+description = "Fingerprint and sample JSONL event streams; an adaptive software immune system built on those fingerprints."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "PyYAML>=6.0",
+    "python-jsonpath>=2.0",
+]
+
+[project.optional-dependencies]
+# The interactive vaccination TUI (examples/demo.py).
+demo = ["rich>=13"]
+# Everything needed to work on the project: `make install` installs this group.
+dev = ["fingerling[demo]"]
+
+[project.scripts]
+fingerling = "fingerling.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["fingerling*"]

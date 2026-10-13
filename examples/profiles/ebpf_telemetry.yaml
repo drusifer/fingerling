@@ -1,0 +1,24 @@
+# Fingerprint profile for Tetragon-shaped eBPF process telemetry
+# (the event shape `python -m fingerling.capture` emits).
+version: 1
+
+# fields define a fingerprint's identity: events with the same tokens share one fingerprint.
+fields:
+  - key: hook_syscall
+    path: "$.process_kprobe.function_name"
+    modifier: DEFAULT
+  - key: exec_target
+    path: "$.process_kprobe.args[0].exec_arg.filename"
+    modifier: DEFAULT
+  - key: kernel_return_state
+    path: "$.process_kprobe.return_value"
+    modifier: "IN_RANGE(-999, 0)"
+
+# aggregates are tracked per fingerprint and never change its identity.
+aggregates:
+  - key: duration_ms
+    path: "$.duration_ms"
+    fn: [MIN, MAX, AVG]
+  - key: samples
+    path: "$"
+    fn: "LAST(3)"

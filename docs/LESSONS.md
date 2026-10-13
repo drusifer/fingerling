@@ -91,7 +91,26 @@ cause from symptoms — the real answer was one skill-read away, not a guess.
 **Lesson:** Temporarily stopping/starting `Live` rendering contexts simplifies stdin read gates in TUIs.
 **What happened:** Running keyboard input prompts inside an active `rich.live.Live` context is prone to rendering jitter and cursor mismatch because standard stream buffering conflicts with curses-like terminal takeovers. Stopping the live context (`live.stop()`) before calling `input()` and restarting it immediately after (`live.start()`) provides an extremely simple and robust input gateway that works on any terminal without requiring complex low-level keyboard hook libraries.
 
+## 2026-08-08 — Sprint 7
 
+See `agents/oracle/lessons.md`: `rich.text.Text` does not parse bracket markup; extend an existing
+TUI step rather than renumbering.
 
+## 2026-10-12 — Sprint 8: Fingerprint Sampling CLI
 
+**Lesson:** When swapping an implementation behind a stable contract, prove equivalence by running old and new side by side, not by trusting the test suite.
+**What happened:** Replacing the hand-rolled JSONPath resolver risked silently changing fingerprint IDs. Trin loaded the pre-sprint `tokenizer.py` from git alongside the new one and compared tokens for every `(path, modifier)` literal in the repo across edge-case records (90 comparisons, 0 differences).
+**Applying it:** For any "same behaviour, new engine" change, keep the old module importable from `git show HEAD:<file>` and diff outputs over real inputs before deleting it.
+
+**Lesson:** Check how the interpreter is managed before choosing a dependency.
+**What happened:** The Pi's system Python is PEP 668 "externally managed" — `pip install` (even `--user`) is refused, and existing deps came from apt. A project `.venv` with `--system-site-packages` added the library without touching the system or losing the apt packages.
+**Applying it:** New dependencies go in `pyproject.toml` and are installed with `make install`. Run everything through `make` so the venv interpreter is used.
+
+**Lesson:** A type change surfaces dead attribute access.
+**What happened:** `examples/demo.py` read `entry.raw_record`, an attribute `FingerprintRecord` never had; it only escaped notice because that branch needs a live eBPF run. It was found while migrating callers to the new record shape.
+**Applying it:** When changing a dataclass, grep every attribute access on it, including in code paths the tests cannot reach.
+
+**Lesson:** Make "merge" and "first run" the same code path.
+**What happened:** Because aggregator state is plain data that is loaded and folded further, batch-vs-split equivalence needed no special merge logic and holds at every split point.
+**Applying it:** Prefer resumable state over a separate merge routine when a tool accumulates across runs.
 

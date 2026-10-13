@@ -1,6 +1,14 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help tldr test via_index demo demo-live chat
+# Everything runs through the project virtualenv; `make install` creates it from pyproject.toml.
+PYTHON := .venv/bin/python
+
+# First line of any recipe that needs the environment.
+define need_venv
+	@test -x $(PYTHON) || { echo "No .venv - run 'make install' first"; exit 1; }
+endef
+
+.PHONY: help tldr install check test run fingerprint demo demo-live clean distclean via_index chat
 
 help: ## Show available make targets
 	@echo ""
@@ -12,17 +20,46 @@ help: ## Show available make targets
 tldr: ## Show TL;DR summaries from all project files (quick orientation for agents)
 	@rg --no-heading "TL;DR:" --glob "*.md" -N | sed 's|^\./||' | sort
 
-test: ## Run unit tests
-	@python3 -m unittest discover -s tests
+$(PYTHON):
+	@python3 -m venv .venv
+
+install: $(PYTHON) ## Create .venv and install the project with dev dependencies (from pyproject.toml)
+	@$(PYTHON) -m pip install -q -e ".[dev]"
+	@echo "Installed into .venv"
+
+check: ## Byte-compile all sources (fast syntax check, no tests run)
+	$(need_venv)
+	@$(PYTHON) -m compileall -q fingerling examples tests
+
+test: ## Run unit tests (ARGS="tests.test_cli" for one module)
+	$(need_venv)
+	@$(PYTHON) -m unittest $(if $(ARGS),$(ARGS),discover -s tests)
+
+clean: ## Remove caches and build metadata (keeps .venv)
+	@find . -name __pycache__ -type d -not -path './.venv/*' -prune -exec rm -rf {} +
+	@rm -rf fingerling.egg-info
+
+distclean: clean ## Also remove the virtualenv
+	@rm -rf .venv
 
 via_index: ## Build the via index required by the via MCP server
 	@via index "$(CURDIR)"
 
-demo: ## Run the end-to-end pipeline demo (see docs/USER_GUIDE.md)
-	@python3 -m examples.demo
+run: ## Run the fingerling CLI (ARGS="fingerprint --help")
+	$(need_venv)
+	@.venv/bin/fingerling $(ARGS)
 
-demo-live: ## Run the unified demo forcing real eBPF capture (needs Linux, root, bpftrace; see docs/USER_GUIDE.md)
-	@sudo python3 -m examples.demo
+fingerprint: ## Merge JSONL events into a fingerprint set (ARGS="-p PROFILE -s SET [EVENTS|-]"; ARGS=--help for more)
+	$(need_venv)
+	@.venv/bin/fingerling fingerprint $(ARGS)
+
+demo: ## Run the interactive vaccination TUI (see docs/USER_GUIDE.md)
+	$(need_venv)
+	@$(PYTHON) -m examples.demo
+
+demo-live: ## Run the TUI with real eBPF capture (needs Linux, root, bpftrace; see docs/USER_GUIDE.md)
+	$(need_venv)
+	@sudo $(PYTHON) -m examples.demo
 
 chat: ## Post a message to agents/CHAT.md (MSG="..." PERSONA="Name" CMD="cmd" [TO="Recipient"])
 	@python3 agents/tools/chat.py "$(MSG)" $(if $(PERSONA),--persona "$(PERSONA)") $(if $(CMD),--cmd "$(CMD)") $(if $(TO),--to "$(TO)")

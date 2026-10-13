@@ -3,7 +3,14 @@
 import json
 import unittest
 
-from fingerling.tokenizer import MaskEntry, apply_modifier, parse_jsonl, resolve_path, tokenize
+from fingerling.tokenizer import (
+    MaskEntry,
+    apply_modifier,
+    compile_path,
+    find_values,
+    parse_jsonl,
+    tokenize,
+)
 
 SAMPLE_RECORD = {
     "time": "2026-07-12T09:44:10.005Z",
@@ -24,34 +31,108 @@ SAMPLE_RECORD = {
 }
 
 
-class ResolvePathTests(unittest.TestCase):
+class FindValuesTests(unittest.TestCase):
     def test_resolves_nested_dot_path(self):
         self.assertEqual(
-            resolve_path(SAMPLE_RECORD, "$.process_exec.process.binary"),
-            "/usr/bin/node",
+            find_values(SAMPLE_RECORD, "$.process_exec.process.binary"), ["/usr/bin/node"]
         )
 
     def test_resolves_array_index_path(self):
         self.assertEqual(
-            resolve_path(SAMPLE_RECORD, "$.process_kprobe.args[0].sock_arg.dport"),
-            6379,
+            find_values(SAMPLE_RECORD, "$.process_kprobe.args[0].sock_arg.dport"), [6379]
         )
 
-    def test_missing_path_returns_missing_sentinel(self):
-        from fingerling.tokenizer import _MISSING
+    def test_missing_path_yields_no_matches(self):
+        self.assertEqual(find_values(SAMPLE_RECORD, "$.process_exec.process.ppid"), [])
 
-        self.assertIs(resolve_path(SAMPLE_RECORD, "$.process_exec.process.ppid"), _MISSING)
+    def test_out_of_range_index_yields_no_matches(self):
+        self.assertEqual(find_values(SAMPLE_RECORD, "$.process_kprobe.args[5].sock_arg.dport"), [])
 
-    def test_out_of_range_index_is_missing(self):
-        from fingerling.tokenizer import _MISSING
-
-        self.assertIs(
-            resolve_path(SAMPLE_RECORD, "$.process_kprobe.args[5].sock_arg.dport"), _MISSING
-        )
-
-    def test_resolves_explicit_json_null(self):
+    def test_explicit_json_null_is_a_match(self):
         record = {"process_kprobe": {"function_name": None}}
-        self.assertIsNone(resolve_path(record, "$.process_kprobe.function_name"))
+        self.assertEqual(find_values(record, "$.process_kprobe.function_name"), [None])
+
+    def test_root_path_matches_whole_record(self):
+        self.assertEqual(find_values(SAMPLE_RECORD, "$"), [SAMPLE_RECORD])
+
+
+MULTI_ARG_RECORD = {
+    "args": [
+        {"type": "sock", "dport": 6379},
+        {"type": "file", "name": "/etc/passwd"},
+        {"type": "sock", "dport": 443},
+        {"type": "sock", "dport": 80},
+    ]
+}
+
+
+class FullJsonPathSyntaxTests(unittest.TestCase):
+    """STORY-FING-23 AC2: syntax the hand-rolled resolver never supported."""
+
+    def test_filter_expression_parenthesised(self):
+        self.assertEqual(
+            find_values(MULTI_ARG_RECORD, "$.args[?(@.type == 'sock')].dport"), [6379, 443, 80]
+        )
+
+    def test_filter_expression_with_comparison(self):
+        self.assertEqual(find_values(MULTI_ARG_RECORD, "$.args[?@.dport > 100].dport"), [6379, 443])
+
+    def test_slice(self):
+        self.assertEqual(find_values(MULTI_ARG_RECORD, "$.args[0:2].type"), ["sock", "file"])
+
+    def test_negative_index(self):
+        self.assertEqual(find_values(MULTI_ARG_RECORD, "$.args[-1].dport"), [80])
+
+    def test_union_of_names(self):
+        self.assertEqual(find_values(MULTI_ARG_RECORD, "$.args[1]['type','name']"), ["file", "/etc/passwd"])
+
+    def test_recursive_descent(self):
+        self.assertEqual(find_values(MULTI_ARG_RECORD, "$..dport"), [6379, 443, 80])
+
+    def test_filter_feeds_tokenize(self):
+        profile = [MaskEntry("sock_ports", "$.args[?(@.type == 'sock')].dport", "ANY(80, 443)")]
+        # 6379 -> FALSE, 443 -> TRUE, 80 -> TRUE; deduplicated + sorted.
+        self.assertEqual(tokenize(MULTI_ARG_RECORD, profile), {"sock_ports": "FALSE,TRUE"})
+
+
+class InvalidPathTests(unittest.TestCase):
+    """STORY-FING-23 AC5: bad paths fail at compile time, as ValueError."""
+
+    def test_unterminated_bracket_raises_value_error(self):
+        with self.assertRaises(ValueError) as ctx:
+            compile_path("$.a[")
+        self.assertIn("$.a[", str(ctx.exception))
+
+    def test_empty_path_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            compile_path("")
+
+    def test_blank_path_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            compile_path("   ")
+
+
+class MatchCountSemanticsTests(unittest.TestCase):
+    """STORY-FING-23 AC3: token shape depends on match count, not path spelling."""
+
+    def test_single_match_from_wildcard_equals_scalar_token(self):
+        record = {"args": [{"dport": 443}]}
+        wildcard = tokenize(record, [MaskEntry("p", "$.args[*].dport", "DEFAULT")])
+        indexed = tokenize(record, [MaskEntry("p", "$.args[0].dport", "DEFAULT")])
+        self.assertEqual(wildcard, indexed)
+        self.assertEqual(wildcard, {"p": "443"})
+
+    def test_list_valued_single_match_is_not_expanded(self):
+        record = {"tags": ["b", "a"]}
+        self.assertEqual(
+            tokenize(record, [MaskEntry("t", "$.tags", "DEFAULT")]), {"t": "['b', 'a']"}
+        )
+
+    def test_empty_wildcard_is_missing(self):
+        record = {"args": []}
+        self.assertEqual(
+            tokenize(record, [MaskEntry("p", "$.args[*].dport", "IS_PRESENT")]), {"p": "FALSE"}
+        )
 
 
 class ApplyModifierTests(unittest.TestCase):

@@ -63,8 +63,7 @@ def create_handler(
             for r in records:
                 try:
                     tokens = tokenize(r, mask_profile)
-                    duration = float(r.get("duration_ms", 0.0))
-                    fid = warehouse.upsert(tokens, duration_ms=duration, raw_record=r)
+                    fid = warehouse.upsert(tokens, r)
                     score = matcher.push(fid)
                     scores.append(score)
                     if matcher.warm and score > 0.05:

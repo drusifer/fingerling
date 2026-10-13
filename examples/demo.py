@@ -41,7 +41,7 @@ from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
 from fingerling.tokenizer import MaskEntry, tokenize
-from fingerling.warehouse import Warehouse, fingerprint_id
+from fingerling.warehouse import TELEMETRY_AGGREGATES, Warehouse, fingerprint_id
 from fingerling.capture import run_capture, stop_capture, wait_ready, parse_stream
 from examples.vulnerable_app import run_app
 
@@ -471,7 +471,7 @@ class TUIDemo:
         status_text.append(f"   └─ Telemetry Ingest: http://127.0.0.1:{self.webhook_port}/telemetry\n\n")
         
         status_text.append("📊 Analytics:\n", style="bold")
-        status_text.append(f"   ├─ Warehouse Size: {len(self.webhook_warehouse._records)} tokens\n")
+        status_text.append(f"   ├─ Warehouse Size: {len(self.webhook_warehouse)} tokens\n")
         status_text.append(f"   ├─ Matcher Window: {self.webhook_matcher._window}\n")
         if self.current_score > 0.05:
             status_text.append("   └─ Anomaly Score: ", style="dim")
@@ -649,7 +649,7 @@ class TUIDemo:
 
             self.webhook_matcher = matcher
             self.webhook_mask_profile = mask_profile
-            self.webhook_warehouse = Warehouse()
+            self.webhook_warehouse = Warehouse(aggregates=TELEMETRY_AGGREGATES)
 
             # Define a custom log writer to route Webhook logs to daemon_logs instead of raw_traces
             class WebhookLogWriter:
@@ -753,7 +753,7 @@ class TUIDemo:
                     for fid in key_pair:
                         entry = self.webhook_warehouse.get(fid)
                         if entry:
-                            filename = entry.raw_record["process_kprobe"]["args"][0]["exec_arg"]["filename"].split("/")[-1]
+                            filename = entry.tokens.get("exec_target", "ping").split("/")[-1]
                             targets.append(filename)
                         else:
                             targets.append("ping")

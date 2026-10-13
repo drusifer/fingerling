@@ -1,4 +1,4 @@
-"""JSONPath extraction and plug-and-play modifier engine (STORY-FING-01).
+"""JSONPath extraction and plug-and-play modifier engine (STORY-FING-01, -23).
 
 Collapses high-cardinality eBPF telemetry fields (PIDs, timestamps, raw byte
 counts) into stable, low-cardinality string tokens before hashing.
@@ -7,12 +7,14 @@ counts) into stable, low-cardinality string tokens before hashing.
 from __future__ import annotations
 
 import json
-import re
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any, Callable
 
+import jsonpath
+
 _MISSING = object()
-"""Sentinel returned by resolve_path when a path segment can't be found."""
+"""Sentinel handed to modifiers when a path selects nothing."""
 
 
 @dataclass(frozen=True)
@@ -24,87 +26,21 @@ class MaskEntry:
     modifier: str
 
 
-def resolve_segments(data: Any, segments: list[str]) -> list[Any]:
-    """Recursively resolve JSONPath segments (supporting fixed indices, wildcards, and descent)."""
-    if data is _MISSING:
-        return []
-
-    if not segments:
-        return [data]
-
-    if data is None:
-        return []
-
-    seg = segments[0]
-    remaining = segments[1:]
-
-    if seg == "":
-        # Recursive descent ".."
-        results = []
-        results.extend(resolve_segments(data, remaining))
-        if isinstance(data, dict):
-            for val in data.values():
-                results.extend(resolve_segments(val, segments))
-        elif isinstance(data, list):
-            for val in data:
-                results.extend(resolve_segments(val, segments))
-        return results
-
-    # Parse brackets (e.g. "args[*]", "[0]", "args")
-    brackets = re.findall(r"\[([^\]]+)\]", seg)
-    name = re.sub(r"\[[^\]]+\]", "", seg)
-
-    curr_level: list[Any] = []
-    if name:
-        if isinstance(data, dict) and name in data:
-            curr_level = [data[name]]
-        else:
-            return []
-    else:
-        curr_level = [data]
-
-    for br in brackets:
-        next_level: list[Any] = []
-        for item in curr_level:
-            if br == "*":
-                if isinstance(item, list):
-                    next_level.extend(item)
-            else:
-                try:
-                    idx = int(br)
-                    if isinstance(item, list) and 0 <= idx < len(item):
-                        next_level.append(item[idx])
-                except ValueError:
-                    pass
-        curr_level = next_level
-        if not curr_level:
-            break
-
-    final_results: list[Any] = []
-    for item in curr_level:
-        final_results.extend(resolve_segments(item, remaining))
-    return final_results
+@lru_cache(maxsize=None)
+def compile_path(path: str) -> jsonpath.JSONPath:
+    """Compile a JSONPath expression (cached). Raises ValueError if it is empty or invalid."""
+    if not isinstance(path, str) or not path.strip():
+        raise ValueError("JSONPath must be a non-empty string")
+    try:
+        return jsonpath.compile(path)
+    except jsonpath.JSONPathError as exc:
+        reason = str(exc).splitlines()[0]
+        raise ValueError(f"Invalid JSONPath {path!r}: {reason}") from exc
 
 
-def resolve_path(record: dict, path: str) -> Any:
-    """Resolve a dot/bracket-index path (supporting wildcards [*] and recursive descent ..) against `record`."""
-    if path == "$":
-        return record
-    if path.startswith("$."):
-        path = path[2:]
-    elif path.startswith("$"):
-        path = path[1:]
-
-    segments = path.split(".")
-    results = resolve_segments(record, segments)
-
-    has_wildcard = "*" in path or ".." in path
-    if has_wildcard:
-        return results
-    else:
-        if not results:
-            return _MISSING
-        return results[0]
+def find_values(record: Any, path: str) -> list[Any]:
+    """Return every value `path` selects from `record`, in document order ([] if none)."""
+    return compile_path(path).findall(record)
 
 
 def _mod_default(value: Any) -> str:
@@ -144,40 +80,71 @@ _MODIFIERS: dict[str, Callable[..., str]] = {
 }
 
 
-def apply_modifier(value: Any, modifier: str, has_wildcard: bool = False) -> str:
-    """Apply a modifier expression (e.g. "IN_RANGE(-999, 0)") to `value`."""
-    if has_wildcard and isinstance(value, list):
-        if not value:
-            value = _MISSING
-        else:
-            tokens = [apply_modifier(item, modifier, has_wildcard=False) for item in value]
-            return ",".join(sorted(list(set(tokens))))
+_ARG_COUNTS: dict[str, tuple[int, int | None]] = {
+    "DEFAULT": (0, 0),
+    "IS_PRESENT": (0, 0),
+    "IS_NULL": (0, 0),
+    "IN_RANGE": (2, 2),
+    "ANY": (1, None),
+}
 
+
+def _parse_modifier(modifier: str) -> tuple[str, list[str]]:
+    """Split a modifier expression into (name, args). Raises ValueError on unknown names."""
     name, _, rest = modifier.partition("(")
     name = name.strip()
     if name not in _MODIFIERS:
         raise ValueError(f"Unknown modifier: {name!r}")
+    args_str = rest.rstrip(")").strip()
+    return name, [a.strip() for a in args_str.split(",")] if args_str else []
 
-    args: list[str] = []
-    if rest:
-        args_str = rest.rstrip(")").strip()
-        if args_str:
-            args = [a.strip() for a in args_str.split(",")]
 
-    fn = _MODIFIERS[name]
-    if name in ("DEFAULT", "IS_PRESENT", "IS_NULL"):
-        return fn(value)
-    return fn(value, *args)
+def validate_modifier(modifier: str) -> None:
+    """Check a modifier expression up front. Raises ValueError saying what is wrong."""
+    if not isinstance(modifier, str) or not modifier.strip():
+        raise ValueError("Modifier must be a non-empty string")
+    name, args = _parse_modifier(modifier)
+    if "(" in modifier and not modifier.rstrip().endswith(")"):
+        raise ValueError(f"Malformed modifier {modifier!r}: missing ')'")
+    low, high = _ARG_COUNTS[name]
+    if len(args) < low or (high is not None and len(args) > high):
+        expected = f"{low}" if low == high else f"at least {low}"
+        raise ValueError(f"Modifier {name} takes {expected} argument(s), got {len(args)}: {modifier!r}")
+    if name == "IN_RANGE":
+        try:
+            bounds = [float(a) for a in args]
+        except ValueError:
+            raise ValueError(f"IN_RANGE bounds must be numbers: {modifier!r}") from None
+        if bounds[0] > bounds[1]:
+            raise ValueError(f"IN_RANGE low bound exceeds high bound: {modifier!r}")
+
+
+def apply_modifier(value: Any, modifier: str) -> str:
+    """Apply a modifier expression (e.g. "IN_RANGE(-999, 0)") to one `value`."""
+    name, args = _parse_modifier(modifier)
+    return _MODIFIERS[name](value, *args)
+
+
+def tokenize_values(values: list[Any], modifier: str) -> str:
+    """Collapse the values one path selected into a single stable token.
+
+    No match is tokenized as missing, one match as that value. Several matches
+    are tokenized individually, then deduplicated, sorted and comma-joined so
+    array order can't cause fingerprint drift.
+    """
+    if not values:
+        return apply_modifier(_MISSING, modifier)
+    if len(values) == 1:
+        return apply_modifier(values[0], modifier)
+    return ",".join(sorted({apply_modifier(value, modifier) for value in values}))
 
 
 def tokenize(record: dict, mask_profile: list[MaskEntry]) -> dict[str, str]:
     """Extract + tokenize every `MaskEntry` in `mask_profile` against `record`."""
-    result = {}
-    for entry in mask_profile:
-        has_wildcard = "*" in entry.path or ".." in entry.path
-        val = resolve_path(record, entry.path)
-        result[entry.key] = apply_modifier(val, entry.modifier, has_wildcard)
-    return result
+    return {
+        entry.key: tokenize_values(find_values(record, entry.path), entry.modifier)
+        for entry in mask_profile
+    }
 
 
 def parse_jsonl(jsonl_text: str) -> list[dict]:
