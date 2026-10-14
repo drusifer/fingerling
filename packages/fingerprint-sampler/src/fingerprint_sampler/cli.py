@@ -30,13 +30,15 @@ from fingerprint_sampler.profile import Profile, ProfileError, load_profile
 EXIT_OK = 0
 EXIT_LINES_SKIPPED = 1
 EXIT_NOT_WRITTEN = 2
+EXIT_HISTORY_NOT_WRITTEN = 3
 
 _MAX_LINE_WARNINGS = 10
 
 _MERGE_DESCRIPTION = (
     "Fingerprint every event in a JSONL stream using PROFILE and merge the results "
     "into the fingerprint set SET: counts add up, aggregates continue, new "
-    "fingerprints are appended. SET is created if it does not exist."
+    "fingerprints are appended. SET is created if it does not exist. Each run's own "
+    "fingerprints are also kept in SET's history directory."
 )
 
 _MERGE_EPILOG = """\
@@ -52,10 +54,17 @@ example:
 
 The SET file is updated in place (atomically) unless --output is given.
 
+history:
+  Every run that updates SET also writes just that run's fingerprints, with a
+  'run:' header (times, source, counts), to <SET without extension>.history/,
+  e.g. web.fingerprints.history/2026-10-14T193005Z.yaml. 'fingerprint show'
+  reads it. A run with --output writes no history.
+
 exit status:
   0  set written, every line was used
   1  set written, but some input lines were skipped (see stderr)
   2  nothing written (bad arguments, profile, set file, or profile mismatch)
+  3  set written, but its history file was not (takes precedence over 1)
 """
 
 
@@ -272,8 +281,13 @@ def _cmd_show(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
-def _fold_stream(lines: Iterable[str], profile: Profile, fingerprints: FingerprintSet) -> dict:
-    """Fingerprint each JSONL line into `fingerprints`. Returns run statistics."""
+def _fold_stream(
+    lines: Iterable[str], profile: Profile, fingerprints: FingerprintSet, run: FingerprintSet
+) -> dict:
+    """Fingerprint each JSONL line into `fingerprints` and into `run` (this run only).
+
+    Both get the same timestamp per event, so their times agree. Returns run statistics.
+    """
     known_before = set(fingerprints)
     seen: set[str] = set()
     events = skipped_lines = 0
@@ -297,7 +311,9 @@ def _fold_stream(lines: Iterable[str], profile: Profile, fingerprints: Fingerpri
             skipped_lines += 1
             warn(lineno, f"expected a JSON object, got {type(event).__name__}")
             continue
-        seen.add(fingerprints.upsert(profile.tokens(event), event))
+        tokens, timestamp = profile.tokens(event), datetime.now(UTC).isoformat()
+        run.upsert(tokens, event, timestamp)
+        seen.add(fingerprints.upsert(tokens, event, timestamp))
         events += 1
 
     return {
@@ -356,6 +372,41 @@ def _open_events(args: argparse.Namespace) -> AbstractContextManager[IO[str]]:
     return nullcontext(sys.stdin)
 
 
+def _source(args: argparse.Namespace) -> str:
+    return "stdin" if args.events == "-" else args.events
+
+
+def _history_path(set_path: str, started: datetime) -> str:
+    """A new file in `<set without extension>.history/`, named by UTC start time (STORY-FING-48).
+
+    Creates the directory. A run starting in the same second as an earlier one gets _2, _3, ... (sorts after the first)
+    """
+    directory = os.path.splitext(set_path)[0] + ".history"
+    os.makedirs(directory, exist_ok=True)
+    stem = started.strftime("%Y-%m-%dT%H%M%SZ")
+    path, n = os.path.join(directory, f"{stem}.yaml"), 2
+    while os.path.exists(path):
+        path, n = os.path.join(directory, f"{stem}_{n}.yaml"), n + 1
+    return path
+
+
+def _write_history(
+    args: argparse.Namespace, run: FingerprintSet, stats: dict, started: datetime
+) -> str:
+    """Save this run's own set, with its `run:` header, to SET's history. Returns its path."""
+    run.run = {
+        "started": started.isoformat(),
+        "finished": datetime.now(UTC).isoformat(),
+        "source": _source(args),
+        "events": stats["events"],
+        "skipped_lines": stats["skipped_lines"],
+        "set": args.set_path,
+    }
+    path = _history_path(args.set_path, started)
+    run.save(path)
+    return path
+
+
 def _report(
     args: argparse.Namespace,
     stats: dict,
@@ -364,7 +415,7 @@ def _report(
     *,
     existed: bool,
 ) -> None:
-    source = "stdin" if args.events == "-" else args.events
+    source = _source(args)
     destination = args.output or args.set_path
     verb = "updated" if existed and not args.output else "wrote"
     _say(f"fingerprint: {stats['events']} events read from {source}")
@@ -382,13 +433,15 @@ def _report(
 
 
 def _cmd_merge(args: argparse.Namespace) -> int:
+    started = datetime.now(UTC)
     destination = args.output or args.set_path
     existed = os.path.exists(args.set_path)
     try:
         profile = _load_profile(args.profile)
         fingerprints = _open_set(args, profile)
+        run = FingerprintSet(profile.aggregates, profile.profile_id)
         with _open_events(args) as stream:
-            stats = _fold_stream(stream, profile, fingerprints)
+            stats = _fold_stream(stream, profile, fingerprints, run)
         try:
             fingerprints.save(destination)
         except OSError as exc:
@@ -402,7 +455,17 @@ def _cmd_merge(args: argparse.Namespace) -> int:
         _say(f"fingerprint: interrupted - {destination} was not modified")
         return 130
     _report(args, stats, fingerprints, profile, existed=existed)
-    return EXIT_LINES_SKIPPED if stats["skipped_lines"] else EXIT_OK
+    status = EXIT_LINES_SKIPPED if stats["skipped_lines"] else EXIT_OK
+    if args.output:
+        return status
+    try:
+        _say(f"  history: {_write_history(args, run, stats, started)}")
+    except OSError as exc:
+        _say(
+            f"fingerprint: {args.set_path} updated, but history not written: {exc.strerror or exc}"
+        )
+        return EXIT_HISTORY_NOT_WRITTEN
+    return status
 
 
 def main(argv: list[str] | None = None) -> int:

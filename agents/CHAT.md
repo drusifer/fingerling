@@ -54,3 +54,7 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_15.md` (2026-10-14 19:19:55) — Sprint 15, Shares of the Set (Tier 2, 5 pts, 0 fix cycles). Owner asked for percentages of aggregate values; clarified as share of the set total for SUM and COUNT, stored and shown. FING-46: each fingerprint's share section in the set file, recomputed on every save. FING-47: fingerprint show prints COUNT % and a value + % column per SUM/COUNT aggregate. No release (mainline).
 
 ---
+
+> **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_16.md` (2026-10-14 19:55:43) — Sprint 16, Run History (Tier 2, 3 pts, 0 fix cycles). Owner asked for lightweight history; clarified: <set>.history/ beside the set, always on, -o kept without history. FING-48: each merge also writes that run's own set with a run: header to <set>.history/<UTC start>.yaml; same-second runs get _2 (UAT caught -2 sorting first); exit 3 if the history write fails. Findings: run files ~6 MB on GH Archive, merge ~1.7x slower. No release (mainline).
+
+---
