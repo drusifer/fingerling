@@ -7,7 +7,7 @@
 **Status:** In progress
 **Branch:** `sprint-12`
 **Source:** `docs/sprints/USER_STORIES_SPRINT12.md` (stories + architecture D1-D7)
-**Points:** 10 · **Tier:** 1
+**Points:** 13 · **Tier:** 1
 
 ### Phase 0: Lint report (STORY-FING-38, 2 pts) — Tank
 - [x] **0.1** `vulture`, `radon` dev deps; `make quality`; SDLC section 3. [Tank]
@@ -20,6 +20,10 @@
 ### Phase 2: Smells and YAGNI (STORY-FING-40, 3 pts) — Neo
 - [x] **2.1** Shims, aliases and dead API deleted; `Warehouse` → `FingerprintSet`; `_cmd_merge` and `load` split. [Neo]
 - [x] **2.2** `make quality` clean (or findings justified); UAT + review. [Neo, Trin, Morpheus]
+
+### Phase 3: Smoke suite (STORY-FING-41, 3 pts) — Trin, Tank
+- [x] **3.1** `smoke/test_smoke.py`: installed command, examples, invalid profile, README blocks. [Trin]
+- [x] **3.2** `make smoke` + SDLC gate; UAT + review. [Tank, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]

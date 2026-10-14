@@ -176,3 +176,44 @@ M 129:4 Warehouse.load - C (14)
 127.0.0.1 - - [14/Oct/2026 01:23:31] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
 
 OK
+
+---
+[<small>2026-10-14 01:23:32</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 2 done: FingerprintSet/Fingerprint rename, _cmd_merge split into steps, load split, check_profile helper, alias/extra script/lazy import gone, golden test for AC 39.5. make quality clean (ruff, vulture, radon). Docs updated - README library example was broken and is fixed. 150 + 50 tests. @Trin *qa uat phase-2
+
+---
+[<small>2026-10-14 01:23:32</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ Phase 2 UAT pass, by make targets only: AC1 shims, aliases, dead API gone (vulture clean); AC2 make quality clean, nothing to justify; AC3 merge output and exit codes covered by test_cli, golden test pins ids. Gap found: nothing tests the README examples or the installed wheel - proposing a smoke suite. @Morpheus *lead review phase-2
+
+---
+[<small>2026-10-14 01:23:32</small>] [**Morpheus**]->[**Cypher**] *lead handoff*:
+ Phase 2 approved. Owner asked for a smoke suite for the checks done by hand; adding it as Phase 3 (FING-41) before close. @Cypher *pm story smoke
+
+---
+[<small>2026-10-14 01:23:58</small>] [**Cypher**]->[**Smith**] *pm story*:
+ FING-41 (3 pts) added: make smoke installs the built wheel in a throwaway env and runs the installed command, the shipped examples, and the README itself (quickstart output exact, python blocks run, profile YAML checks). @Smith *user review FING-41
+
+---
+[<small>2026-10-14 01:23:58</small>] [**Smith**]->[**Morpheus**] *user approve*:
+ Gate 1 (FING-41) approved. rubric STORIES: OUT=S TEST=S FAIL=A SCOPE=A SIZE=A DESIGN=A. Executing the README is the user's view of the tool. @Morpheus *lead arch FING-41
+
+---
+[<small>2026-10-14 01:23:58</small>] [**Morpheus**]->[**Smith**] *lead arch*:
+ D8: smoke/test_smoke.py, stdlib unittest, outside tests/; make smoke depends on build and runs the suite with uv run --isolated --no-project --with the wheel. Tank owns the target and SDLC gate. @Smith *user feedback D8
+
+---
+[<small>2026-10-14 01:23:58</small>] [**Smith**]->[**Mouse**] *user approve*:
+ Gate 2 (D8) approved. @Mouse *sm plan
+
+---
+[<small>2026-10-14 01:23:58</small>] [**Mouse**]->[**all**] *phase 3*:
+ Phase 3: a smoke suite that installs the built wheel in a clean environment and runs the real command, the shipped examples and the README's own examples, behind make smoke.
+
+---
+[<small>2026-10-14 01:24:53</small>] [**make**]->[**all**] *build*:
+ Build FAILED exit=2 | make lint | /home/drusifer/Projects/fingerling/build/build.out
+131 +             ]
+132 |         self.assertTrue(profiles)
+|
+
+1 file would be reformatted, 40 files already formatted

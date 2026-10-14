@@ -1,6 +1,6 @@
 # Sprint 12 User Stories: Domain Model and Consolidated Validation
 
-*   **Total Points**: 10 (Tier 1 — the owner invoked `/sprint`)
+*   **Total Points**: 13 (Tier 1 — the owner invoked `/sprint`; FING-41 added mid-sprint)
 *   **Branch**: `sprint-12`
 *   **Source**: Owner, 2026-10-14 (`/sprint refactor …`, plus "Input is strictly jsonl. do we have a
     domain model?" and the answer "Move whole module out" for the tokenizer). Logged in `agents/CHAT.md`.
@@ -77,6 +77,25 @@ worst-graded functions simplified,
    remaining extended-ruff finding is listed in the sprint record with the reason it stays.
 3. `fingerprint merge` behaviour (output, exit codes, files written) is unchanged.
 
+## STORY-FING-41: Smoke suite for the installed tool
+**Points:** 3 · **Owner:** Trin (tests), Tank (target) · added mid-sprint at the owner's request
+
+**As** the owner,
+**I want** the checks agents were running by hand — install the wheel, run the commands, try the
+README — to be a test suite behind one make target,
+**so that** they are repeatable and nobody needs ad hoc commands to know the tool works.
+
+### Acceptance Criteria
+1. `make smoke` builds the wheel, installs it into a throwaway environment with no project
+   checkout on the path, and runs the smoke tests there; it fails if any test fails.
+2. The suite runs the installed `fingerprint` command: `--version` matches the package version;
+   `check` passes every shipped example profile; an invalid profile gives exit 1 from `check`
+   and exit 2 from `merge` with nothing written.
+3. The README is executed: the Quickstart shell block runs and prints exactly the output block
+   shown under it; every `python` block runs without error; every YAML block that is a whole
+   profile passes `fingerprint check`.
+4. The SDLC lists `make smoke` as a gate before handoff to Trin and at sprint close.
+
 ---
 
 ## Out of Scope
@@ -139,3 +158,10 @@ C(14) → separate parsing from validation; `aggregators.update` C(11) → D3.
 
 **D7 — Build environment.** Dev dependencies `vulture` and `radon` and target `make quality`
 are a mechanism change: Tank, Phase 0. No runtime dependency changes.
+
+**D8 — Smoke suite (FING-41).** `packages/fingerprint-sampler/smoke/test_smoke.py`, stdlib
+`unittest` only, outside `tests/` so `make test` does not pick it up. `make smoke` depends on
+`build` and runs `uv run --isolated --no-project --with dist/*.whl python -m unittest discover`
+on it, so the code under test is the installed wheel, not the source tree. README blocks are
+found by their fences under a heading; output comparison is exact. Mechanism change (target, SDLC
+gate): Tank.

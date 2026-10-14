@@ -61,6 +61,7 @@ stop with "No .venv - run 'make install' first" if it is missing. Agents invoke 
 | `test` | `test-fingerprint` then `test-fingerling` | both suites |
 | `test-fingerprint` | `unittest discover` in `packages/fingerprint-sampler` | `ARGS` is passed to `unittest` in place of `discover`; it does not currently find a single module (backlog) |
 | `test-fingerling` | `unittest discover -s tests` | parked modules + compatibility shims |
+| `smoke` | `build`, then the `packages/fingerprint-sampler/smoke` suite inside a throwaway environment holding only the built wheel | runs the installed `fingerprint` command, the shipped examples and the README's own examples |
 | `test-all` | both suites on Python 3.14 and 3.15 in throwaway uv environments | downloads interpreters on first use |
 | `lint` | `ruff check .` and `ruff format --check .` | changes nothing |
 | `quality` | extended `ruff` rules, `vulture`, `radon cc -nc` over `packages/fingerprint-sampler/src` | report only, always exits 0; Trin reads it at UAT |
@@ -101,6 +102,7 @@ is a Mechanism-class change. `agents/` (BobProtocol tooling) and Markdown are ex
 |---|---|---|
 | Lint + format | `make lint` | every handoff to Trin; sprint close |
 | Tests | `make test` | every handoff to Trin; sprint close |
+| Smoke (installed wheel + README) | `make smoke` | every handoff to Trin; sprint close |
 | Tests, all Pythons | `make test-all` | sprint close |
 | Secret scan | `make secrets` | sprint close; staged changes are scanned on every commit by the hook |
 | Package build | `make build` | sprint close; before any tag |
@@ -258,7 +260,7 @@ Run by Tank at sprint close (`*devops sdlc-check`):
 7. This sprint's changes followed section 6: made on the sprint branch, Conventional Commit
    messages, right class and approval, chat report produced with a section for every phase and
    for close, nothing pushed by agents.
-8. `.venv/bin/fingerprint merge --help` and `.venv/bin/fingerling fingerprint --help` run, and a
+8. `make smoke` passes (it runs the installed `fingerprint` command), and a
    second `make install` changes nothing.
 9. The workflows under `.github/workflows/` invoke only `make` targets that exist.
 
