@@ -1,7 +1,12 @@
-# Task Board — Sprint 9: Fingerprint Package + SDLC Tooling
+# Task Board
+
+**No sprint in flight.** Last sprint: 9 (below). Next up: see *Owner actions* and *Queued requests*.
+
+## Sprint 9: Fingerprint Package + SDLC Tooling
 
 **Status:** Sprint 9 complete — launched 2026-10-13 (18/18 pts); merged to `main`, tagged `v0.1.0`, not pushed
-**Branch:** `sprint-9`
+**Branch:** `sprint-9` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_9.diagram.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT9.md` (stories + architecture D1-D7)
 **Process:** `docs/SDLC.md` (branch per sprint, Conventional Commits, Tank check at close)
 **Points:** 18 · **Tier:** 1
@@ -39,16 +44,25 @@
 - `make lint`, `make test`, `make secrets` green on the sprint branch.
 - Nothing pushed, nothing published.
 
+## Since Sprint 9 (maintenance, each on its own `fix/` branch, merged to `main`)
+- [x] `fix/single-makefile` — one Makefile; `chat` and `tldr` targets removed in favour of `bobp chat` / `bobp tldr`.
+- [x] `fix/docs-groom` — sprint stories moved to `docs/sprints/`; README documentation map; agents index and Oracle memory rewritten; dead links fixed.
+- [x] `fix/remove-legacy-tools` — nine stale `agents/tools/*.py` copies of bobp tools removed.
+- [x] `fix/session-close` — this board, state files and the post-sprint chat archive.
+
+Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published package did not change.
+
 ## Owner actions (agents do not push or publish)
 - One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
 - `git push origin main` — first run of the CI workflow; watch the parked tests on the runner.
 - `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0.
-- Commit the `chat-report` change in `~/Projects/bob_protocol` and sync the skill/persona edits upstream.
+- In `~/Projects/bob_protocol`: commit the uncommitted `chat_report.py`, `tldr.py`, `setup_agent_links.py` changes and tests, and copy this project's skill/template/persona edits upstream (list in `agents/bob/state.md`).
 
 ## Queued requests (next up)
 - **Artifact rubrics** (User, 2026-10-13): inventory the output artifacts each persona and skill is expected to produce; for templated artifacts, add a rubric appendix to the template for qualitative judgement of agent-produced content; recommend which skills to pilot first.
 
 ## Backlog (unscheduled)
 - Fingerprint tool: `fingerprint show` (table/report view of a set); `GLOB`/`REGEX` modifiers; reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
-- Process: reset or archive `CHAT.md` before a sprint starts so "Planning" holds only that sprint; `--svg`/mermaid lint of chat reports need Node.
+- Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
+- Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.
 - Parked (not scheduled while the fingerprint tool is the focus): n-gram/Jaccard stage, `examples/demo.py` markup sweep and smoke test, `sudo make demo-live` verification, `tests/test_server.py` private access, USER_GUIDE GitOps/sandbox sections.
