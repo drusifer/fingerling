@@ -41,4 +41,12 @@ sequenceDiagram
     Note right of Trin: "UAT phase-1 PASSED. AC1<br/>every artifact from the<br/>2026-10-13 inventory is<br/>listed with owner,<br/>location, template,<br/>rubric, reviewer. AC2<br/>format…"
     Morpheus->>Bob: "lead handoff"
     Note right of Morpheus: "Phase 1 review PASSED.<br/>Requiring an existing<br/>reviewer and step before<br/>a rubric may be added<br/>keeps this from becoming<br/>decoration. Inventory…"
+    Mouse->>All: "phase 2"
+    Note right of Mouse: "Stories template and<br/>rubric (STORY-FING-32):<br/>a template for the<br/>sprint stories document<br/>with a STORIES rubric<br/>appended, applied by<br/>Cypher a…"
+    Bob->>Trin: "prompt handoff"
+    Note right of Bob: "Phase 2 done (FING-32): <br/>agents/templates/_templa<br/>te_USER_STORIES.md with<br/>the sections our sprint<br/>docs use (goal, owner<br/>assumptions, stories,…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase-2 PASSED. AC1<br/>template sections match<br/>Sprints 8-10 documents.<br/>AC2 rubric in the<br/>standard format between<br/>the markers, 6<br/>criteria,…"
+    Morpheus->>Bob: "lead handoff"
+    Note right of Morpheus: "Phase 2 review PASSED.<br/>DESIGN is the criterion<br/>I wanted most: early<br/>sprints' criteria<br/>prescribed FIFO queues<br/>and libraries, which<br/>left the…"
 ```

@@ -66,8 +66,10 @@ If the SDLC is silent on source control, do not commit; ask the user.
 ```
 Cypher *pm plan sprint
 ```
+- Write the stories from `agents/templates/_template_USER_STORIES.md` (delete its rubric block)
 - Define user stories with clear acceptance criteria
 - Scope the sprint: what's in, what's out
+- Self-check against the template's STORIES rubric before handing off
 - Hand off to Smith for user review gate
 
 **Handoff:**
@@ -80,7 +82,7 @@ bobp chat "Stories ready for user review. @Smith *user review <sprint>" --person
 Smith *user review <stories>
 ```
 - Evaluate stories against HCI principles and user value
-- Check: are acceptance criteria testable and user-facing?
+- Apply the STORIES rubric and report its verdict line (`rubric STORIES: OUT=A TEST=S ...`); any Weak rejects, naming the criterion and the fix — see `agents/templates/ARTIFACTS.md`
 - Must post explicit approve or reject
 
 ```bash

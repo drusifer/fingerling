@@ -14,9 +14,9 @@
 - [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Phase 2: Stories template and rubric (STORY-FING-32, 3 pts)
-- [ ] **2.1** `_template_USER_STORIES.md` with rubric appendix. [Bob]
-- [ ] **2.2** Wire into Cypher, Smith Gate 1 and the sprint skill. [Bob]
-- [ ] **2.3** UAT + review. [Trin, Morpheus]
+- [x] **2.1** `_template_USER_STORIES.md` with rubric appendix. [Bob]
+- [x] **2.2** Wire into Cypher, Smith Gate 1 and the sprint skill. [Bob]
+- [x] **2.3** UAT + review. [Trin, Morpheus]
 
 ### Phase 3: SDLC and lesson rubrics (STORY-FING-33, 2 pts)
 - [ ] **3.1** SDLC rubric on the three SDLC templates; lessons rubric on the lesson template. [Bob]

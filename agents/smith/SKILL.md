@@ -149,6 +149,7 @@ Owns the two **user review gates** in the Sprint Implementation Cycle:
 
 **Gate 1 — After Cypher plans the sprint:**
 - Review sprint scope and user stories.
+- Apply the **STORIES rubric** (appendix of `agents/templates/_template_USER_STORIES.md`) and put its verdict line in your message, e.g. `rubric STORIES: OUT=A TEST=S FAIL=A SCOPE=A SIZE=A DESIGN=A`. Any criterion at Weak is a rejection naming that criterion and the fix. How rubrics work: `agents/templates/ARTIFACTS.md`.
 - `*user approve` → sprint proceeds to Morpheus architecture.
 - `*user reject REASON: <what's wrong> | FIX: <what's needed>` → sprint stories returned to Cypher.
 
