@@ -202,3 +202,15 @@ make: *** [Makefile:47: test-fingerprint] Error 1
 All checks passed!
 == vulture (dead code)
 == radon (complexity grade C or worse)
+
+---
+[<small>2026-10-14 17:30:12</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Done: type: DATETIME/DATE (ISO only, UTC-normalised; format/epoch dropped per owner), TRUNC modifier, MIN/MAX on real datetimes, typed built-in times. Tests first; lint, quality, 174 + 50, smoke pass. @Trin *qa uat
+
+---
+[<small>2026-10-14 17:30:12</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ UAT pass via make: zones normalise, non-ISO counts as missing/skipped, TRUNC units, save/load keeps datetime state, type changes profile id. @Morpheus *lead review
+
+---
+[<small>2026-10-14 17:30:12</small>] [**Morpheus**]->[**User**] *lead review*:
+ Approved: types are a third Rule family; no parser options.

@@ -62,4 +62,10 @@ sequenceDiagram
     Note right of User: "wdyt of an AS DATE<br/>modifier ... or just<br/>labeling the type in the<br/>profile? Dates are going<br/>to come up a lot / and<br/>datetimes"
     User->>All: "request"
     Note right of User: "drop the format option<br/>we will always output<br/>iso datetime / stop -<br/>we're not writing a<br/>parser - we can expect<br/>valid json datetimes to<br/>be in…"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Done: type:<br/>DATETIME/DATE (ISO only,<br/>UTC-normalised,<br/>format/epoch dropped per<br/>owner), TRUNC modifier,<br/>MIN/MAX on real<br/>datetimes, typed buil…"
+    Trin->>Morpheus: "qa uat"
+    Note right of Trin: "UAT pass via make: zones<br/>normalise, non-ISO<br/>counts as<br/>missing/skipped, TRUNC<br/>units, save/load keeps<br/>datetime state, type<br/>changes profile id…"
+    Morpheus->>User: "lead review"
+    Note right of Morpheus: "Approved: types are a<br/>third Rule family, no<br/>parser options."
 ```
