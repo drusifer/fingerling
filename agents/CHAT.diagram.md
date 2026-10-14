@@ -5,5 +5,27 @@ Auto-generated from `agents/CHAT.md` by `bobp chat-diagram`. Do not edit by hand
 ```mermaid
 %%{init: {"sequence": {"messageFontSize": 14, "noteFontSize": 18, "actorFontSize": 14}}}%%
 sequenceDiagram
-    Note over Team: No conversation entries yet.
+    autonumber
+    participant User
+    participant All
+    participant Cypher
+    participant Smith
+    participant Morpheus
+    participant Mouse
+    participant Neo
+    Note over User,Neo: 📅 2026-10-14
+    User->>All: "request"
+    Note right of User: "Owner:<br/>SUM(SIZE(payload)) style<br/>weighted aggregates,<br/>agreed design is op:<br/>SIZE on the aggregate,<br/>not a SUM parameter.<br/>Sprint 14."
+    Cypher->>Smith: "pm handoff"
+    Note right of Cypher: "Sprint 14 (Weighted<br/>Aggregates, Tier 2, 2<br/>pts): FING-45 op: SIZE<br/>on aggregates. docs/spri<br/>nts/USER_STORIES_SPRINT1<br/>4.md. Self-check rubric<br/>ST…"
+    Morpheus->>Smith: "lead handoff"
+    Note right of Morpheus: "Arch D1-D4: Op rule<br/>family in<br/>aggregators.py, Size =<br/>UTF-8 bytes (str) or<br/>compact JSON bytes,<br/>schema $defs.op enum +<br/>not(op and type), Aggr…"
+    Smith->>Mouse: "user approve"
+    Note right of Smith: "*user approve. rubric<br/>STORIES: OUT=S TEST=S<br/>FAIL=A SCOPE=S SIZE=A<br/>DESIGN=A. Arch approved:<br/>op reads as<br/>SUM(SIZE(x)), worked<br/>example in AC1…"
+    Mouse->>Morpheus: "sm handoff"
+    Note right of Mouse: "Sprint 14 planned in<br/>task.md: one phase<br/>(FING-45), close-out<br/>with Tank sdlc-check.<br/>@Morpheus *lead review<br/>sprint plan"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Plan approved. Per<br/>Smith: the op+type<br/>message comes from a<br/>description on the<br/>schema's not-subschema,<br/>so it stays schema-<br/>driven. @Neo *swe…"
+    Mouse->>All: "phase 1"
+    Note right of Mouse: "Phase 1: op: SIZE on<br/>aggregates (FING-45)"
 ```

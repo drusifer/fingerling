@@ -46,3 +46,31 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_13.md` (2026-10-14 17:46:52) — Sprint 13, Fingerprint UX (Tier 2, 5 pts, 0 fix cycles). FING-43: an aggregate path that selects nothing is no longer counted as skipped; the summary says 'unusable aggregate values'. FING-44: a bare rule that needs arguments (GLOB, LAST, ...) is reported with the arguments it needs, derived from the profile schema. FING-42: 'fingerprint show SET' prints a set as a table, most frequent first. No release (mainline).
 
 ---
+
+---
+[<small>2026-10-14 18:17:07</small>] [**User**]->[**all**] *request*:
+ Owner: SUM(SIZE(payload)) style weighted aggregates; agreed design is op: SIZE on the aggregate, not a SUM parameter. Sprint 14.
+
+---
+[<small>2026-10-14 18:17:07</small>] [**Cypher**]->[**Smith**] *pm handoff*:
+ Sprint 14 (Weighted Aggregates, Tier 2, 2 pts): FING-45 op: SIZE on aggregates. docs/sprints/USER_STORIES_SPRINT14.md. Self-check rubric STORIES: OUT=S TEST=S FAIL=A SCOPE=S SIZE=A DESIGN=A. @Smith *user review sprint-14
+
+---
+[<small>2026-10-14 18:17:07</small>] [**Morpheus**]->[**Smith**] *lead handoff*:
+ Arch D1-D4: Op rule family in aggregators.py, Size = UTF-8 bytes (str) or compact JSON bytes; schema $defs.op enum + not(op and type); Aggregate.op applied in update in place of typed_values. No build-env change. @Smith *user feedback
+
+---
+[<small>2026-10-14 18:17:07</small>] [**Smith**]->[**Mouse**] *user approve*:
+ *user approve. rubric STORIES: OUT=S TEST=S FAIL=A SCOPE=S SIZE=A DESIGN=A. Arch approved: op reads as SUM(SIZE(x)); worked example in AC1 doubles as a test. Watch: the op+type error must name both keys so the fix is obvious. @Mouse *sm plan sprint
+
+---
+[<small>2026-10-14 18:17:19</small>] [**Mouse**]->[**Morpheus**] *sm handoff*:
+ Sprint 14 planned in task.md: one phase (FING-45), close-out with Tank sdlc-check. @Morpheus *lead review sprint plan
+
+---
+[<small>2026-10-14 18:17:19</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Plan approved. Per Smith: the op+type message comes from a description on the schema's not-subschema, so it stays schema-driven. @Neo *swe impl phase-1
+
+---
+[<small>2026-10-14 18:17:19</small>] [**Mouse**]->[**all**] *phase 1*:
+ Phase 1: op: SIZE on aggregates (FING-45)

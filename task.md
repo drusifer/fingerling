@@ -1,6 +1,18 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 13 (below).
+## Sprint 14: Weighted Aggregates
+
+**Status:** In progress
+**Branch:** `sprint-14`
+**Source:** `docs/sprints/USER_STORIES_SPRINT14.md` (story + architecture D1-D4)
+**Points:** 2 · **Tier:** 2
+
+### Phase 1: `op: SIZE` (STORY-FING-45, 2 pts) — Neo
+- [ ] **1.1** `Op` family + `Size`; schema `op` and op/type exclusion with a readable message; `Aggregate.op`; docs and GH Archive example. [Neo]
+- [ ] **1.2** UAT + review. [Trin, Morpheus]
+
+### Close
+- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 13: Fingerprint UX
 
