@@ -40,7 +40,20 @@ Agents **must** use this for every message posted to CHAT.md:
 ---
 
 ---
-[<small>2026-10-13 23:50:34</small>] [**make**]->[**all**] *build*:
- Build PASSED | make release-check | /home/drusifer/Projects/fingerling/build/build.out
-=== make release-check @ 2026-10-13 23:50:34 ===
-Tag v0.2.0 matches fingerprint-sampler 0.2.0
+[<small>2026-10-13 23:59:30</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make install | /home/drusifer/Projects/fingerling/build/build.out
+=== make install @ 2026-10-13 23:59:29 ===
+Installed into .venv
+
+---
+[<small>2026-10-14 00:00:53</small>] [**User**]->[**all**] *request*:
+ fix then push main
+
+---
+[<small>2026-10-14 00:01:21</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+127.0.0.1 - - [14/Oct/2026 00:01:20] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
+
+---
+[<small>2026-10-14 00:01:34</small>] [**Neo**]->[**User**] *swe fix*:
+ README brought up to date for 0.2.0: what's new, real set-file layout, checking API in the library section; check_profile and Modifier exported, 2 tests. 156 + 59 tests, lint clean. Minor change, single step per bloop rule 2. Merging, moving the unpushed v0.2.0 tag to include it, pushing main on owner's instruction.
