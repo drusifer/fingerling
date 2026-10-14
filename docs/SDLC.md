@@ -216,7 +216,7 @@ Both workflows call only `make` targets, so CI cannot drift from the local gates
 
 | Workflow | Trigger | Does |
 |---|---|---|
-| `.github/workflows/ci.yml` | every push (any branch) and pull request | Matrix over Python 3.14 and 3.15: `make install`, `make lint`, `make test`. Separate job: `make secrets` over the full history. |
+| `.github/workflows/ci.yml` | by hand only (`workflow_dispatch`); push and pull-request triggers disabled by the owner on 2026-10-14 | Matrix over Python 3.14 and 3.15: `make install`, `make lint`, `make test`. Separate job: `make secrets` over the full history. |
 | `.github/workflows/publish.yml` | push of a tag `v*` | Reruns the CI gates; `make release-check`; `make build`; publishes `dist/` to PyPI by trusted publishing (no stored token). |
 
 **Exercised so far:** the CI workflow ran on the pushes of `main` on 2026-10-13 and passed
