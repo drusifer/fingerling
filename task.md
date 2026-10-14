@@ -1,6 +1,34 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 9 (below). Next up: see *Owner actions* and *Queued requests*.
+**Sprint 10 in flight** (below). Previous: Sprint 9.
+
+## Sprint 10: Artifact Rubrics
+
+**Status:** In progress
+**Branch:** `sprint-10`
+**Source:** `docs/sprints/USER_STORIES_SPRINT10.md` (stories + architecture D1-D7)
+**Points:** 10 · **Tier:** 1 · Implementer: Bob (templates and skills)
+
+### Phase 1: Inventory and rubric format (STORY-FING-31, 2 pts)
+- [ ] **1.1** `agents/templates/ARTIFACTS.md`: inventory, rubric format, verdict line, how to add; link from the agents index. [Bob]
+- [ ] **1.2** UAT + review. [Trin, Morpheus]
+
+### Phase 2: Stories template and rubric (STORY-FING-32, 3 pts)
+- [ ] **2.1** `_template_USER_STORIES.md` with rubric appendix. [Bob]
+- [ ] **2.2** Wire into Cypher, Smith Gate 1 and the sprint skill. [Bob]
+- [ ] **2.3** UAT + review. [Trin, Morpheus]
+
+### Phase 3: SDLC and lesson rubrics (STORY-FING-33, 2 pts)
+- [ ] **3.1** SDLC rubric on the three SDLC templates; lessons rubric on the lesson template. [Bob]
+- [ ] **3.2** Wire into build-env, Tank, Oracle groom and Smith's close test. [Bob]
+- [ ] **3.3** UAT + review. [Trin, Morpheus]
+
+### Phase 4: Calibration (STORY-FING-34, 3 pts)
+- [ ] **4.1** Apply each rubric to 3+ existing artifacts; reword criteria that do not apply cleanly. [Bob]
+- [ ] **4.2** `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`; UAT + review. [Bob, Trin, Morpheus]
+
+### Close
+- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 9: Fingerprint Package + SDLC Tooling
 

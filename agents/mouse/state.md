@@ -27,23 +27,14 @@
 - 2026-10-13 Session close. After Sprint 9: fix/single-makefile, fix/docs-groom,
   fix/remove-legacy-tools, fix/session-close — all merged to main with --no-ff. main is ahead of
   origin and tagged v0.1.0; nothing pushed. Post-sprint chat archived as CHAT_POST_SPRINT_9.
+- 2026-10-13 Sprint 10 planned: 4 phases, Bob implements; markers posted per phase.
 
 ## Current Task
-**Status:** No sprint in flight. Sprint 9 closed; post-sprint maintenance closed.
+**Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
+**Status:** Phase 1 in progress
 
 ## Next Steps
-Cold start:
-1. Read `task.md` (board), `docs/SDLC.md` (how changes are made) and the last message in
-   `agents/CHAT.md`.
-2. Waiting on the owner: PyPI one-time setup, `git push origin main`, `git push origin v0.1.0`,
-   and the bob_protocol sync (see task.md, Owner actions).
-3. Next request in the queue: **artifact rubrics** — the owner still has to choose the pilot
-   (stories alone, or stories + SDLC + lessons). Inventory and recommendation were given
-   2026-10-13; start by writing a stories template with a rubric appendix once they choose.
-4. Starting any sprint: confirm `docs/SDLC.md` exists, create `sprint-<N>` from a clean `main`
-   before Cypher writes stories (next is sprint-10, next story STORY-FING-31), post a
-   `--cmd "phase <N>"` marker at each phase start and `phase close` at close-out.
-5. Active scope is the fingerprint tool only; do not schedule work on parked modules.
+Tick task.md per phase; post phase markers; no release at close.
 
 ---
-*Last updated: 2026-10-13T20:02:25-04:00*
+*Last updated: 2026-10-13T20:08:10-04:00*

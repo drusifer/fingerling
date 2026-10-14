@@ -1,5 +1,16 @@
 # Sprint Log
 
+## Sprint: Fingerling Sprint 10 (Artifact Rubrics) — 2026-10-13
+
+- **Planning:** Tier 1 at the owner's request, on branch `sprint-10`. Process-only sprint: agent
+  templates, skills and persona instructions; no release.
+- **Velocity target:** 10 story points (2+3+2+3) across 4 stories.
+- **Phase breakdown:** 1 inventory + format (FING-31) · 2 stories template + rubric (FING-32) ·
+  3 SDLC and lesson rubrics (FING-33) · 4 calibration (FING-34). Bob implements.
+- **Board:** `task.md` (root).
+
+---
+
 ## Sprint: Fingerling Sprint 9 (Fingerprint Package + SDLC Tooling) — 2026-10-12
 
 - **Planning:** Tier 1, on branch `sprint-9`. First sprint under `docs/SDLC.md`.

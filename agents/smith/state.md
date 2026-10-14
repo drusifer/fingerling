@@ -53,13 +53,14 @@
 - 2026-10-12 Sprint 8 user test passed; 1 cosmetic bug filed and fixed (usage prog). Backlog: 'skipped aggregate values' wording, table view of a set.
 - 2026-10-12 Sprint 9 Gates 1+2 approved; added FING-28 AC9 (self-contained README quickstart), AC10 (no silent failure for moved commands).
 - 2026-10-13 Sprint 9 user test passed (wheel in clean 3.11 env, README verbatim).
+- 2026-10-13 Sprint 10 Gates 1+2 approved; added FING-31 AC6 (verdict fits one chat message).
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Sprint 9 complete
+**Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
+**Status:** Gates done
 
 ## Next Steps
-No pending gates.
+Apply the new stories rubric at future Gate 1s; at close review this sprint's new lessons with the lessons rubric.
 
 ---
-*Last updated: 2026-10-13T00:09:31-04:00*
+*Last updated: 2026-10-13T20:08:10-04:00*

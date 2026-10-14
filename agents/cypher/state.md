@@ -55,13 +55,14 @@
 - 2026-10-12 Sprint 8 launched 2026-10-12: FING-23..26 delivered, 16/16 pts, 178 tests. Backlog recorded in task.md.
 - 2026-10-12 Sprint 9 stories written (FING-27..30, 18 pts) from SDLC section 11. Owner decision: fingerprint CLI is the only active scope.
 - 2026-10-13 Sprint 9 launched 2026-10-13: FING-27..30, 18/18. fingerprint-sampler 0.1.0 is the first release (tag v0.1.0, unpushed).
+- 2026-10-13 Sprint 10 (artifact rubrics) stories FING-31..34 written, 10 pts. Assumptions recorded: 3 pilots (stories, SDLC, lessons); any Weak criterion rejects at the gate; no scoring.
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Sprint 9 complete
+**Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
+**Status:** Stories at Gate 1
 
 ## Next Steps
-No sprint in flight. Queued next: artifact-rubrics request (task.md). Then fingerprint iteration: show/report, GLOB/REGEX, event-time. Next story ID: STORY-FING-31.
+At close: *pm launch sprint10 - no release (published package unchanged). Next story ID: STORY-FING-35.
 
 ---
-*Last updated: 2026-10-13T00:09:31-04:00*
+*Last updated: 2026-10-13T20:07:26-04:00*
