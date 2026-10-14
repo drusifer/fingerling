@@ -115,3 +115,7 @@ fingerprint_sampler-0.2.0.tar.gz
 === make lint @ 2026-10-14 13:54:54 ===
 All checks passed!
 41 files already formatted
+
+---
+[<small>2026-10-14 13:54:55</small>] [**Neo**]->[**User**] *swe done*:
+ GH Archive example done: examples/gharchive.yaml + make gharchive (GH_HOUR, downloads once to data/, gitignored). One hour: 180,387 events -> 88 fingerprints. Lint and tests pass.
