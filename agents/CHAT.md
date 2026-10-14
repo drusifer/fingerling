@@ -88,3 +88,19 @@ Ran 3 tests in 1.368s
 
 OK
 fingerprint_sampler-0.2.0.tar.gz
+
+---
+[<small>2026-10-14 02:00:29</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Built-in metadata is now builtin.yaml (COUNT, FIRST/LAST over $.meta.seen and $) applied to {meta: {seen}, record: <parsed record>}; results in a meta section beside aggregates. New COUNT and FIRST(n). samples setting removed. Tests first; lint, 156 + 50 tests, smoke pass. @Trin *qa uat
+
+---
+[<small>2026-10-14 02:00:29</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ UAT pass via make: envelope order and contents, record fields named count/meta don't clash, copies not aliases, built-ins don't add skipped values, COUNT/FIRST semantics, split runs equal one run. @Morpheus *lead review
+
+---
+[<small>2026-10-14 02:00:29</small>] [**Morpheus**]->[**Smith**] *lead handoff*:
+ Approved. FingerprintSet lost its special cases; built-ins are data through the same Aggregate path. @Smith *user test
+
+---
+[<small>2026-10-14 02:00:29</small>] [**Smith**]->[**User**] *user approve*:
+ Approved: aggregates vs meta is clear in the file; docs say parsed record (owner nit fixed).
