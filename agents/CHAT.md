@@ -38,3 +38,9 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_11.md` (2026-10-13 23:50:24) — Sprint 11 - Structured Modifiers and Profile Checking (2026-10-13). Tier 2, 8/8 pts, STORY-FING-35..37, on branch sprint-11. Python 3.14+ only (tested on 3.14 and 3.15); modifier arguments written as YAML mappings, string parser removed; profiles checked against a shipped JSON Schema by jsonschema, with fingerprint check listing every problem. Owner rule recorded: no backwards compatibility before 1.0. 0 fix cycles. Released as fingerprint-sampler 0.2.0 (tag v0.2.0, local). The Planning section also holds the pre-sprint status report and the GLOB/REGEX/REGSUB change merged on fix/glob-regex-regsub.
 
 ---
+
+---
+[<small>2026-10-13 23:50:34</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make release-check | /home/drusifer/Projects/fingerling/build/build.out
+=== make release-check @ 2026-10-13 23:50:34 ===
+Tag v0.2.0 matches fingerprint-sampler 0.2.0
