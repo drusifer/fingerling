@@ -1,9 +1,12 @@
 # Task Board
 
+**No sprint in flight.** Last sprint: 14 (below).
+
 ## Sprint 14: Weighted Aggregates
 
-**Status:** In progress
-**Branch:** `sprint-14`
+**Status:** Complete — launched 2026-10-14 (2/2 pts); merged to `main`; no release (mainline)
+**Branch:** `sprint-14` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_14.diagram.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT14.md` (story + architecture D1-D4)
 **Points:** 2 · **Tier:** 2
 

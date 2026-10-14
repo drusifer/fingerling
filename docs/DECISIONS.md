@@ -351,3 +351,6 @@ review should trace every AC to a literal function signature, not just a data-fl
 
 **Decision (Sprint 13, 2026-10-14):** An aggregate path that selects nothing in an event is not a skip; only a present value that a function cannot use (or that does not convert to the declared `type`) is counted, reported as "unusable aggregate values". A bare rule name that needs arguments (`GLOB`, `LAST`, ...) is reported as such, with the required arguments read from the profile schema.
 **Consequences:** The skipped count is 0 on data where fields are optional (GH Archive), so a non-zero count points to a real problem. New rules get the "needs arguments" message without code changes. `fingerprint show SET` prints a set as a table (no options yet).
+
+**Decision (owner, Sprint 14, 2026-10-14):** Weighted aggregates use an `op` on the aggregate (`{path: $.payload, op: SIZE, fn: [SUM, AVG, MAX]}`), not a parameter of one function (`SUM(..., op=SIZE)`): measuring is a step on the value, summing a step after it, and every function should get the measured value. `SIZE` is UTF-8 bytes for text and compact-JSON bytes otherwise. `op` and `type` are exclusive.
+**Consequences:** `Op` is a new Rule family; new ops (`LEN`, `ABS`) need no syntax change. A cross-key schema rule (`not`) supplies its own message through its `description`. The profile id is unchanged by `op`.

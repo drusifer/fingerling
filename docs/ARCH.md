@@ -14,7 +14,7 @@ published, general-purpose tool for any JSONL event stream. **This is the active
 | Module | Story | Responsibility |
 |---|---|---|
 | `fingerprint_sampler/model.py` | FING-01, -23, -36, -39 | `Path`, the `Rule` base, the `Modifier` classes, `Field` |
-| `fingerprint_sampler/aggregators.py` | FING-25 | Per-fingerprint `SUM`/`AVG`/`MIN`/`MAX`/`LAST(n)` state, mergeable across runs |
+| `fingerprint_sampler/aggregators.py` | FING-25, -45 | Per-fingerprint `SUM`/`AVG`/`MIN`/`MAX`/`COUNT`/`FIRST(n)`/`LAST(n)` state, mergeable across runs; `op` rules (`SIZE`) applied to values first |
 | `fingerprint_sampler/fingerprint_set.py` | FING-02, -25, -40 | `FingerprintSet`: MD5 IDs, stateful upsert, versioned atomic YAML file |
 | `fingerprint_sampler/profile.py` | FING-24, -37 | YAML profile loading; `check_profile` reports every problem (schema layer, then semantic layer); `profile_id` |
 | `fingerprint_sampler/schema.py`, `profile.schema.json` | FING-37 | The published profile JSON Schema (Draft 2020-12) and the `jsonschema` validator over it; also validates a single modifier for `Modifier.of` |
