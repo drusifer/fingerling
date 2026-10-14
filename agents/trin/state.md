@@ -34,6 +34,8 @@
 - 2026-10-13 Sprint 9 closed: 127 + 59 tests on 3.10-3.13. Unverified: GitHub workflows, --svg chat report.
 - 2026-10-13 Sprint 10 closed. Verify claims about past file versions with git log --follow / git show; verify that handoff messages actually reached CHAT.md.
 
+- 2026-10-13 UAT of GLOB/REGEX/REGSUB passed: 145 + 59 tests on 3.10-3.13; CLI checked with the access-log example. Open for Tank: `make test-fingerprint ARGS=test_cli` raises ModuleNotFoundError although SDLC section 3 documents it.
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete
@@ -42,4 +44,4 @@
 No pending UAT.
 
 ---
-*Last updated: 2026-10-13T20:15:33-04:00*
+*Last updated: 2026-10-13T23:20:00-04:00*

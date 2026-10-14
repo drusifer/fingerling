@@ -79,6 +79,8 @@
   target as two stubs is obsolete. There is one Makefile; add a target there once and run it with
   `bobp make <target>` (docs/SDLC.md section 3).
 
+- 2026-10-13 GLOB/REGEX/REGSUB added (branch fix/glob-regex-regsub): tokenizer._split_args parses quoted arguments (single/double quotes, doubled quote = literal, backslashes untouched); _parse_modifier is lru_cached, returns a tuple, strips exactly one ')'. validate_modifier compiles the regex and test-runs the REGSUB replacement. Run one test module with `bobp make test-fingerprint` (the ARGS= form is broken).
+
 ## Current Task
 **Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
@@ -87,4 +89,4 @@
 No pending tasks.
 
 ---
-*Last updated: 2026-10-13T00:09:31-04:00*
+*Last updated: 2026-10-13T23:20:00-04:00*
