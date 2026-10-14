@@ -1,9 +1,12 @@
 # Task Board
 
+**No sprint in flight.** Last sprint: 16 (below).
+
 ## Sprint 16: Run History
 
-**Status:** In progress
-**Branch:** `sprint-16`
+**Status:** Complete — launched 2026-10-14 (3/3 pts); merged to `main`; no release (mainline)
+**Branch:** `sprint-16` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_16.diagram.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT16.md` (story + architecture D1-D5)
 **Points:** 3 · **Tier:** 2
 
@@ -16,7 +19,7 @@
 - [x] **2.2** UAT + review. [Trin, Morpheus]
 
 ### Close
-- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 15: Shares of the Set
 
@@ -236,6 +239,8 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 
 ## Backlog (unscheduled)
 - **Top priority (Sprint 15 retro):** `fingerprint show --sort KEY` (any column, including `%` columns, e.g. `payload_bytes.SUM %`) and `--top N`.
+- **History weight (Sprint 16, owner decision):** run files are ~6.2 MB on a GH Archive hour (as large as the set; sample records dominate), and merge is ~1.7x slower (~115 s vs ~68 s, likely the second fold copying samples). Options: run files without sample records; fold once and derive the run.
+- **`-o`:** owner may revisit (keep or drop); it writes no history.
 - Fingerprint tool: JSON Schema for set files, generated from the profile (offered 2026-10-14).
 - **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
