@@ -22,13 +22,14 @@ Agents *must* use this for keeping their context.md files organized
 - 2026-10-13 Sprint 9 Phase 2 done: make build / release-check; .github/workflows/ci.yml + publish.yml (unexercised until owner pushes); SDLC sections 3,4,7,8 updated; only the chat-report row remains in section 11.
 - 2026-10-13 Sprint 9 sdlc-check passed. After launch: merged sprint-9 into main (--no-ff), tagged v0.1.0, deleted branch; nothing pushed.
 - 2026-10-13 2026-10-13 fix/single-makefile: project Makefile no longer has chat/tldr targets; SDLC section 3 says exactly one Makefile, no team-tooling targets. bob_protocol (uncommitted there): bobp/tools/tldr.py now shells out to the system via CLI (via -mg '*' -tF -oJ -n 0) and uses find_project_root; tests/test_tldr.py added. bobp prep-tldr still imports via as a library and is still broken.
+- 2026-10-13 Sprint 10 sdlc-check passed; SDLC section 8 corrected (main was pushed; CI result unknown). SDLC section 6 now requires confirming the sprint record is complete before merging. Self-check SDLC edits against the SDLC rubric.
 
 ## Current Task
-**Task:** single Makefile cleanup (branch fix/single-makefile)
-**Status:** Makefile cleanup merged
+**Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
+**Status:** Sprint 10 complete
 
 ## Next Steps
-No pending work. Known: bobp prep-tldr broken (imports via library); agents/tools/*.py are stale copies of bobp tools.
+Update the SDLC in the same change as any out-of-sprint action that makes a sentence stale.
 
 ---
-*Last updated: 2026-10-13T10:03:18-04:00*
+*Last updated: 2026-10-13T20:15:33-04:00*

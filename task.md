@@ -6,7 +6,7 @@
 
 **Status:** Complete — launched 2026-10-13 (10/10 pts); merged to `main`; no release (published package unchanged); not pushed
 **Branch:** `sprint-10` (merged and deleted)
-**Record:** `agents/chat_archive/CHAT_SPRINT_10.diagram.md` · calibration: `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`
+**Record:** `agents/chat_archive/CHAT_SPRINT_10.diagram.md` (planning and phases 1-4) and `CHAT_SPRINT_10_CLOSE.diagram.md` (Phase 4 handoffs, close, retro and launch, posted late — see the lesson of 2026-10-13) · calibration: `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT10.md` (stories + architecture D1-D7)
 **Points:** 10 · **Tier:** 1 · Implementer: Bob (templates and skills)
 
@@ -25,8 +25,8 @@
 - [x] **3.3** UAT + review. [Trin, Morpheus]
 
 ### Phase 4: Calibration (STORY-FING-34, 3 pts)
-- [ ] **4.1** Apply each rubric to 3+ existing artifacts; reword criteria that do not apply cleanly. [Bob]
-- [ ] **4.2** `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`; UAT + review. [Bob, Trin, Morpheus]
+- [x] **4.1** Apply each rubric to 3+ existing artifacts; reword criteria that do not apply cleanly. [Bob]
+- [x] **4.2** `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`; UAT + review. [Bob, Trin, Morpheus]
 
 ### Close
 - [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · merge (no release) [Tank, Oracle, Smith, All]

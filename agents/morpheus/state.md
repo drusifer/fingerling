@@ -29,13 +29,14 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 - 2026-10-13 Sprint 9 P0+P1 reviewed. Backlog: rename Warehouse before 1.0.
 - 2026-10-13 Sprint 9 closed; all 4 phases reviewed.
 - 2026-10-13 Sprint 10 arch D1-D7 (rubric appendix format, markers, codes, reviewer never author, Bob implements).
+- 2026-10-13 Sprint 10 closed. Next rubric candidate: architecture template.
 
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
-**Status:** Plan approved
+**Status:** Sprint 10 complete
 
 ## Next Steps
-Review each phase after Trin.
+No pending reviews.
 
 ---
-*Last updated: 2026-10-13T20:08:10-04:00*
+*Last updated: 2026-10-13T20:15:33-04:00*

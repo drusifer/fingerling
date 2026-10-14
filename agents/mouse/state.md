@@ -28,13 +28,14 @@
   fix/remove-legacy-tools, fix/session-close — all merged to main with --no-ff. main is ahead of
   origin and tagged v0.1.0; nothing pushed. Post-sprint chat archived as CHAT_POST_SPRINT_9.
 - 2026-10-13 Sprint 10 planned: 4 phases, Bob implements; markers posted per phase.
+- 2026-10-13 Sprint 10 closed: 10/10 pts. Its chat record lost 12 messages to silent failures (over-length bobp chat calls with output discarded); posted late and archived as CHAT_SPRINT_10_CLOSE. Always confirm markers and handoffs were posted - check the bobp chat result and message length (512).
 
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
-**Status:** Phase 1 in progress
+**Status:** No sprint in flight
 
 ## Next Steps
-Tick task.md per phase; post phase markers; no release at close.
+Cold start: read task.md, docs/SDLC.md, last message in agents/CHAT.md. Next sprint is sprint-11, next story STORY-FING-35. Before merging a sprint, confirm the chat log has every phase marker, Smith's approval, the retro and the launch. Active scope is the fingerprint tool only.
 
 ---
-*Last updated: 2026-10-13T20:08:10-04:00*
+*Last updated: 2026-10-13T20:15:33-04:00*

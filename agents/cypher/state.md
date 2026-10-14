@@ -56,13 +56,14 @@
 - 2026-10-12 Sprint 9 stories written (FING-27..30, 18 pts) from SDLC section 11. Owner decision: fingerprint CLI is the only active scope.
 - 2026-10-13 Sprint 9 launched 2026-10-13: FING-27..30, 18/18. fingerprint-sampler 0.1.0 is the first release (tag v0.1.0, unpushed).
 - 2026-10-13 Sprint 10 (artifact rubrics) stories FING-31..34 written, 10 pts. Assumptions recorded: 3 pilots (stories, SDLC, lessons); any Weak criterion rejects at the gate; no scoring.
+- 2026-10-13 Sprint 10 launched: rubrics for stories/SDLC/lessons. Write future stories from agents/templates/_template_USER_STORIES.md and self-check with the STORIES rubric.
 
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
-**Status:** Stories at Gate 1
+**Status:** Sprint 10 complete
 
 ## Next Steps
-At close: *pm launch sprint10 - no release (published package unchanged). Next story ID: STORY-FING-35.
+No sprint in flight. Owner still to confirm that any Weak blocks a gate. Next story ID: STORY-FING-35.
 
 ---
-*Last updated: 2026-10-13T20:07:26-04:00*
+*Last updated: 2026-10-13T20:15:33-04:00*

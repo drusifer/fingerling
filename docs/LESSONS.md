@@ -149,3 +149,7 @@ TUI step rather than renumbering.
 **What happened:** The rule "no file outside `agents/templates/` contains `RUBRIC-START`" was written into three documents and then run: it matched four files that only *mention* the marker in prose (two skills, the chat log, the sprint stories). The check was failing on a clean repository.
 **Applying it:** Match the marker's syntactic form, not the word — here a line beginning `<!-- RUBRIC-START` — and run the exact command once on the current tree before putting it in a skill or a conformance list.
 
+**Lesson:** When a command's output is discarded and commands are chained, a rejected step silently cancels everything after it — check the result of anything whose record you rely on.
+**What happened:** In Sprint 10 the persona messages were posted with `bobp chat ... >/dev/null`, chained with `&&`. `bobp chat` rejects messages over 512 characters; two were over. Each rejection skipped the rest of its chain without a word: the Phase 4 handoffs, the close marker, Smith's approval, every retro, the launch, the persona state updates and one commit. The sprint was then archived and merged with that record missing. It was noticed only because the chat report had no "Close" section.
+**Applying it:** Never send a `bobp chat` result to `/dev/null`. Check message length before posting (limit 512) and stop loudly on a failure. Before running `bobp chat-report` and before merging a sprint, confirm the log holds every phase marker, Smith's approvals, the retro and the launch — `docs/SDLC.md` section 6 now requires it.
+

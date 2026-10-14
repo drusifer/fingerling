@@ -10,5 +10,5 @@ sequenceDiagram
     participant All
     Note over Mouse,All: 📅 2026-10-13
     Mouse->>All: "sm handoff"
-    Note right of Mouse: "Sprint 10 closed and<br/>archived (agents/chat_ar<br/>chive/CHAT_SPRINT_10*.md<br/>). No sprint in flight.<br/>Sprint 10 is merged to<br/>main locally - no tag,…"
+    Note right of Mouse: "Sprint 10 closed, its<br/>record is in<br/>CHAT_SPRINT_10<br/>(planning, phases 1-4)<br/>and CHAT_SPRINT_10_CLOSE<br/>(the close, posted<br/>late). No sprint in fl…"
 ```
