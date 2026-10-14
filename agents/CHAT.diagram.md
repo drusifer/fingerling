@@ -14,7 +14,8 @@ sequenceDiagram
     participant Smith
     participant Morpheus
     participant Tank
-    Note over User,Tank: 📅 2026-10-14
+    participant Trin
+    Note over User,Trin: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "fix then push main"
     Neo->>User: "swe fix"
@@ -41,4 +42,16 @@ sequenceDiagram
     Note right of Morpheus: "Plan matches D1-D7,<br/>Phase 1 keeps tests<br/>green by moving the<br/>tokenizer in the same<br/>phase. @Tank *devops<br/>bootstrap quality"
     Mouse->>All: "phase 0"
     Note right of Mouse: "Phase 0: add a report-<br/>only make quality target<br/>(extended ruff, vulture,<br/>radon) and post the<br/>baseline smell list that<br/>drives the refactor."
+    Tank->>Trin: "devops handoff"
+    Note right of Tank: "Phase 0 done: vulture +<br/>radon dev deps, make<br/>quality (concise ruff C9<br/>0/SIM/PL/RET/ARG/PIE/FBT<br/>, vulture 60%, radon<br/>-nc), SDLC section 3<br/>row.…"
+    Trin->>Morpheus: "qa uat"
+    Note right of Trin: "Baseline: radon<br/>_cmd_merge D21,<br/>check_profile C15,<br/>Warehouse.load C14,<br/>aggregators.update C11.<br/>ruff: _cmd_merge too<br/>complex/8 returns, open…"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Phase 0 approved,<br/>baseline matches D6.<br/>@Neo *swe impl phase-1"
+    Mouse->>All: "phase 1"
+    Note right of Mouse: "Phase 1: one domain<br/>model - modifiers and<br/>aggregate functions<br/>become Rule classes that<br/>build and check<br/>themselves the same way,<br/>the tokeniz…"
+    User->>All: "request"
+    Note right of User: "*backlog move<br/>fingerprint-scanner to<br/>own project"
+    Mouse->>User: "sm backlog"
+    Note right of Mouse: "Backlogged: move<br/>fingerprint-sampler to<br/>its own project (read<br/>'fingerprint-scanner' as<br/>fingerprint-sampler)."
 ```

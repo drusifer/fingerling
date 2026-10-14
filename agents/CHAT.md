@@ -114,3 +114,34 @@ Tag v0.2.0 matches fingerprint-sampler 0.2.0
 === make lint @ 2026-10-14 01:14:55 ===
 All checks passed!
 45 files already formatted
+
+---
+[<small>2026-10-14 01:14:56</small>] [**Tank**]->[**Trin**] *devops handoff*:
+ Phase 0 done: vulture + radon dev deps, make quality (concise ruff C90/SIM/PL/RET/ARG/PIE/FBT, vulture 60%, radon -nc), SDLC section 3 row. Lint clean. @Trin *qa uat phase-0
+
+---
+[<small>2026-10-14 01:14:56</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ Baseline: radon _cmd_merge D21, check_profile C15, Warehouse.load C14, aggregators.update C11. ruff: _cmd_merge too complex/8 returns, open() without context, bool positional force. vulture: merge_main, PROFILE_VERSION, validate_modifier, apply_modifier, parse_jsonl dead; dataclass fields and argparse attrs are false positives. @Morpheus *lead review phase-0
+
+---
+[<small>2026-10-14 01:14:56</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Phase 0 approved; baseline matches D6. @Neo *swe impl phase-1
+
+---
+[<small>2026-10-14 01:14:56</small>] [**Mouse**]->[**all**] *phase 1*:
+ Phase 1: one domain model - modifiers and aggregate functions become Rule classes that build and check themselves the same way; the tokenizer module moves to the eBPF-side fingerling package.
+
+---
+[<small>2026-10-14 01:15:44</small>] [**User**]->[**all**] *request*:
+ *backlog move fingerprint-scanner to own project
+
+---
+[<small>2026-10-14 01:15:44</small>] [**Mouse**]->[**User**] *sm backlog*:
+ Backlogged: move fingerprint-sampler to its own project (read 'fingerprint-scanner' as fingerprint-sampler).
+
+---
+[<small>2026-10-14 01:19:36</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make quality | /home/drusifer/Projects/fingerling/build/build.out
+F 196:0 _cmd_merge - D (21)
+packages/fingerprint-sampler/src/fingerprint_sampler/warehouse.py
+M 129:4 Warehouse.load - C (14)

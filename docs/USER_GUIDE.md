@@ -33,8 +33,7 @@ make test       # full suite, offline
 `make install` builds an isolated project virtualenv; nothing is installed into the system
 Python. Dependencies are declared in `pyproject.toml` (`rich`, used only by the TUI demo, is the
 `demo` extra). Every `make` target runs inside `.venv` and tells you to run `make install` if it
-is missing. Installing also creates the `fingerprint` command at `.venv/bin/fingerprint`
-(`fingerling fingerprint` remains as an alias for `fingerprint merge`). `make distclean` removes the environment.
+is missing. Installing also creates the `fingerprint` command at `.venv/bin/fingerprint`. `make distclean` removes the environment.
 
 ## Fingerprint CLI
 
@@ -106,7 +105,7 @@ aggregates:
     fn: [MIN, MAX, AVG]
   - key: recent_paths
     path: "$.request.path"
-    fn: "LAST(3)"
+    fn: {name: LAST, n: 3}
 ```
 
 - **`fields`** — each entry extracts values with a JSONPath and turns them into one token with a
@@ -118,7 +117,7 @@ aggregates:
   |---|---|
   | `SUM`, `MIN`, `MAX` | running sum / smallest / largest value |
   | `AVG` | the average, plus the sum and count that make it mergeable |
-  | `LAST(n)` | the `n` most recent values — use path `$` to keep whole events as samples |
+  | `{name: LAST, n: N}` | the `N` most recent values — use path `$` to keep whole events as samples |
 
   Numeric functions accept numbers and numeric strings. An event where the path matches nothing,
   or a value isn't numeric, is skipped for that aggregate and counted in the summary.
@@ -153,7 +152,7 @@ fingerprints:
 - `profile_id` is derived from the profile's `fields`. A set can only be merged under the profile
   that built it, because fingerprints from different field definitions aren't comparable. Changing
   `aggregates` is always allowed: a new aggregate starts accumulating from that run, and changing
-  `n` in `LAST(n)` keeps the samples already collected.
+  `n` of `LAST` keeps the samples already collected.
 - Splitting a stream over several runs gives the same set as one run over all of it.
 - The file is replaced atomically; a failed or interrupted run leaves the previous set intact.
 
@@ -184,28 +183,28 @@ Full architectural rationale (including why each interface looks the way it does
 
 ## Module Reference
 
-### `fingerprint_sampler.tokenizer`
+### `fingerprint_sampler.model`
 
-Turns one telemetry record (or a JSONL stream of them) into a small dict of stable string
-tokens, using a list of extraction rules (a "mask profile").
+The profile's building blocks. A `Field` turns one event into one token: a JSONPath selects
+values and a modifier collapses them. `tokens(event, fields)` applies a list of fields.
 
 ```python
-from fingerprint_sampler.tokenizer import MaskEntry, parse_jsonl, tokenize
+from fingerprint_sampler.model import Field, tokens
 
-mask_profile = [
-    MaskEntry(key="hook_syscall", path="$.process_kprobe.function_name", modifier="DEFAULT"),
-    MaskEntry(key="dest_port", path="$.process_kprobe.args[0].sock_arg.dport",
-              modifier={"name": "ANY", "values": [80, 443, 6379]}),
+fields = [
+    Field("hook_syscall", "$.process_kprobe.function_name"),           # modifier: DEFAULT
+    Field("dest_port", "$.process_kprobe.args[0].sock_arg.dport",
+          {"name": "ANY", "values": [80, 443, 6379]}),
 ]
-
-records = parse_jsonl(jsonl_text)          # one dict per line
-tokens = tokenize(records[0], mask_profile)  # {"hook_syscall": "sys_connect", "dest_port": "TRUE"}
+tokens(event, fields)    # {"hook_syscall": "sys_connect", "dest_port": "TRUE"}
 ```
 
-**Modifiers** (the third part of a `MaskEntry`): a bare name such as `"IS_PRESENT"`, or a
-mapping with `name` and the modifier's arguments, e.g. `{"name": "IN_RANGE", "low": -999, "high": 0}`.
-`MaskEntry` stores it as a validated `Modifier`, so a mistake raises `ValueError` when the entry is
-built.
+For telemetry, `fingerling.tokenizer` adds `parse_jsonl(text)` and `tokenize(record, fields)`.
+
+**Modifiers** (the third part of a `Field`): a bare name such as `"IS_PRESENT"`, or a mapping
+with `name` and the modifier's arguments, e.g. `{"name": "IN_RANGE", "low": -999, "high": 0}`.
+Each modifier is a `Rule` subclass, built and checked when the `Field` is created (`ValueError`
+if wrong) — the same way aggregate functions are.
 
 | Modifier | Arguments | Token |
 |---|---|---|
@@ -228,7 +227,7 @@ token instead.
 filters (`[?(@.type == 'sock')]`). The token depends on how many values the path selects: none is
 treated as missing; one is tokenized as-is; several are tokenized individually, deduplicated,
 sorted and comma-joined, so array order can't change a fingerprint. An invalid path raises
-`ValueError` from `compile_path()` (and at profile load time).
+`ValueError` when the `Path` (or the `Field`) is created.
 
 ### `fingerprint_sampler.warehouse`
 
@@ -236,12 +235,12 @@ The fingerprint set as a library: hashes a token dict into a stable fingerprint 
 each one, with the aggregators you declare.
 
 ```python
-from fingerprint_sampler.aggregators import make_entry
+from fingerprint_sampler.aggregators import Aggregate
 from fingerprint_sampler.warehouse import Warehouse
 
 warehouse = Warehouse(aggregates=[
-    make_entry("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
-    make_entry("samples", "$", "LAST(3)"),
+    Aggregate("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
+    Aggregate("samples", "$", {"name": "LAST", "n": 3}),
 ])
 fingerprint_id = warehouse.upsert(tokens, records[0])
 
@@ -257,8 +256,7 @@ warehouse.load("fingerprints.yaml")         # continue folding from stored state
 
 Two calls with the same tokens produce the same `fingerprint_id` and reuse one record (a
 "match"); different tokens create a new record (a "drift"). `Warehouse()` with no aggregators
-keeps only the count and first/last seen. The older import paths (`fingerling.tokenizer`,
-`fingerling.warehouse`, ...) still work: they re-export the same objects.
+keeps only the count and first/last seen.
 `fingerling.warehouse.TELEMETRY_AGGREGATES` is the duration-bounds-plus-last-3-events set the
 parked telemetry pipeline uses. To load a profile file
 instead of building entries in Python, use `fingerprint_sampler.profile.load_profile(path)` and pass its

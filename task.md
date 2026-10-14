@@ -14,8 +14,8 @@
 - [x] **0.2** Baseline findings posted; UAT + review. [Trin, Morpheus]
 
 ### Phase 1: Domain model (STORY-FING-39, 5 pts) — Neo
-- [ ] **1.1** `Rule` base; Modifier and Aggregator families; Field, Aggregate, Path in `model.py`/`aggregators.py`; schema `aggregator` definition; `check_profile` loop. [Neo]
-- [ ] **1.2** Tokenizer moved to `fingerling`; parked code on `Field`; docs and examples; UAT + review. [Neo, Trin, Morpheus]
+- [x] **1.1** `Rule` base; Modifier and Aggregator families; Field, Aggregate, Path in `model.py`/`aggregators.py`; schema `aggregator` definition; `check_profile` loop. [Neo]
+- [x] **1.2** Tokenizer moved to `fingerling`; parked code on `Field`; docs and examples; UAT + review. [Neo, Trin, Morpheus]
 
 ### Phase 2: Smells and YAGNI (STORY-FING-40, 3 pts) — Neo
 - [ ] **2.1** Shims, aliases and dead API deleted; `Warehouse` → `FingerprintSet`; `_cmd_merge` and `load` split. [Neo]
@@ -150,6 +150,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 - **bob_protocol, for Trin:** a test strategy document Trin owns, laying out the project's testing practices and conventions: the test pyramid applied to the tools available in the project's ecosystem. Queued 2026-10-13 by the owner during Sprint 11; not started.
 
 ## Backlog (unscheduled)
+- **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
 - Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.

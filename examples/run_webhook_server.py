@@ -12,8 +12,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
-from fingerling.tokenizer import MaskEntry
 from fingerling.warehouse import TELEMETRY_AGGREGATES, Warehouse, fingerprint_id
+from fingerprint_sampler import Field
 
 
 def main() -> None:
@@ -27,7 +27,7 @@ def main() -> None:
     # Pre-seed whitelist with (ping, ping)
     fid_ping = fingerprint_id({"hook_syscall": "ping"})
     matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
-    mask_profile = [MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
+    mask_profile = [Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
     warehouse = Warehouse(aggregates=TELEMETRY_AGGREGATES)
 
     server = run_server(

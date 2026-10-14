@@ -13,8 +13,9 @@ import yaml
 
 from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
-from fingerling.tokenizer import MaskEntry, parse_jsonl, tokenize
+from fingerling.tokenizer import parse_jsonl, tokenize
 from fingerling.warehouse import Warehouse
+from fingerprint_sampler import Field
 
 TELEMETRY_JSONL = "\n".join(
     [
@@ -28,13 +29,13 @@ TELEMETRY_JSONL = "\n".join(
 )
 
 MASK_PROFILE = [
-    MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT"),
-    MaskEntry(
+    Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT"),
+    Field(
         "dest_port",
         "$.process_kprobe.args[0].sock_arg.dport",
         {"name": "ANY", "values": [80, 443, 6379]},
     ),
-    MaskEntry(
+    Field(
         "kernel_return_state",
         "$.process_kprobe.return_value",
         {"name": "IN_RANGE", "low": -999, "high": 0},

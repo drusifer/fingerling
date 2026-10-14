@@ -22,4 +22,4 @@ aggregates:
     fn: [MIN, MAX, AVG]
   - key: samples
     path: "$"
-    fn: "LAST(3)"
+    fn: {name: LAST, n: 3}

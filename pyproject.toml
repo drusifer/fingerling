@@ -21,9 +21,6 @@ dependencies = [
 # The interactive vaccination TUI (examples/demo.py).
 demo = ["rich>=13"]
 
-[project.scripts]
-fingerling = "fingerling.__main__:main"
-
 [dependency-groups]
 # Development tools; installed by `make install` (uv sync), never shipped.
 dev = [

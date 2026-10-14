@@ -8,8 +8,9 @@ and the N-gram baseline helper for the sequence-analysis stage.
 
 from __future__ import annotations
 
-from fingerprint_sampler.aggregators import AggregateEntry, make_entry
-from fingerprint_sampler.tokenizer import MaskEntry, tokenize
+from fingerling.tokenizer import tokenize
+from fingerprint_sampler.aggregators import Aggregate
+from fingerprint_sampler.model import Field
 from fingerprint_sampler.warehouse import (  # noqa: F401
     SET_VERSION,
     FingerprintRecord,
@@ -19,16 +20,16 @@ from fingerprint_sampler.warehouse import (  # noqa: F401
     fingerprint_id,
 )
 
-TELEMETRY_AGGREGATES: tuple[AggregateEntry, ...] = (
-    make_entry("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
-    make_entry("samples", "$", "LAST(3)"),
+TELEMETRY_AGGREGATES: tuple[Aggregate, ...] = (
+    Aggregate("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
+    Aggregate("samples", "$", {"name": "LAST", "n": 3}),
 )
 """What the pre-aggregator warehouse hardcoded: duration bounds and the last 3 raw events."""
 
 
 def build_whitelist(
     records: list[dict],
-    mask_profile: list[MaskEntry],
+    mask_profile: list[Field],
     n: int,
     warehouse: Warehouse | None = None,
 ) -> set[tuple[str, ...]]:

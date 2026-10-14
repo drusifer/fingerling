@@ -40,8 +40,9 @@ from fingerling.gitops import initialize_repo
 from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
-from fingerling.tokenizer import MaskEntry, tokenize
+from fingerling.tokenizer import tokenize
 from fingerling.warehouse import TELEMETRY_AGGREGATES, Warehouse, fingerprint_id
+from fingerprint_sampler import Field
 
 # Constant vulnerable code snippet shown in TUI Code pane
 VULNERABLE_CODE_SNIPPET = """def handle_ping(host: str) -> str:
@@ -792,9 +793,9 @@ class TUIDemo:
             )
             matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
             mask_profile = [
-                MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT"),
-                MaskEntry("exec_target", "$.process_kprobe.args[0].exec_arg.filename", "DEFAULT"),
-                MaskEntry(
+                Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT"),
+                Field("exec_target", "$.process_kprobe.args[0].exec_arg.filename", "DEFAULT"),
+                Field(
                     "kernel_return_state",
                     "$.process_kprobe.return_value",
                     {"name": "IN_RANGE", "low": -999, "high": 0},
