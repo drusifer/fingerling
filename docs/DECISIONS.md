@@ -345,3 +345,6 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision (owner, 2026-10-14):** An aggregate with one function stores its value directly (`count: 12`); several functions keep a map by name. `MIN`/`MAX` order text as well as numbers, so ISO-8601 times work; the built-in `first_seen`/`last_seen` are `MIN`/`MAX` of `$.meta.seen`. `FIRST`/`LAST` always take `n` and keep a list.
 **Consequences:** `meta` reads `{count: n, first_seen: t, last_seen: t, first: [..], last: [..]}` with no special case. Event-time min/max are correct even for out-of-order streams. Set files are version 3; older ones are refused.
 
+**Decision (owner, 2026-10-14):** Dates and times are declared with `type: DATETIME` or `type: DATE` on a field or aggregate, not a modifier: the type says what the input is, which fields and aggregates both need. Values are ISO-8601 only — no formats, epochs or parsing options ("we're not writing a parser"). Times are normalised to UTC (no zone = UTC). `TRUNC` buckets typed values for fields.
+**Consequences:** `MIN`/`MAX` compare real datetimes across zones; the set stores YAML timestamps. Built-in `first_seen`/`last_seen` are typed. A field's type is part of the profile id.
+

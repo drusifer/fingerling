@@ -58,4 +58,8 @@ sequenceDiagram
     Note right of Trin: "UAT pass via make: out-<br/>of-order ISO times,<br/>numeric strings as<br/>numbers, mixed kinds<br/>skipped and counted,<br/>multi-function maps,<br/>split runs equ…"
     Morpheus->>User: "lead review"
     Note right of Morpheus: "Approved: accept/fold<br/>pure functions,<br/>Aggregate owns storage<br/>layout, no first/last-<br/>seen special case."
+    User->>All: "request"
+    Note right of User: "wdyt of an AS DATE<br/>modifier ... or just<br/>labeling the type in the<br/>profile? Dates are going<br/>to come up a lot / and<br/>datetimes"
+    User->>All: "request"
+    Note right of User: "drop the format option<br/>we will always output<br/>iso datetime / stop -<br/>we're not writing a<br/>parser - we can expect<br/>valid json datetimes to<br/>be in…"
 ```
