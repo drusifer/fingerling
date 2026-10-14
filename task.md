@@ -1,6 +1,22 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 12 (below).
+## Sprint 13: Fingerprint UX
+
+**Status:** In progress
+**Branch:** `sprint-13`
+**Source:** `docs/sprints/USER_STORIES_SPRINT13.md` (stories + architecture D1-D4)
+**Points:** 5 · **Tier:** 2
+
+### Phase 1: Small fixes (STORY-FING-43, -44, 2 pts) — Neo
+- [ ] **1.1** Absent path adds 0 to the skipped count; wording "unusable aggregate values"; README/USER_GUIDE. [Neo]
+- [ ] **1.2** `schema_errors` says which rules need arguments; UAT + review. [Neo, Trin, Morpheus]
+
+### Phase 2: `fingerprint show` (STORY-FING-42, 3 pts) — Neo
+- [ ] **2.1** `show` subcommand, table, errors, help; docs. [Neo]
+- [ ] **2.2** UAT + review. [Trin, Morpheus]
+
+### Close
+- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Since Sprint 12 (each on its own `fix/` branch, merged to `main`, pushed)
 - [x] `fix/disable-ci` — CI runs by hand only (owner).

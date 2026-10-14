@@ -15,7 +15,8 @@ sequenceDiagram
     participant Bob
     participant Tank
     participant Mouse
-    Note over User,Mouse: 📅 2026-10-14
+    participant Cypher
+    Note over User,Cypher: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "/bloop time for some<br/>meta data for the<br/>profiles (aka freebies).<br/>these can be optional if<br/>there is a reasonable<br/>default. consolidate to<br/>diff…"
     Neo->>Trin: "swe handoff"
@@ -76,4 +77,16 @@ sequenceDiagram
     Note right of Tank: "Formats stay at version<br/>0 until 1.0 (profiles<br/>and set files). SDLC<br/>section 7 updated.<br/>Tests, lint, smoke pass."
     Mouse->>All: "sm handoff"
     Note right of Mouse: "Prep for clear. Since<br/>Sprint 12 (all merged<br/>and pushed): built-in<br/>meta profile over {meta,<br/>record} envelope,<br/>COUNT/FIRST, flat<br/>single-funct…"
+    Cypher->>Smith: "pm handoff"
+    Note right of Cypher: "Sprint 13 (Fingerprint<br/>UX, Tier 2, 5 pts):<br/>FING-42 fingerprint<br/>show, FING-43 skipped<br/>count ignores absent<br/>paths, FING-44 clear<br/>error for ru…"
+    Morpheus->>Smith: "lead handoff"
+    Note right of Morpheus: "Arch appended (D1-D4):<br/>show in cli.py with a<br/>padding helper, no deps,<br/>meta times normalised to<br/>UTC, absent path adds 0,<br/>schema_errors rewri…"
+    Smith->>Mouse: "user approve"
+    Note right of Smith: "*user approve. rubric<br/>STORIES: OUT=S TEST=S<br/>FAIL=S SCOPE=S SIZE=A<br/>DESIGN=A. Arch approved:<br/>show reuses merge's set-<br/>file error text, the<br/>arg…"
+    Mouse->>Morpheus: "sm handoff"
+    Note right of Mouse: "Sprint 13 planned in<br/>task.md: Phase 1<br/>FING-43+44 (small<br/>fixes), Phase 2 FING-42<br/>show, close-out includes<br/>Tank sdlc-check.<br/>@Morpheus *lead r…"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Plan approved: matches<br/>D1-D4, fixes first so<br/>show's help lands on a<br/>clean summary. @Neo *swe<br/>impl phase-1"
+    Mouse->>All: "phase 1"
+    Note right of Mouse: "Phase 1: skipped count<br/>ignores absent paths<br/>(FING-43), clear error<br/>for rules needing<br/>arguments (FING-44)"
 ```

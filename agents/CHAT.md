@@ -242,3 +242,27 @@ OK
 ---
 [<small>2026-10-14 17:38:09</small>] [**Mouse**]->[**All**] *sm handoff*:
  Prep for clear. Since Sprint 12 (all merged and pushed): built-in meta profile over {meta, record} envelope, COUNT/FIRST, flat single-function state, MIN/MAX on text and dates, DATE/DATETIME types + TRUNC, IS_PRESENT vs IS_NULL fix, GH Archive example, formats v0, CI manual, make clean removes data. Resume: agents/mouse/state.md Next Steps.
+
+---
+[<small>2026-10-14 17:40:58</small>] [**Cypher**]->[**Smith**] *pm handoff*:
+ Sprint 13 (Fingerprint UX, Tier 2, 5 pts): FING-42 fingerprint show, FING-43 skipped count ignores absent paths, FING-44 clear error for rules needing args. docs/sprints/USER_STORIES_SPRINT13.md. Self-check: rubric STORIES: OUT=S TEST=S FAIL=S SCOPE=S SIZE=A DESIGN=A. @Smith *user review sprint-13
+
+---
+[<small>2026-10-14 17:40:59</small>] [**Morpheus**]->[**Smith**] *lead handoff*:
+ Arch appended (D1-D4): show in cli.py with a padding helper, no deps; meta times normalised to UTC; absent path adds 0; schema_errors rewrites enum errors for rules needing args from the schema's required lists. No build-env change, no Phase 0. @Smith *user feedback
+
+---
+[<small>2026-10-14 17:41:03</small>] [**Smith**]->[**Mouse**] *user approve*:
+ *user approve. rubric STORIES: OUT=S TEST=S FAIL=S SCOPE=S SIZE=A DESIGN=A. Arch approved: show reuses merge's set-file error text; the args message gives the fix inline. Nit only: '1 unusable aggregate values' plural, consistent with 'malformed lines', ok. @Mouse *sm plan sprint
+
+---
+[<small>2026-10-14 17:41:10</small>] [**Mouse**]->[**Morpheus**] *sm handoff*:
+ Sprint 13 planned in task.md: Phase 1 FING-43+44 (small fixes), Phase 2 FING-42 show; close-out includes Tank sdlc-check. @Morpheus *lead review sprint plan
+
+---
+[<small>2026-10-14 17:41:10</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Plan approved: matches D1-D4, fixes first so show's help lands on a clean summary. @Neo *swe impl phase-1
+
+---
+[<small>2026-10-14 17:41:11</small>] [**Mouse**]->[**all**] *phase 1*:
+ Phase 1: skipped count ignores absent paths (FING-43); clear error for rules needing arguments (FING-44)
