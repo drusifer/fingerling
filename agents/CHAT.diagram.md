@@ -12,7 +12,8 @@ sequenceDiagram
     participant Trin
     participant Morpheus
     participant Smith
-    Note over User,Smith: 📅 2026-10-14
+    participant Bob
+    Note over User,Bob: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "/bloop time for some<br/>meta data for the<br/>profiles (aka freebies).<br/>these can be optional if<br/>there is a reasonable<br/>default. consolidate to<br/>diff…"
     Neo->>Trin: "swe handoff"
@@ -45,4 +46,8 @@ sequenceDiagram
     Note right of Trin: "UAT pass via make test:<br/>three-state test covers<br/>missing/null/value,<br/>golden quickstart ids<br/>unchanged. @Morpheus<br/>*lead review"
     Morpheus->>User: "lead review"
     Note right of Morpheus: "Approved: the two<br/>modifiers own their<br/>token rule, other<br/>modifiers unchanged."
+    User->>All: "request"
+    Note right of User: "update the fix skill -<br/>add an instruction to<br/>first figure out what<br/>the bug is and tell me<br/>before trying to fix it"
+    Bob->>User: "prompt update"
+    Note right of Bob: "Fix loop updated: new<br/>step 0 - Neo diagnoses<br/>without changing code,<br/>tells the user actual vs<br/>expected, cause and<br/>proposed fix, and waits<br/>fo…"
 ```
