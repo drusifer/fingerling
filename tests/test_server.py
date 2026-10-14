@@ -14,8 +14,7 @@ import urllib.request
 from fingerling.gitops import initialize_repo
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
-from fingerling.warehouse import Warehouse
-from fingerprint_sampler import Field
+from fingerprint_sampler import Field, FingerprintSet
 
 
 def get_free_port() -> int:
@@ -31,7 +30,7 @@ class TelemetryServerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.port = get_free_port()
-        cls.warehouse = Warehouse()
+        cls.warehouse = FingerprintSet()
         # Seed whitelist with one trajectory so we can test match vs anomaly
         cls.matcher = SlidingWindowMatcher(n=2, whitelist={("a1", "b1")})
         cls.mask_profile = [Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
@@ -147,7 +146,7 @@ class GitOpsTelemetryServerTests(unittest.TestCase):
         initialize_repo(self.repo_path, default_branch="main")
 
         self.port = get_free_port()
-        self.warehouse = Warehouse()
+        self.warehouse = FingerprintSet()
         self.matcher = SlidingWindowMatcher(n=2, whitelist={("a1", "b1")})
         self.mask_profile = [Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
         self.server = run_server(

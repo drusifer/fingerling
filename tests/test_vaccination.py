@@ -15,8 +15,7 @@ from fingerling.gitops import initialize_repo
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
 from fingerling.vaccine import run_vaccination
-from fingerling.warehouse import Warehouse
-from fingerprint_sampler import Field
+from fingerprint_sampler import Field, FingerprintSet
 
 
 def get_free_port() -> int:
@@ -41,9 +40,9 @@ class E2EVaccinationTests(unittest.TestCase):
         self.app_thread.start()
 
         self.webhook_port = get_free_port()
-        self.warehouse = Warehouse()
+        self.warehouse = FingerprintSet()
         # Seed whitelist with the baseline transition: (fid_ping, fid_ping)
-        from fingerling.warehouse import fingerprint_id
+        from fingerprint_sampler import fingerprint_id
 
         fid_ping = fingerprint_id({"hook_syscall": "ping"})
         self.matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})

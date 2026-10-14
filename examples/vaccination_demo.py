@@ -29,8 +29,8 @@ from fingerling.gitops import initialize_repo
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
 from fingerling.vaccine import run_vaccination
-from fingerling.warehouse import TELEMETRY_AGGREGATES, Warehouse, fingerprint_id
-from fingerprint_sampler import Field
+from fingerling.warehouse import TELEMETRY_AGGREGATES
+from fingerprint_sampler import Field, FingerprintSet, fingerprint_id
 
 
 def get_free_port() -> int:
@@ -67,7 +67,7 @@ def main() -> None:
     fid_ping = fingerprint_id({"hook_syscall": "ping"})
     matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
     mask_profile = [Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
-    warehouse = Warehouse(aggregates=TELEMETRY_AGGREGATES)
+    warehouse = FingerprintSet(aggregates=TELEMETRY_AGGREGATES)
 
     webhook_server = run_server(
         port=webhook_port,

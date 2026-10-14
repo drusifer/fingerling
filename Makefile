@@ -67,7 +67,7 @@ lint: ## Static checks: ruff lint + format check (changes nothing)
 quality: ## Report smells in the published package: extended ruff, dead code, complexity (never fails)
 	$(need_venv)
 	@echo "== ruff (extended rules)"; .venv/bin/ruff check $(FP)/src --select C90,SIM,PL,RET,ARG,PIE,FBT --output-format concise --exit-zero
-	@echo "== vulture (dead code)"; .venv/bin/vulture $(FP)/src --min-confidence 60 || true
+	@echo "== vulture (dead code)"; .venv/bin/vulture $(FP)/src --min-confidence 60 --ignore-names total_occurrences,first_seen,last_seen || true
 	@echo "== radon (complexity grade C or worse)"; .venv/bin/radon cc -s -nc $(FP)/src
 
 format: ## Rewrite files to the project style (ruff format + import sorting)

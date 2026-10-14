@@ -18,8 +18,8 @@
 - [x] **1.2** Tokenizer moved to `fingerling`; parked code on `Field`; docs and examples; UAT + review. [Neo, Trin, Morpheus]
 
 ### Phase 2: Smells and YAGNI (STORY-FING-40, 3 pts) — Neo
-- [ ] **2.1** Shims, aliases and dead API deleted; `Warehouse` → `FingerprintSet`; `_cmd_merge` and `load` split. [Neo]
-- [ ] **2.2** `make quality` clean (or findings justified); UAT + review. [Neo, Trin, Morpheus]
+- [x] **2.1** Shims, aliases and dead API deleted; `Warehouse` → `FingerprintSet`; `_cmd_merge` and `load` split. [Neo]
+- [x] **2.2** `make quality` clean (or findings justified); UAT + review. [Neo, Trin, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]

@@ -14,7 +14,7 @@ policy enforcement is simulated.
 3. [The Pipeline at a Glance](#the-pipeline-at-a-glance)
 4. [Module Reference](#module-reference)
    - [`fingerprint_sampler.tokenizer`](#fingerprint_samplertokenizer)
-   - [`fingerprint_sampler.warehouse`](#fingerprint_samplerwarehouse)
+   - [`fingerprint_sampler.fingerprint_set`](#fingerprint_samplerfingerprint_set)
    - [`fingerling.ringbuffer`](#fingerlingringbuffer) *(parked)*
    - [`fingerling.policy`](#fingerlingpolicy) *(parked)*
 5. [End-to-End Pipeline](#end-to-end-pipeline) *(parked)*
@@ -166,10 +166,10 @@ being developed while the fingerprint tool is finished (see `docs/SDLC.md`, Acti
 raw JSONL telemetry
         │
         ▼
-fingerprint_sampler.tokenizer   — extract fields via JSONPath, collapse to stable string tokens
+fingerprint_sampler.model       — extract fields via JSONPath, collapse to stable string tokens
         │
         ▼
-fingerprint_sampler.warehouse   — hash tokens into a fingerprint ID, upsert into a bounded history
+fingerprint_sampler.fingerprint_set — hash tokens into a fingerprint ID, upsert into the set
         │
         ▼
 fingerling.ringbuffer  — feed the fingerprint ID stream into a sliding-window matcher
@@ -229,38 +229,38 @@ treated as missing; one is tokenized as-is; several are tokenized individually, 
 sorted and comma-joined, so array order can't change a fingerprint. An invalid path raises
 `ValueError` when the `Path` (or the `Field`) is created.
 
-### `fingerprint_sampler.warehouse`
+### `fingerprint_sampler.fingerprint_set`
 
 The fingerprint set as a library: hashes a token dict into a stable fingerprint ID and tracks
 each one, with the aggregators you declare.
 
 ```python
 from fingerprint_sampler.aggregators import Aggregate
-from fingerprint_sampler.warehouse import Warehouse
+from fingerprint_sampler.fingerprint_set import FingerprintSet
 
-warehouse = Warehouse(aggregates=[
+fingerprints = FingerprintSet(aggregates=[
     Aggregate("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
     Aggregate("samples", "$", {"name": "LAST", "n": 3}),
 ])
-fingerprint_id = warehouse.upsert(tokens, records[0])
+fingerprint_id = fingerprints.upsert(tokens, records[0])
 
-record = warehouse.get(fingerprint_id)
+record = fingerprints.get(fingerprint_id)
 record.tokens                               # the tokens behind the ID
 record.total_occurrences                    # grows each time the same token set is seen again
 record.aggregates["duration_ms"]["MAX"]
 record.aggregates["samples"]["LAST"]        # up to 3 raw events, most recent last
 
-warehouse.save("fingerprints.yaml")         # atomic
-warehouse.load("fingerprints.yaml")         # continue folding from stored state
+fingerprints.save("fingerprints.yaml")         # atomic
+fingerprints.load("fingerprints.yaml")         # continue folding from stored state
 ```
 
 Two calls with the same tokens produce the same `fingerprint_id` and reuse one record (a
-"match"); different tokens create a new record (a "drift"). `Warehouse()` with no aggregators
+"match"); different tokens create a new record (a "drift"). `FingerprintSet()` with no aggregates
 keeps only the count and first/last seen.
 `fingerling.warehouse.TELEMETRY_AGGREGATES` is the duration-bounds-plus-last-3-events set the
 parked telemetry pipeline uses. To load a profile file
 instead of building entries in Python, use `fingerprint_sampler.profile.load_profile(path)` and pass its
-`.aggregates` and `.profile_id` to `Warehouse`.
+`.aggregates` and `.profile_id` to `FingerprintSet`.
 
 > **Changed in Sprint 8:** `upsert(tokens, duration_ms=..., raw_record=...)` is now
 > `upsert(tokens, record)`, and `record.min_duration_ms` / `max_duration_ms` / `samples` moved
