@@ -23,6 +23,10 @@ Agents **must** use this for every message posted to CHAT.md:
 
 ---
 
+> **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_10.md` (2026-10-13 20:13:52) — Sprint 10 - Artifact Rubrics (2026-10-13), on branch sprint-10. Delivered STORY-FING-31..34 (10/10 pts): an inventory of the artifacts agents produce and a standard rubric format (agents/templates/ARTIFACTS.md); a sprint stories template with a STORIES rubric applied at Smith's Gate 1; SDLC and LESSON rubrics applied by Oracle at groom and Smith at the close test; and a calibration on existing documents that reworded three criteria and found one stale statement in the SDLC. Process-only sprint: no release, nothing pushed.
+
 ---
-[<small>2026-10-13 20:02:26</small>] [**Mouse**]->[**all**] *sm handoff*:
- Session closed. No sprint in flight. main = Sprint 9 + four merged fix/ branches, tagged v0.1.0, ahead of origin, nothing pushed. Waiting on the owner: PyPI one-time setup, push main, push the tag, bob_protocol sync. Queued next: artifact rubrics (owner to pick the pilot). To resume: read task.md, docs/SDLC.md and agents/mouse/state.md; next sprint is sprint-10, next story STORY-FING-31. Active scope is the fingerprint tool only.
+
+---
+[<small>2026-10-13 20:13:52</small>] [**Mouse**]->[**all**] *sm handoff*:
+ Sprint 10 closed and archived (agents/chat_archive/CHAT_SPRINT_10*.md). No sprint in flight. Sprint 10 is merged to main locally - no tag, not pushed. To resume: read task.md, docs/SDLC.md and agents/mouse/state.md; next sprint is sprint-11, next story STORY-FING-35. Open for the owner: confirm that any Weak criterion should block a gate.

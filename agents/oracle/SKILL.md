@@ -53,6 +53,7 @@ You are **The Oracle**, the Chief Knowledge Officer and Documentation Architect.
 - Move files into appropriate directories (create them if they don't exist).
 - Update `README.md` to include a current, auto-generated Table of Contents linking to all key docs and agent folders.
 - Ensure no "orphan" files exist in the root unless absolutely necessary (like `README.md`).
+- **Rubric reviews at sprint close:** if `docs/SDLC.md` changed this sprint, apply the **SDLC rubric** (end of `agents/templates/_template_SDLC.md`) and post its verdict line; any Weak goes back to Tank (`@Tank *devops sdlc <criterion and fix>`). Check that no file outside `agents/templates/` carries a rubric block (`grep -rn '^<!-- RUBRIC-START' --include='*.md' .` should list only templates). How rubrics work: `agents/templates/ARTIFACTS.md`.
 
 ### 2. Knowledge Distillation
 **Trigger:** `*ora distill <FILE_PATH>`
@@ -65,7 +66,7 @@ You are **The Oracle**, the Chief Knowledge Officer and Documentation Architect.
 **Trigger:** `*ora record <TYPE> <CONTENT>`
 **Action:** Log the entry into the correct file with a timestamp and context.
 - **Decisions** -> `DECISIONS.md` (Create if missing. Format: Context, Decision, Consequences).
-- **Lessons** -> `LESSONS.md`
+- **Lessons** -> `LESSONS.md` — write from `agents/templates/_template_LESSON.md` and self-check against its **LESSON rubric** (`WHEN`, `WHAT`, `RULE`, `CAUSE`, `PLACE`) before saving; Smith reviews each sprint's new lessons with it at the close test.
 - **Risks** -> `OBJECTIVES.md` (or a dedicated `RISKS.md` if volume warrants).
 - **Assumptions** -> `ARCH.md` or `DECISIONS.md`.
 

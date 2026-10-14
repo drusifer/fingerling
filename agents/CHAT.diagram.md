@@ -10,5 +10,5 @@ sequenceDiagram
     participant All
     Note over Mouse,All: 📅 2026-10-13
     Mouse->>All: "sm handoff"
-    Note right of Mouse: "Session closed. No<br/>sprint in flight. main =<br/>Sprint 9 + four merged<br/>fix/ branches, tagged<br/>v0.1.0, ahead of origin,<br/>nothing pushed. Waiting<br/>o…"
+    Note right of Mouse: "Sprint 10 closed and<br/>archived (agents/chat_ar<br/>chive/CHAT_SPRINT_10*.md<br/>). No sprint in flight.<br/>Sprint 10 is merged to<br/>main locally - no tag,…"
 ```

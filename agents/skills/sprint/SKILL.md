@@ -66,8 +66,10 @@ If the SDLC is silent on source control, do not commit; ask the user.
 ```
 Cypher *pm plan sprint
 ```
+- Write the stories from `agents/templates/_template_USER_STORIES.md` (delete its rubric block)
 - Define user stories with clear acceptance criteria
 - Scope the sprint: what's in, what's out
+- Self-check against the template's STORIES rubric before handing off
 - Hand off to Smith for user review gate
 
 **Handoff:**
@@ -80,7 +82,7 @@ bobp chat "Stories ready for user review. @Smith *user review <sprint>" --person
 Smith *user review <stories>
 ```
 - Evaluate stories against HCI principles and user value
-- Check: are acceptance criteria testable and user-facing?
+- Apply the STORIES rubric and report its verdict line (`rubric STORIES: OUT=A TEST=S ...`); any Weak rejects, naming the criterion and the fix — see `agents/templates/ARTIFACTS.md`
 - Must post explicit approve or reject
 
 ```bash
@@ -241,6 +243,8 @@ bobp chat "SDLC check FAILED: <drift>. @Neo *swe fix <issue>" --persona Tank --c
 Oracle *ora groom
 ```
 - Update docs, record decisions, archive sprint artifacts
+- If `docs/SDLC.md` changed this sprint, apply the SDLC rubric and report its verdict line; any Weak goes back to Tank before the handoff
+- Write new lessons from the lesson template, self-checked against the LESSON rubric
 - Ensure CHAT.md is archived if over 50-100 messages (rolling `*ora archive`)
 - **Per-phase report:** `bobp chat-report` splits the archived diagram into one section per phase when Mouse has posted `*phase <N>*` markers (sprint summary first, then each phase's description and its own diagram). Run it after Cypher's launch if the SDLC says so, so the report covers the whole sprint.
 - **Sprint-close chat report:** write a short summary of the sprint's CHAT.md conversation, then run
@@ -260,6 +264,7 @@ Smith *user test <sprint>
 Smith *user feedback
 ```
 - Test all delivered features from the user's perspective
+- Apply the LESSON rubric to each lesson Oracle added this sprint and report a verdict line per lesson; any Weak goes back to Oracle
 - Apply HCI heuristics — flag rough edges, inconsistencies, confusing interfaces
 
 **Handoff (pass):**

@@ -30,6 +30,7 @@ Full log: `docs/DECISIONS.md`.
 | 5-7 | 2026-07-22 to 08-08 | Interactive demos and TUI; pattern-based policy |
 | 8 | 2026-10-12 | Fingerprint CLI, library JSONPath, aggregators, profiles |
 | 9 | 2026-10-13 | `fingerprint-sampler` 0.1.0 (tagged, unpublished), uv, ruff, gitleaks, CI, per-phase chat report |
+| 10 | 2026-10-13 | Artifact inventory and review rubrics for stories, SDLC and lessons (`agents/templates/ARTIFACTS.md`) |
 
 ## Repository Structure Memory
 - `packages/fingerprint-sampler/`: the fingerprint package (source, tests, examples, README).

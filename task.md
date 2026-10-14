@@ -1,6 +1,35 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 9 (below). Next up: see *Owner actions* and *Queued requests*.
+**No sprint in flight.** Last sprint: 10 (below). Next up: see *Owner actions* and *Queued requests*.
+
+## Sprint 10: Artifact Rubrics
+
+**Status:** Complete — launched 2026-10-13 (10/10 pts); merged to `main`; no release (published package unchanged); not pushed
+**Branch:** `sprint-10` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_10.diagram.md` · calibration: `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`
+**Source:** `docs/sprints/USER_STORIES_SPRINT10.md` (stories + architecture D1-D7)
+**Points:** 10 · **Tier:** 1 · Implementer: Bob (templates and skills)
+
+### Phase 1: Inventory and rubric format (STORY-FING-31, 2 pts)
+- [x] **1.1** `agents/templates/ARTIFACTS.md`: inventory, rubric format, verdict line, how to add; link from the agents index. [Bob]
+- [x] **1.2** UAT + review. [Trin, Morpheus]
+
+### Phase 2: Stories template and rubric (STORY-FING-32, 3 pts)
+- [x] **2.1** `_template_USER_STORIES.md` with rubric appendix. [Bob]
+- [x] **2.2** Wire into Cypher, Smith Gate 1 and the sprint skill. [Bob]
+- [x] **2.3** UAT + review. [Trin, Morpheus]
+
+### Phase 3: SDLC and lesson rubrics (STORY-FING-33, 2 pts)
+- [x] **3.1** SDLC rubric on the three SDLC templates; lessons rubric on the lesson template. [Bob]
+- [x] **3.2** Wire into build-env, Tank, Oracle groom and Smith's close test. [Bob]
+- [x] **3.3** UAT + review. [Trin, Morpheus]
+
+### Phase 4: Calibration (STORY-FING-34, 3 pts)
+- [ ] **4.1** Apply each rubric to 3+ existing artifacts; reword criteria that do not apply cleanly. [Bob]
+- [ ] **4.2** `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`; UAT + review. [Bob, Trin, Morpheus]
+
+### Close
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 9: Fingerprint Package + SDLC Tooling
 
@@ -54,14 +83,15 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 
 ## Owner actions (agents do not push or publish)
 - One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
-- `git push origin main` — first run of the CI workflow; watch the parked tests on the runner.
+- `main` was pushed on 2026-10-13 (through Sprint 9 and the maintenance branches); check the first CI run's result. Sprint 10 is merged locally and not yet pushed.
 - `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0.
 - In `~/Projects/bob_protocol`: commit the uncommitted `chat_report.py`, `tldr.py`, `setup_agent_links.py` changes and tests, and copy this project's skill/template/persona edits upstream (list in `agents/bob/state.md`).
 
 ## Queued requests (next up)
-- **Artifact rubrics** (User, 2026-10-13): inventory the output artifacts each persona and skill is expected to produce; for templated artifacts, add a rubric appendix to the template for qualitative judgement of agent-produced content; recommend which skills to pilot first.
+- None. (Artifact rubrics delivered in Sprint 10.)
 
 ## Backlog (unscheduled)
+- Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
 - Fingerprint tool: `fingerprint show` (table/report view of a set); `GLOB`/`REGEX` modifiers; reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
 - Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.

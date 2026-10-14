@@ -293,3 +293,14 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** `bobp chat-report` splits the archive by `*phase <label>*` marker messages (change made in the bob_protocol repository).
 **Consequences:** One document per sprint: summary, then each phase's description and diagram. Logs without markers archive as before.
 
+## 2026-10-13 — Sprint 10: Artifact Rubrics
+
+**Decision:** Templated artifacts carry a review rubric as an appendix to the template; `agents/templates/ARTIFACTS.md` holds the artifact inventory and the rubric format. Piloted on sprint stories, the SDLC and lessons.
+**Consequences:** Reviews cite written criteria. Each rubric is applied by an independent reviewer at a step that already existed (Smith at Gate 1 and the close test, Oracle at groom), so no new ceremony was added.
+
+**Decision (assumed for the owner, not confirmed):** any criterion judged Weak rejects at the gate; rubrics guide judgement and are never scored numerically.
+**Consequences:** A rubric can stop a sprint at Gate 1. If the owner prefers rubrics to inform rather than block, the verdict rule in `ARTIFACTS.md` is the one place to change.
+
+**Decision:** Persona state, chat messages and TLDR blocks get no rubric.
+**Consequences:** Their failures are mechanical and are better caught by checks that can be run; none exist yet.
+
