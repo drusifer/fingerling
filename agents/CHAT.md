@@ -73,3 +73,18 @@ OK
 ---
 [<small>2026-10-14 01:49:03</small>] [**Smith**]->[**User**] *user approve*:
  Approved. The set file now reads top to bottom: what it is, how often, when, your stats, real examples. samples: 0 is the off switch. Docs explain built-in vs profile.
+
+---
+[<small>2026-10-14 01:58:05</small>] [**User**]->[**all**] *request*:
+ try this, wrap the jsonl in an outer object that has the jsonl data in one and metadata in the other. we can inject fields like current time into the meta object when we process the record. That way we can entirely avoid field name conflicts
+
+---
+[<small>2026-10-14 02:00:13</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make smoke | /home/drusifer/Projects/fingerling/build/build.out
+fingerprint_sampler-0.2.0-py3-none-any.whl
+...
+----------------------------------------------------------------------
+Ran 3 tests in 1.368s
+
+OK
+fingerprint_sampler-0.2.0.tar.gz

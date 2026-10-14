@@ -83,7 +83,7 @@ class Modifier(Rule):            # token(value) -> str; absent token for missing
     # Regex(pattern, flags), RegSub(pattern, replace, flags)
 
 class Aggregator(Rule):          # update(state, value); numeric ones only see numbers
-    # Sum, Min, Max, Avg, Last(n)
+    # Sum, Min, Max, Avg, Count, First(n), Last(n)
 
 @dataclass(frozen=True)
 class Field:                     # key, path, modifier (text/specs are built on creation)
@@ -105,15 +105,15 @@ def fingerprint_id(tokens: dict[str, str]) -> str: ...
 @dataclass
 class Fingerprint:
     tokens: dict[str, str]
-    count: int                      # built in, like first_seen / last_seen (wall clock)
-    first_seen: str
-    last_seen: str
-    aggregates: dict[str, dict]     # from the profile: key -> {"MIN": .., "AVG": {..}, "LAST": [..]}
-    first: list[dict]               # built in: first `samples` events [{"seen": ts, "event": ..}]
-    last: list[dict]                # built in: last `samples` events
+    aggregates: dict[str, dict]     # the profile's aggregates: key -> {"MIN": .., "LAST": [..]}
+    meta: dict[str, dict]           # builtin.yaml's aggregates: count, first/last seen, first/last
+
+def builtin_aggregates() -> tuple[Aggregate, ...]: ...   # parsed once from builtin.yaml
 
 class FingerprintSet:
-    def __init__(self, aggregates=(), profile_id=None, samples: int = 3): ...
+    def __init__(self, aggregates=(), profile_id=None): ...
+    # upsert folds the profile's aggregates over the record, and the built-in ones over the
+    # envelope {"meta": {"seen": <wall clock>}, "record": record}: injected fields can't clash.
     def upsert(self, tokens: dict[str, str], event: Any, timestamp: str | None = None) -> str: ...
     def load(self, path: str, *, force: bool = False) -> None: ...  # ProfileMismatchError unless force
     def save(self, path: str) -> None: ...                           # temp file + os.replace

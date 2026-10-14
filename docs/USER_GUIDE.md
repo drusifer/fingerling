@@ -117,7 +117,9 @@ aggregates:
   |---|---|
   | `SUM`, `MIN`, `MAX` | running sum / smallest / largest value |
   | `AVG` | the average, plus the sum and count that make it mergeable |
-  | `{name: LAST, n: N}` | the `N` most recent values of the path (whole events are built in) |
+  | `COUNT` | how many values the path selected |
+  | `{name: FIRST, n: N}` | the `N` earliest values of the path |
+  | `{name: LAST, n: N}` | the `N` most recent values of the path |
 
   Numeric functions accept numbers and numeric strings. An event where the path matches nothing,
   or a value isn't numeric, is skipped for that aggregate and counted in the summary.
@@ -139,24 +141,23 @@ profile_id: 37087e1858c85f7cb976959311d01b65
 fingerprints:
   cc986aed647e7d173dcc791d402d3e89:
     tokens: {method: GET, route: "/items/{id}", status_class: 'TRUE'}
-    count: 3
-    first_seen: '2026-10-13T01:25:42.821783+00:00'
-    last_seen: '2026-10-13T01:25:42.822552+00:00'
-    aggregates:
+    aggregates:                             # from your profile
       latency_ms: {MIN: 9.0, MAX: 12.5, AVG: {avg: 10.83, sum: 32.5, count: 3}}
       recent_paths: {LAST: [/items/17, /items/42, /items/3]}
-    first:                                  # up to 3 earliest events, each with when it was seen
-    - {seen: '2026-10-13T01:25:42.821783+00:00', event: {...}}
-    last:                                   # up to 3 latest events
-    - {seen: '2026-10-13T01:25:42.822552+00:00', event: {...}}
+    meta:                                   # built in, for every fingerprint
+      count: {COUNT: 3}
+      first_seen: {FIRST: ['2026-10-13T01:25:42.821783+00:00']}
+      last_seen: {LAST: ['2026-10-13T01:25:42.822552+00:00']}
+      first: {FIRST: [{meta: {seen: '2026-10-13T01:25:42.821783+00:00'}, record: {...}}, ...]}
+      last: {LAST: [..., {meta: {seen: '2026-10-13T01:25:42.822552+00:00'}, record: {...}}]}
 ```
 
 - `tokens` shows what the ID stands for.
-- **Built in, for every fingerprint:** `count`, `first_seen` / `last_seen`, and the first and last
-  3 events (`first`, `last`) with the time each was seen. Profile setting `samples: N` changes the
-  number (`0` keeps none). Times are wall clock — when the tool read the event — so they assume
-  nothing about the events' shape; a time field inside the events belongs in `aggregates`.
-- **From your profile:** everything under `aggregates`.
+- **`aggregates`** is what your profile asked for; **`meta`** is built in for every fingerprint:
+  `count`, `first_seen` / `last_seen` and the first and last 3 records. `meta` comes from a
+  built-in profile (`builtin.yaml` in the package) that reads each record wrapped as
+  `{meta: {seen: <time read>}, record: <the parsed record>}`, so injected fields never clash with the
+  record's own. Times are wall clock; a time field inside the records belongs in `aggregates`.
 - `profile_id` is derived from the profile's `fields`. A set can only be merged under the profile
   that built it, because fingerprints from different field definitions aren't comparable. Changing
   `aggregates` is always allowed: a new aggregate starts accumulating from that run, and changing
@@ -253,9 +254,9 @@ fingerprint_id = fingerprints.upsert(tokens, records[0])
 
 record = fingerprints.get(fingerprint_id)
 record.tokens                               # the tokens behind the ID
-record.count                                # grows each time the same token set is seen again
+record.meta["count"]                        # {"COUNT": n}: grows each time the tokens recur
 record.aggregates["duration_ms"]["MAX"]
-record.last                                 # up to 3 latest events: [{"seen": ..., "event": ...}]
+record.meta["last"]["LAST"]                 # up to 3 latest records, each {meta: {seen}, record}
 
 fingerprints.save("fingerprints.yaml")         # atomic
 fingerprints.load("fingerprints.yaml")         # continue folding from stored state
@@ -412,7 +413,8 @@ These are known limits, not bugs. Planned work is listed in the backlog in `task
   Fixable later via `buf()` + Python-side byte parsing of the sockaddr layout, or by rebuilding
   the kernel with `CONFIG_DEBUG_INFO_BTF=y` (a multi-hour undertaking on a Pi, not attempted).
   Not a blocker: `examples/demo.py`'s anomaly signal is entirely execve-based.
-- **No event-time timestamps.** `first_seen` / `last_seen` record ingestion time.
+- **No event-time timestamps by default.** `meta` times are when the tool read the record; add a
+  time field from the records to `aggregates` if you need event time.
 - **Mock/Simulated cgroup limitations** — while cgroup assignments are attempted, full cgroup-level container runtime policies (like namespace restrictions or root filesystem mounts) are deferred.
 
 ## Troubleshooting / FAQ

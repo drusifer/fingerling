@@ -23,4 +23,6 @@ sequenceDiagram
     Note right of Morpheus: "Approved. Built-in<br/>metadata lives on<br/>Fingerprint, profile<br/>stuff stays in<br/>aggregates, one setting,<br/>no new rule types.<br/>@Smith *user test"
     Smith->>User: "user approve"
     Note right of Smith: "Approved. The set file<br/>now reads top to bottom:<br/>what it is, how often,<br/>when, your stats, real<br/>examples. samples: 0 is<br/>the off switch. Docs…"
+    User->>All: "request"
+    Note right of User: "try this, wrap the jsonl<br/>in an outer object that<br/>has the jsonl data in<br/>one and metadata in the<br/>other. we can inject<br/>fields like current tim…"
 ```
