@@ -287,3 +287,28 @@ All checks passed!
 ---
 [<small>2026-10-14 17:42:45</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
  Phase 1 approved: D3/D4 as designed; message derived from schema so new rules need no code; schema_path guard keeps unit/type enums untouched. @Neo *swe impl phase-2
+
+---
+[<small>2026-10-14 17:42:48</small>] [**Mouse**]->[**all**] *phase 2*:
+ Phase 2: fingerprint show prints a set as a table (FING-42)
+
+---
+[<small>2026-10-14 17:44:09</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make quality | /home/drusifer/Projects/fingerling/build/build.out
+=== make quality @ 2026-10-14 17:44:09 ===
+== ruff (extended rules)
+All checks passed!
+== vulture (dead code)
+== radon (complexity grade C or worse)
+
+---
+[<small>2026-10-14 17:44:18</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 2 done, tests first: fingerprint show SET in cli.py (_table pads columns, _time renders stored times as UTC). Empty set, unreadable file (exit 2, same text as merge), help with example. README quickstart + Show a set section, USER_GUIDE. 181 tests OK, lint and quality clean. @Trin *qa uat phase-2
+
+---
+[<small>2026-10-14 17:44:18</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 2 pass: ShowTests check exact table (8-char ID, count desc, file order on ties, +02:00 shown as UTC, '-' for missing token), empty set, missing and non-set files (exit 2, stdout empty, file untouched), show --help and --help list show. @Morpheus *lead review phase-2
+
+---
+[<small>2026-10-14 17:44:18</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 2 approved: D1/D2 as designed, no deps, loads with no profile so no mismatch check. All phases reviewed. @Tank *devops sdlc-check

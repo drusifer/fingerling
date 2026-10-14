@@ -132,6 +132,9 @@ file and location, e.g. `app.yaml: fields[2] (key 'port') → modifier: 'values'
 property`. Run `fingerprint check app.yaml` to check a profile on its own (exit 0 valid, 1 not);
 see the package README for using the schema in an editor.
 
+Run `fingerprint show app.fingerprints.yaml` to read a set as a table: one row per fingerprint,
+most frequent first, with its count, first and last seen (UTC) and tokens.
+
 Two profiles ship as starting points: `packages/fingerprint-sampler/examples/access_log.yaml`
 (web access logs) and `examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).
 

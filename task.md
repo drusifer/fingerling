@@ -12,8 +12,8 @@
 - [x] **1.2** `schema_errors` says which rules need arguments; UAT + review. [Neo, Trin, Morpheus]
 
 ### Phase 2: `fingerprint show` (STORY-FING-42, 3 pts) — Neo
-- [ ] **2.1** `show` subcommand, table, errors, help; docs. [Neo]
-- [ ] **2.2** UAT + review. [Trin, Morpheus]
+- [x] **2.1** `show` subcommand, table, errors, help; docs. [Neo]
+- [x] **2.2** UAT + review. [Trin, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]

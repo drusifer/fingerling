@@ -95,4 +95,12 @@ sequenceDiagram
     Note right of Trin: "UAT phase 1 pass via<br/>make test-fingerprint:<br/>FING-43 AC1-2<br/>(test_cli), AC3<br/>(test_types typed skip<br/>still 1), AC4-5, FING-44<br/>AC1-2 all 6 needi…"
     Morpheus->>Neo: "lead handoff"
     Note right of Morpheus: "Phase 1 approved: D3/D4<br/>as designed, message<br/>derived from schema so<br/>new rules need no code,<br/>schema_path guard keeps<br/>unit/type enums untouch…"
+    Mouse->>All: "phase 2"
+    Note right of Mouse: "Phase 2: fingerprint<br/>show prints a set as a<br/>table (FING-42)"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Phase 2 done, tests<br/>first: fingerprint show<br/>SET in cli.py (_table<br/>pads columns, _time<br/>renders stored times as<br/>UTC). Empty set,<br/>unreadable f…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase 2 pass:<br/>ShowTests check exact<br/>table (8-char ID, count<br/>desc, file order on<br/>ties, +02:00 shown as<br/>UTC, '-' for missing<br/>token), empt…"
+    Morpheus->>Tank: "lead handoff"
+    Note right of Morpheus: "Phase 2 approved: D1/D2<br/>as designed, no deps,<br/>loads with no profile so<br/>no mismatch check. All<br/>phases reviewed. @Tank<br/>*devops sdlc-check"
 ```
