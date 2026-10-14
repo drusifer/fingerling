@@ -148,3 +148,18 @@ All checks passed!
 ---
 [<small>2026-10-14 14:00:24</small>] [**Bob**]->[**User**] *prompt update*:
  Fix loop updated: new step 0 - Neo diagnoses without changing code, tells the user actual vs expected, cause and proposed fix, and waits for confirmation. Same rule on Neo's *swe fix. Applied here and in bob_protocol (uncommitted there).
+
+---
+[<small>2026-10-14 17:18:46</small>] [**User**]->[**all**] *request*:
+ yes and... (flatten single-function aggregate state; FIRST/LAST without n keep one value)
+
+---
+[<small>2026-10-14 17:22:35</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make smoke | /home/drusifer/Projects/fingerling/build/build.out
+fingerprint_sampler-0.2.0-py3-none-any.whl
+...
+----------------------------------------------------------------------
+fingerprint_sampler-0.2.0.tar.gz
+Ran 3 tests in 1.354s
+
+OK

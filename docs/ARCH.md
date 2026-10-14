@@ -82,7 +82,7 @@ class Modifier(Rule):            # token(value) -> str; absent token for missing
     # Default, IsPresent, IsNull, InRange(low, high), AnyOf(values), Glob(pattern),
     # Regex(pattern, flags), RegSub(pattern, replace, flags)
 
-class Aggregator(Rule):          # update(state, value); numeric ones only see numbers
+class Aggregator(Rule):          # accept(state, value) -> value | SKIP; fold(state, value) -> new state
     # Sum, Min, Max, Avg, Count, First(n), Last(n)
 
 @dataclass(frozen=True)
@@ -105,8 +105,8 @@ def fingerprint_id(tokens: dict[str, str]) -> str: ...
 @dataclass
 class Fingerprint:
     tokens: dict[str, str]
-    aggregates: dict[str, dict]     # the profile's aggregates: key -> {"MIN": .., "LAST": [..]}
-    meta: dict[str, dict]           # builtin.yaml's aggregates: count, first/last seen, first/last
+    aggregates: dict[str, Any]      # the profile's: key -> value (one fn) or {"MIN": .., "MAX": ..}
+    meta: dict[str, Any]            # builtin.yaml: count, first_seen/last_seen (MIN/MAX), first/last
 
 def builtin_aggregates() -> tuple[Aggregate, ...]: ...   # parsed once from builtin.yaml
 
@@ -134,7 +134,7 @@ def load_profile(path: str) -> Profile: ...   # ProfileError.problems lists ever
 
 Aggregate state is keyed by function name, so changing `LAST`'s `n` keeps collected samples.
 Numeric functions accept ints, floats and numeric strings; other values are skipped and counted
-in `FingerprintSet.skipped_values`. The set file is version 2 (`version`, `profile_id`,
+in `FingerprintSet.skipped_values`. The set file is version 3 (`version`, `profile_id`,
 `fingerprints`).
 
 ### 4.3 `ringbuffer.py` (STORY-FING-03)

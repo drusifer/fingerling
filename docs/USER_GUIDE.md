@@ -115,14 +115,16 @@ aggregates:
 
   | Function | Keeps |
   |---|---|
-  | `SUM`, `MIN`, `MAX` | running sum / smallest / largest value |
+  | `SUM` | running sum of numbers |
+  | `MIN`, `MAX` | smallest / largest — numbers, or text such as ISO-8601 times |
   | `AVG` | the average, plus the sum and count that make it mergeable |
   | `COUNT` | how many values the path selected |
   | `{name: FIRST, n: N}` | the `N` earliest values of the path |
   | `{name: LAST, n: N}` | the `N` most recent values of the path |
 
-  Numeric functions accept numbers and numeric strings. An event where the path matches nothing,
-  or a value isn't numeric, is skipped for that aggregate and counted in the summary.
+  One function stores its value directly; several store a map by function name. Numbers and
+  numeric strings count as numbers. A value a function can't use, or an event where the path
+  matches nothing, is skipped for that aggregate and counted in the summary.
 
 Profiles are checked before any event is read, against a JSON Schema plus the checks a schema
 cannot express (regexes, JSONPaths, ranges, duplicate keys). Every problem is listed with its
@@ -136,20 +138,20 @@ Two profiles ship as starting points: `packages/fingerprint-sampler/examples/acc
 ### The fingerprint set file
 
 ```yaml
-version: 2
+version: 3
 profile_id: 37087e1858c85f7cb976959311d01b65
 fingerprints:
   cc986aed647e7d173dcc791d402d3e89:
     tokens: {method: GET, route: "/items/{id}", status_class: 'TRUE'}
     aggregates:                             # from your profile
       latency_ms: {MIN: 9.0, MAX: 12.5, AVG: {avg: 10.83, sum: 32.5, count: 3}}
-      recent_paths: {LAST: [/items/17, /items/42, /items/3]}
+      recent_paths: [/items/17, /items/42, /items/3]     # one function: its value directly
     meta:                                   # built in, for every fingerprint
-      count: {COUNT: 3}
-      first_seen: {FIRST: ['2026-10-13T01:25:42.821783+00:00']}
-      last_seen: {LAST: ['2026-10-13T01:25:42.822552+00:00']}
-      first: {FIRST: [{meta: {seen: '2026-10-13T01:25:42.821783+00:00'}, record: {...}}, ...]}
-      last: {LAST: [..., {meta: {seen: '2026-10-13T01:25:42.822552+00:00'}, record: {...}}]}
+      count: 3
+      first_seen: '2026-10-13T01:25:42.821783+00:00'
+      last_seen: '2026-10-13T01:25:42.822552+00:00'
+      first: [{meta: {seen: '2026-10-13T01:25:42.821783+00:00'}, record: {...}}, ...]
+      last: [..., {meta: {seen: '2026-10-13T01:25:42.822552+00:00'}, record: {...}}]
 ```
 
 - `tokens` shows what the ID stands for.

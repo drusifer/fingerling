@@ -50,4 +50,6 @@ sequenceDiagram
     Note right of User: "update the fix skill -<br/>add an instruction to<br/>first figure out what<br/>the bug is and tell me<br/>before trying to fix it"
     Bob->>User: "prompt update"
     Note right of Bob: "Fix loop updated: new<br/>step 0 - Neo diagnoses<br/>without changing code,<br/>tells the user actual vs<br/>expected, cause and<br/>proposed fix, and waits<br/>fo…"
+    User->>All: "request"
+    Note right of User: "yes and... (flatten<br/>single-function<br/>aggregate state,<br/>FIRST/LAST without n<br/>keep one value)"
 ```

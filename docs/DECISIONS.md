@@ -342,3 +342,6 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision (owner, 2026-10-14):** A missing key and a key set to `null` mean different things. `IS_PRESENT` is TRUE when the key exists (even if null); `IS_NULL` is TRUE only for an explicit null. Missing → FALSE/FALSE, null → TRUE/TRUE, value → TRUE/FALSE.
 **Consequences:** Supersedes the source spec's definitions, under which the two were exact complements. Profiles using either modifier may produce different tokens for records with explicit nulls.
 
+**Decision (owner, 2026-10-14):** An aggregate with one function stores its value directly (`count: 12`); several functions keep a map by name. `MIN`/`MAX` order text as well as numbers, so ISO-8601 times work; the built-in `first_seen`/`last_seen` are `MIN`/`MAX` of `$.meta.seen`. `FIRST`/`LAST` always take `n` and keep a list.
+**Consequences:** `meta` reads `{count: n, first_seen: t, last_seen: t, first: [..], last: [..]}` with no special case. Event-time min/max are correct even for out-of-order streams. Set files are version 3; older ones are refused.
+
