@@ -73,6 +73,17 @@
 - `make lint`, `make test`, `make secrets` green on the sprint branch.
 - Nothing pushed, nothing published.
 
+## Since Sprint 10 (maintenance, each on its own `fix/` branch, merged to `main`)
+- [x] `fix/sprint-10-record` — Sprint 10's missing close record restored; SDLC requires checking the record before a merge.
+- [x] `fix/remove-legacy-templates` — three retired state templates removed; stories template uses `STORY-{KEY}-{id}`.
+- [x] `fix/sync-agents-md` — `agents/AGENTS.md` synced with upstream (SDLC guideline, single `state.md`, `bobp make`).
+- [x] `fix/shutdown-prep` — board and state files for hand-off.
+
+BobProtocol sync (2026-10-13): the tool changes, the `build-env` skill, SDLC and rubric templates,
+skill and persona edits and the SDLC guideline are all committed and pushed in
+`~/Projects/bob_protocol`, including its shipped templates. `agents/skills`, `agents/templates`
+and `agents/AGENTS.md` here match it.
+
 ## Since Sprint 9 (maintenance, each on its own `fix/` branch, merged to `main`)
 - [x] `fix/single-makefile` — one Makefile; `chat` and `tldr` targets removed in favour of `bobp chat` / `bobp tldr`.
 - [x] `fix/docs-groom` — sprint stories moved to `docs/sprints/`; README documentation map; agents index and Oracle memory rewritten; dead links fixed.
@@ -81,11 +92,11 @@
 
 Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published package did not change.
 
-## Owner actions (agents do not push or publish)
+## Owner actions (agents do not push or publish unless told)
 - One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
-- `main` was pushed on 2026-10-13 (through Sprint 9 and the maintenance branches); check the first CI run's result. Sprint 10 is merged locally and not yet pushed.
-- `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0.
-- In `~/Projects/bob_protocol`: commit the uncommitted `chat_report.py`, `tldr.py`, `setup_agent_links.py` changes and tests, and copy this project's skill/template/persona edits upstream (list in `agents/bob/state.md`).
+- Then `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0. The tag exists locally only.
+- Check the result of the CI runs triggered by the pushes of 2026-10-13; no agent has looked at them.
+- Confirm that any Weak rubric criterion should block a gate (assumed in Sprint 10).
 
 ## Queued requests (next up)
 - None. (Artifact rubrics delivered in Sprint 10.)
