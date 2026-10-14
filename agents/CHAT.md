@@ -229,3 +229,7 @@ fingerprint_sampler-0.2.0.tar.gz
 Ran 3 tests in 1.332s
 
 OK
+
+---
+[<small>2026-10-14 17:33:27</small>] [**Tank**]->[**User**] *devops sdlc*:
+ Formats stay at version 0 until 1.0 (profiles and set files). SDLC section 7 updated. Tests, lint, smoke pass.

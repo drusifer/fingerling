@@ -13,7 +13,8 @@ sequenceDiagram
     participant Morpheus
     participant Smith
     participant Bob
-    Note over User,Bob: 📅 2026-10-14
+    participant Tank
+    Note over User,Tank: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "/bloop time for some<br/>meta data for the<br/>profiles (aka freebies).<br/>these can be optional if<br/>there is a reasonable<br/>default. consolidate to<br/>diff…"
     Neo->>Trin: "swe handoff"
@@ -70,4 +71,6 @@ sequenceDiagram
     Note right of Morpheus: "Approved: types are a<br/>third Rule family, no<br/>parser options."
     User->>All: "request"
     Note right of User: "stay at v0 no back<br/>compat until v1 ok?"
+    Tank->>User: "devops sdlc"
+    Note right of Tank: "Formats stay at version<br/>0 until 1.0 (profiles<br/>and set files). SDLC<br/>section 7 updated.<br/>Tests, lint, smoke pass."
 ```
