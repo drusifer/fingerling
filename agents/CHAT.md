@@ -97,3 +97,28 @@ All checks passed!
 ---
 [<small>2026-10-14 19:15:54</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
  Phase 1 approved: D1-D3 as designed; _store promoted to store() and value() added so share and fold share one layout rule. @Neo *swe impl phase-2
+
+---
+[<small>2026-10-14 19:15:54</small>] [**Mouse**]->[**all**] *phase 2*:
+ Phase 2: shares in fingerprint show (FING-47)
+
+---
+[<small>2026-10-14 19:17:11</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make quality | /home/drusifer/Projects/fingerling/build/build.out
+=== make quality @ 2026-10-14 19:17:10 ===
+== ruff (extended rules)
+All checks passed!
+== vulture (dead code)
+== radon (complexity grade C or worse)
+
+---
+[<small>2026-10-14 19:17:19</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 2 done, tests first: show adds COUNT % after COUNT and a value + % column per shared SUM/COUNT (key or key.FN), read from stored shares; old sets show '-'. Split into _show_table/_show_row after radon flagged C. Help + README. 194 OK, lint and quality clean. @Trin *qa uat phase-2
+
+---
+[<small>2026-10-14 19:17:20</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 2 pass: AC1 exact column order (COUNT %, size.SUM, size.SUM %, n, n %, tokens last); AC2 66.7 one decimal, '-' for missing; AC3 count sort kept; AC4 pre-share set shows '-' and no agg columns, exit 0; AC5 help + README. @Morpheus *lead review phase-2
+
+---
+[<small>2026-10-14 19:17:20</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 2 approved: D4 as designed, show recomputes nothing; helpers small and named. All phases reviewed. @Tank *devops sdlc-check

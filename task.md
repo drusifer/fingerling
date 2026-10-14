@@ -12,8 +12,8 @@
 - [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Phase 2: Shares in `show` (STORY-FING-47, 2 pts) — Neo
-- [ ] **2.1** `COUNT %` and value/% columns; help and README. [Neo]
-- [ ] **2.2** UAT + review. [Trin, Morpheus]
+- [x] **2.1** `COUNT %` and value/% columns; help and README. [Neo]
+- [x] **2.2** UAT + review. [Trin, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
