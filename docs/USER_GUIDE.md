@@ -86,7 +86,7 @@ fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log
 A profile says how to fingerprint one kind of event:
 
 ```yaml
-version: 1
+version: 0
 
 # fields define identity: events with the same tokens share one fingerprint
 fields:
@@ -138,7 +138,7 @@ Two profiles ship as starting points: `packages/fingerprint-sampler/examples/acc
 ### The fingerprint set file
 
 ```yaml
-version: 3
+version: 0
 profile_id: 37087e1858c85f7cb976959311d01b65
 fingerprints:
   cc986aed647e7d173dcc791d402d3e89:
