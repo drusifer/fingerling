@@ -77,7 +77,6 @@ In `templates/`:
 | `_template_tldr.md` | TLDR block formats |
 | `_template_USER_STORIES.md` | Sprint stories document (with STORIES rubric) |
 | `_template_SDLC.md`, `_template_SDLC.python.md`, `_template_SDLC.javascript.md` | `docs/SDLC.md` (base and per language; with SDLC rubric) |
-| `_template_context.md`, `_template_current_task.md`, `_template_next_steps.md` | Superseded by the single `state.md`; kept for older projects |
 
 ## Tools
 

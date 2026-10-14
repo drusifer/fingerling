@@ -8,7 +8,10 @@ sequenceDiagram
     autonumber
     participant Mouse
     participant All
-    Note over Mouse,All: 📅 2026-10-13
+    participant Bob
+    Note over Mouse,Bob: 📅 2026-10-13
     Mouse->>All: "sm handoff"
     Note right of Mouse: "Sprint 10 closed, its<br/>record is in<br/>CHAT_SPRINT_10<br/>(planning, phases 1-4)<br/>and CHAT_SPRINT_10_CLOSE<br/>(the close, posted<br/>late). No sprint in fl…"
+    Bob->>All: "prompt update"
+    Note right of Bob: "Removed the three legacy<br/>state templates<br/>(_template_context,<br/>_template_current_task,<br/>_template_next_steps):<br/>they belong to the<br/>retired thre…"
 ```
