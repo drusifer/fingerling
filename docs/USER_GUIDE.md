@@ -124,7 +124,7 @@ aggregates:
   or a value isn't numeric, is skipped for that aggregate and counted in the summary.
 
 Profiles are validated before any event is read; an error names the file and the entry, e.g.
-`app.yaml: fields[2] (key 'port'): Unknown modifier: 'GLOB'`.
+`app.yaml: fields[2] (key 'port'): Unknown modifier: 'UPPER'`.
 
 Two profiles ship as starting points: `packages/fingerprint-sampler/examples/access_log.yaml`
 (web access logs) and `examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).
@@ -208,6 +208,13 @@ tokens = tokenize(records[0], mask_profile)  # {"hook_syscall": "sys_connect", "
 | `IS_NULL` | `"TRUE"`/`"FALSE"` — is the field absent or explicitly null? |
 | `IN_RANGE(low, high)` | `"TRUE"` if `low <= value <= high`, else `"FALSE"` |
 | `ANY(v1, v2, ...)` | `"TRUE"` if the value matches one of the listed options |
+| `GLOB(pattern)` | `"TRUE"` if the whole value matches the shell-style pattern (`*`, `?`, `[a-z]`), case-sensitive |
+| `REGEX(pattern)` | `"TRUE"` if the regular expression matches anywhere in the value; anchor with `^` and `$` |
+| `REGSUB(pattern, replacement)` | The value with every match replaced, e.g. `REGSUB(\d+, N)` turns `/items/17` into `/items/N`; `"NULL"` if absent/null |
+
+Arguments are comma-separated and trimmed. Quote an argument (single or double quotes) when it
+contains a comma, leading or trailing space, or is empty: `REGEX('^a{2,3}$')`, `REGSUB('-\d+$', '')`.
+Backslashes reach the pattern unchanged. See the package README for YAML quoting advice.
 
 A missing or `null` field never raises — every modifier degrades to a stable `"FALSE"`/`"NULL"`
 token instead.
@@ -396,7 +403,6 @@ These are known limits, not bugs. Planned work is listed in the backlog in `task
   Fixable later via `buf()` + Python-side byte parsing of the sockaddr layout, or by rebuilding
   the kernel with `CONFIG_DEBUG_INFO_BTF=y` (a multi-hour undertaking on a Pi, not attempted).
   Not a blocker: `examples/demo.py`'s anomaly signal is entirely execve-based.
-- **No `GLOB` / `REGEX` modifiers** yet, though `docs/SOURCE_SPEC.md` lists them.
 - **No event-time timestamps.** `first_seen` / `last_seen` record ingestion time.
 - **Mock/Simulated cgroup limitations** — while cgroup assignments are attempted, full cgroup-level container runtime policies (like namespace restrictions or root filesystem mounts) are deferred.
 
@@ -422,7 +428,7 @@ Some input lines weren't valid JSON objects; they are listed on stderr by line n
 
 **"`ValueError: Unknown modifier"` when calling `tokenize()`.**
 Your `MaskEntry.modifier` string doesn't match one of `DEFAULT`, `IS_PRESENT`, `IS_NULL`,
-`IN_RANGE(...)`, or `ANY(...)` exactly (case-sensitive, no extra whitespace before the `(`).
+`IN_RANGE(...)`, `ANY(...)`, `GLOB(...)`, `REGEX(...)` or `REGSUB(...)` (names are case-sensitive).
 
 **"`ValueError: match_labels must not be empty`" from `compile_policy()`.**
 This is intentional — an empty `matchLabels` selector would match every pod in the namespace.

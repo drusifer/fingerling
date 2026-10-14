@@ -56,6 +56,8 @@
 - 2026-10-13 Sprint 10 Gates 1+2 approved; added FING-31 AC6 (verdict fits one chat message).
 - 2026-10-13 Sprint 10 closed. From now on: Gate 1 uses the STORIES rubric (verdict line, any Weak rejects); close test reviews new lessons with the LESSON rubric.
 
+- 2026-10-13 User-tested GLOB/REGEX/REGSUB: approved. Residual risk: double-quoted YAML halves backslashes silently; documented in the package README only.
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete
@@ -64,4 +66,4 @@
 No pending gates.
 
 ---
-*Last updated: 2026-10-13T20:15:33-04:00*
+*Last updated: 2026-10-13T23:20:00-04:00*

@@ -38,3 +38,47 @@ Agents **must** use this for every message posted to CHAT.md:
 ---
 [<small>2026-10-13 22:07:32</small>] [**Mouse**]->[**all**] *sm handoff*:
  Shutdown hand-off. No sprint in flight; Sprints 8-10 closed. fingerling main is pushed; tag v0.1.0 is local only because pushing it publishes to PyPI and the PyPI setup is not done. bob_protocol is synced and pushed. Waiting on the owner: PyPI setup then the tag; the CI results; whether a Weak rubric criterion should block a gate. To resume: read task.md, docs/SDLC.md and agents/mouse/state.md. Next sprint is sprint-11, next story STORY-FING-35.
+
+---
+[<small>2026-10-13 22:08:21</small>] [**User**]->[**all**] *request*:
+ /bob-protocol init /mouse status report
+
+---
+[<small>2026-10-13 22:08:39</small>] [**Mouse**]->[**User**] *sm status*:
+ Status: no sprint in flight. Sprints 8-10 closed (16, 18, 10 pts; 1 fix cycle total). main is level with origin. CI checked: all 3 runs from today's pushes passed (3.10-3.13 + secret scan). Tag v0.1.0 is still local only. Waiting on owner: PyPI setup then push the tag; whether a Weak rubric criterion blocks a gate. Nothing queued; next is sprint-11, STORY-FING-35.
+
+---
+[<small>2026-10-13 23:12:57</small>] [**User**]->[**all**] *request*:
+ /bloop GLOB/REGX/REGSUB
+
+---
+[<small>2026-10-13 23:14:12</small>] [**Mouse**]->[**Neo**] *sm handoff*:
+ Resolved: /bloop GLOB/REGX/REGSUB = *impl of three new tokenizer modifiers (backlog item, spec FR-MOD-01). One concrete change, so no sprint: branch fix/glob-regex-regsub, chain Neo > Trin > Morpheus > Smith. Named REGEX as in the spec, not REGX. @Neo *swe impl GLOB, REGEX, REGSUB
+
+---
+[<small>2026-10-13 23:15:37</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make build | /home/drusifer/Projects/fingerling/build/build.out
+=== make build @ 2026-10-13 23:15:35 ===
+fingerprint-sampler 0.1.0
+fingerprint_sampler-0.1.0-py3-none-any.whl
+fingerprint_sampler-0.1.0.tar.gz
+
+---
+[<small>2026-10-13 23:16:08</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ GLOB(pattern), REGEX(pattern), REGSUB(pattern, replacement) added to the tokenizer. Arguments may now be quoted so a pattern can hold commas or spaces; one closing paren is stripped instead of all. Regex and replacement are checked at profile load. 21 new tests; lint and 145 + 59 tests pass. README and user guide updated. @Trin *qa uat GLOB/REGEX/REGSUB
+
+---
+[<small>2026-10-13 23:16:08</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT pass. Ran the CLI on the access-log example with all three modifiers: tokens correct, 3 fingerprints. Bad profiles exit 2 and name the entry (wrong arg count, invalid regex). Missing and null give FALSE / NULL. Gates: lint, test-all on 3.10-3.13, secrets, build. Found: make test-fingerprint ARGS=test_cli fails (ModuleNotFoundError), though SDLC section 3 says it works - for @Tank. @Morpheus *lead review
+
+---
+[<small>2026-10-13 23:16:08</small>] [**Morpheus**]->[**Smith**] *lead handoff*:
+ Review approved. Parser stays one function, modifiers stay table-driven, no new dependency. Noted: REGEX searches (anchor to match whole value), GLOB matches whole value; ANY with a quoted argument now drops the quotes, a behaviour change nobody is likely to rely on; patterns are the profile author's, so no ReDoS guard. Profile ids of existing profiles are unchanged. @Smith *user test
+
+---
+[<small>2026-10-13 23:16:08</small>] [**Smith**]->[**Mouse**] *user approve*:
+ User test approved. Errors name the file, entry and cause. Docs show a worked example of each modifier and say when to quote. One risk left for the owner: a double-quoted YAML string needs doubled backslashes - documented, but the error a user sees is a wrong token, not a message. Feature is a minor bump (0.2.0) per SDLC section 7; not bumped or tagged here. @Mouse *sm done
+
+---
+[<small>2026-10-13 23:16:09</small>] [**Mouse**]->[**User**] *sm done*:
+ Done: GLOB/REGEX/REGSUB passed UAT, review and user test with no fix cycles. Committed on fix/glob-regex-regsub. Board updated. Owner decides the release: 0.2.0, or move the unpublished v0.1.0 tag. @Tank two SDLC notes are in the task.md backlog.

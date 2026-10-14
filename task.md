@@ -74,6 +74,7 @@
 - Nothing pushed, nothing published.
 
 ## Since Sprint 10 (maintenance, each on its own `fix/` branch, merged to `main`)
+- [x] `fix/glob-regex-regsub` — `GLOB`, `REGEX` and `REGSUB` modifiers with quoted arguments (spec FR-MOD-01); Trin UAT, Morpheus review, Smith user test. CI for the 2026-10-13 pushes checked: green.
 - [x] `fix/sprint-10-record` — Sprint 10's missing close record restored; SDLC requires checking the record before a merge.
 - [x] `fix/remove-legacy-templates` — three retired state templates removed; stories template uses `STORY-{KEY}-{id}`.
 - [x] `fix/sync-agents-md` — `agents/AGENTS.md` synced with upstream (SDLC guideline, single `state.md`, `bobp make`).
@@ -95,7 +96,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 ## Owner actions (agents do not push or publish unless told)
 - One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
 - Then `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0. The tag exists locally only.
-- Check the result of the CI runs triggered by the pushes of 2026-10-13; no agent has looked at them.
+- Decide the release for the GLOB/REGEX/REGSUB feature: bump to 0.2.0 (SDLC section 7), or move the unpublished `v0.1.0` tag to include it. Not bumped or tagged.
 - Confirm that any Weak rubric criterion should block a gate (assumed in Sprint 10).
 
 ## Queued requests (next up)
@@ -103,7 +104,8 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 
 ## Backlog (unscheduled)
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
-- Fingerprint tool: `fingerprint show` (table/report view of a set); `GLOB`/`REGEX` modifiers; reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
+- Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
+- For Tank: `make test-fingerprint ARGS=test_cli` fails with ModuleNotFoundError although SDLC section 3 documents it; SDLC sections 8 and 9 still say the first CI result is unknown (it passed).
 - Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.
 - Parked (not scheduled while the fingerprint tool is the focus): n-gram/Jaccard stage, `examples/demo.py` markup sweep and smoke test, `sudo make demo-live` verification, `tests/test_server.py` private access, USER_GUIDE GitOps/sandbox sections.

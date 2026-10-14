@@ -31,6 +31,8 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 - 2026-10-13 Sprint 10 arch D1-D7 (rubric appendix format, markers, codes, reviewer never author, Bob implements).
 - 2026-10-13 Sprint 10 closed. Next rubric candidate: architecture template.
 
+- 2026-10-13 Reviewed GLOB/REGEX/REGSUB: approved. Decisions: REGEX = re.search, GLOB = fnmatchcase on the whole value, REGSUB missing -> NULL; modifier arguments support quoting. No ReDoS guard (profiles are trusted input).
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete
@@ -39,4 +41,4 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 No pending reviews.
 
 ---
-*Last updated: 2026-10-13T20:15:33-04:00*
+*Last updated: 2026-10-13T23:20:00-04:00*

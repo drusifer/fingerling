@@ -30,6 +30,9 @@
 - 2026-10-13 Sprint 10 planned: 4 phases, Bob implements; markers posted per phase.
 - 2026-10-13 Sprint 10 closed: 10/10 pts. Its chat record lost 12 messages to silent failures (over-length bobp chat calls with output discarded); posted late and archived as CHAT_SPRINT_10_CLOSE. Always confirm markers and handoffs were posted - check the bobp chat result and message length (512).
 - 2026-10-13 Shutdown. Sprints 8-10 closed; maintenance branches merged; main pushed. bob_protocol fully synced and pushed.
+- 2026-10-13 22:10 status report (cold start): CI checked with `gh run list` - all 3 runs on main from the 2026-10-13 pushes passed (lint + test on 3.10-3.13, secret scan). main is level with origin; tag v0.1.0 still local only. `task.md` Owner actions still lists the CI check - remove that line on the next branch that touches the board.
+
+- 2026-10-13 GLOB/REGEX/REGSUB delivered outside a sprint on fix/glob-regex-regsub (Neo > Trin > Morpheus > Smith, 0 fix cycles). Not bumped or tagged: owner decides between 0.2.0 and moving the unpublished v0.1.0 tag.
 
 ## Current Task
 **Status:** No sprint in flight.
@@ -37,10 +40,10 @@
 ## Next Steps
 Cold start:
 1. Read `task.md`, `docs/SDLC.md` and the last message in `agents/CHAT.md`.
-2. Waiting on the owner: PyPI setup then pushing tag `v0.1.0`; the CI results; the rubric blocking rule.
+2. Waiting on the owner: PyPI setup then pushing tag `v0.1.0`; the rubric blocking rule. (CI results: checked 2026-10-13, green.)
 3. No request is queued. Backlog is in `task.md`; the fingerprint tool is the only active scope (next candidates: `fingerprint show`, `GLOB`/`REGEX` modifiers, event-time timestamps).
 4. Starting a sprint: confirm `docs/SDLC.md`, create `sprint-11` from clean `main` before stories (next story STORY-FING-35), write stories from `agents/templates/_template_USER_STORIES.md`, post `--cmd "phase <N>"` markers.
 5. Posting to chat: keep messages under 512 characters and check that `bobp chat` succeeded; before merging a sprint confirm the log has every marker, Smith's approvals, the retro and the launch.
 
 ---
-*Last updated: 2026-10-13T22:07:32-04:00*
+*Last updated: 2026-10-13T23:20:00-04:00*
