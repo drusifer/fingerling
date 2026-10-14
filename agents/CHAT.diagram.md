@@ -37,4 +37,12 @@ sequenceDiagram
     Note right of User: "okay let's do that to<br/>get me going (GH Archive<br/>example profile + make<br/>target to fetch an hour)"
     Neo->>User: "swe done"
     Note right of Neo: "GH Archive example done:<br/>examples/gharchive.yaml<br/>+ make gharchive<br/>(GH_HOUR, downloads once<br/>to data/, gitignored).<br/>One hour: 180,387<br/>events…"
+    User->>All: "request"
+    Note right of User: "*fix IS_PRESESNT !=<br/>IS_NULL"
+    Neo->>Trin: "swe fix"
+    Note right of Neo: "Fixed: IS_PRESENT = key<br/>exists (even null),<br/>IS_NULL = explicit null<br/>only. missing F/F, null<br/>T/T, value T/F. Tests<br/>first, lint, 157 + 50<br/>pas…"
+    Trin->>Morpheus: "qa uat"
+    Note right of Trin: "UAT pass via make test:<br/>three-state test covers<br/>missing/null/value,<br/>golden quickstart ids<br/>unchanged. @Morpheus<br/>*lead review"
+    Morpheus->>User: "lead review"
+    Note right of Morpheus: "Approved: the two<br/>modifiers own their<br/>token rule, other<br/>modifiers unchanged."
 ```

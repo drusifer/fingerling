@@ -339,3 +339,6 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision (owner, same day, supersedes the above):** The built-in metadata is a small profile shipped with the package (`builtin.yaml`) using the ordinary aggregate functions, plus the new `COUNT` and `FIRST(n)`. It reads each parsed record wrapped in an envelope, `{meta: {seen: <wall clock>}, record: <parsed record>}`, and its results go to a `meta` section beside the profile's `aggregates`.
 **Consequences:** No special-case fields or code in `FingerprintSet`; injected fields and built-in keys can never clash with the record or the user's aggregate keys. The `samples` setting is gone. The set file reads `meta: {count: {COUNT: n}, ...}` — uniform with aggregates, slightly noisier.
 
+**Decision (owner, 2026-10-14):** A missing key and a key set to `null` mean different things. `IS_PRESENT` is TRUE when the key exists (even if null); `IS_NULL` is TRUE only for an explicit null. Missing → FALSE/FALSE, null → TRUE/TRUE, value → TRUE/FALSE.
+**Consequences:** Supersedes the source spec's definitions, under which the two were exact complements. Profiles using either modifier may produce different tokens for records with explicit nulls.
+

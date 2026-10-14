@@ -218,8 +218,8 @@ if wrong) — the same way aggregate functions are.
 | Modifier | Arguments | Token |
 |---|---|---|
 | `DEFAULT` | — | the value as a string; `"NULL"` if absent |
-| `IS_PRESENT` | — | `"TRUE"`/`"FALSE"` — present and non-null? |
-| `IS_NULL` | — | `"TRUE"`/`"FALSE"` — absent or null? |
+| `IS_PRESENT` | — | `"TRUE"` if the key exists, even when its value is `null` |
+| `IS_NULL` | — | `"TRUE"` only if the key exists and is set to `null` (a missing key is `"FALSE"`) |
 | `IN_RANGE` | `low`, `high` (numbers) | `"TRUE"` if `low <= value <= high` |
 | `ANY` | `values` (a list) | `"TRUE"` if the value is one of those listed |
 | `GLOB` | `pattern` | `"TRUE"` if the whole value matches the shell-style pattern (`*`, `?`, `[a-z]`), case-sensitive |
@@ -228,8 +228,8 @@ if wrong) — the same way aggregate functions are.
 
 In a YAML profile, write patterns in single quotes; see the package README for examples and flags.
 
-A missing or `null` field never raises — every modifier degrades to a stable `"FALSE"`/`"NULL"`
-token instead.
+A missing key and a key set to `null` are different, and `IS_PRESENT` / `IS_NULL` tell them
+apart. No modifier ever raises on either: the others give a stable `"FALSE"`/`"NULL"` token.
 
 **Paths** are full JSONPath, resolved by the `python-jsonpath` library: dot and bracket access,
 `[*]`, slices (`[0:2]`), negative indexes, unions (`['a','b']`), recursive descent (`..`) and
