@@ -38,18 +38,15 @@ None.
   format), _template_USER_STORIES.md (STORIES rubric), SDLC rubric on the 3 SDLC templates, LESSON
   rubric on _template_LESSON.md. Wired into cypher, smith, tank, oracle SKILL.md and the sprint
   and build-env skills. Verdict rule: any Weak rejects (assumed for the owner).
+- 2026-10-13 BobProtocol sync complete: tool changes, build-env skill, SDLC/rubric templates, skill and persona edits and the AGENTS.md SDLC guideline are committed and pushed in ~/Projects/bob_protocol (agents/ and bobp/templates/agents/). Fingerling's agents/skills, agents/templates and agents/AGENTS.md match upstream. bobp reinstalled with `bobp make system-install`.
 
 ## Current Task
-**Status:** Sprint 10 complete
+**Status:** Complete — nothing pending.
 
 ## Next Steps
-- Pending bob_protocol sync (owner): tool changes uncommitted in ~/Projects/bob_protocol
-  (chat_report.py, tldr.py, setup_agent_links.py + tests); and everything edited locally under
-  agents/ since 2026-10-12 — build-env skill, SDLC/USER_STORIES/LESSON templates and ARTIFACTS.md,
-  sprint/bloop/judge/personas skills, all persona SKILL.md edits, AGENTS.md guideline 4,
-  DOCUMENTATION_INDEX.md, HELP.md.
-- Next rubric: architecture template. Runnable checks for state.md / chat / TLDR.
-- Known broken upstream: `bobp prep-tldr` (imports via as a library).
+- Still fingerling-specific and not upstreamed, by design: `agents/DOCUMENTATION_INDEX.md`, `agents/bob/HELP.md` edits.
+- Known upstream gaps: `bobp prep-tldr` imports via as a library (broken); `bobp setup-agent-links` exits 0 when a step fails; `bobp pull` never creates new files.
+- Next rubric candidate: architecture template.
 
 ---
-*Last updated: 2026-10-13T20:13:52-04:00*
+*Last updated: 2026-10-13T22:07:32-04:00*

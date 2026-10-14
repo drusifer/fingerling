@@ -8,12 +8,7 @@ sequenceDiagram
     autonumber
     participant Mouse
     participant All
-    participant Bob
-    Note over Mouse,Bob: 📅 2026-10-13
+    Note over Mouse,All: 📅 2026-10-13
     Mouse->>All: "sm handoff"
-    Note right of Mouse: "Sprint 10 closed, its<br/>record is in<br/>CHAT_SPRINT_10<br/>(planning, phases 1-4)<br/>and CHAT_SPRINT_10_CLOSE<br/>(the close, posted<br/>late). No sprint in fl…"
-    Bob->>All: "prompt update"
-    Note right of Bob: "Removed the three legacy<br/>state templates<br/>(_template_context,<br/>_template_current_task,<br/>_template_next_steps):<br/>they belong to the<br/>retired thre…"
-    Bob->>All: "prompt update"
-    Note right of Bob: "agents/AGENTS.md synced<br/>with the upstream copy,<br/>which now carries the<br/>SDLC guideline.<br/>Fingerling was behind<br/>upstream here: it still<br/>describ…"
+    Note right of Mouse: "Shutdown hand-off. No<br/>sprint in flight,<br/>Sprints 8-10 closed.<br/>fingerling main is<br/>pushed, tag v0.1.0 is<br/>local only because<br/>pushing it publish…"
 ```

@@ -29,13 +29,18 @@
   origin and tagged v0.1.0; nothing pushed. Post-sprint chat archived as CHAT_POST_SPRINT_9.
 - 2026-10-13 Sprint 10 planned: 4 phases, Bob implements; markers posted per phase.
 - 2026-10-13 Sprint 10 closed: 10/10 pts. Its chat record lost 12 messages to silent failures (over-length bobp chat calls with output discarded); posted late and archived as CHAT_SPRINT_10_CLOSE. Always confirm markers and handoffs were posted - check the bobp chat result and message length (512).
+- 2026-10-13 Shutdown. Sprints 8-10 closed; maintenance branches merged; main pushed. bob_protocol fully synced and pushed.
 
 ## Current Task
-**Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
-**Status:** No sprint in flight
+**Status:** No sprint in flight.
 
 ## Next Steps
-Cold start: read task.md, docs/SDLC.md, last message in agents/CHAT.md. Next sprint is sprint-11, next story STORY-FING-35. Before merging a sprint, confirm the chat log has every phase marker, Smith's approval, the retro and the launch. Active scope is the fingerprint tool only.
+Cold start:
+1. Read `task.md`, `docs/SDLC.md` and the last message in `agents/CHAT.md`.
+2. Waiting on the owner: PyPI setup then pushing tag `v0.1.0`; the CI results; the rubric blocking rule.
+3. No request is queued. Backlog is in `task.md`; the fingerprint tool is the only active scope (next candidates: `fingerprint show`, `GLOB`/`REGEX` modifiers, event-time timestamps).
+4. Starting a sprint: confirm `docs/SDLC.md`, create `sprint-11` from clean `main` before stories (next story STORY-FING-35), write stories from `agents/templates/_template_USER_STORIES.md`, post `--cmd "phase <N>"` markers.
+5. Posting to chat: keep messages under 512 characters and check that `bobp chat` succeeded; before merging a sprint confirm the log has every marker, Smith's approvals, the retro and the launch.
 
 ---
-*Last updated: 2026-10-13T20:15:33-04:00*
+*Last updated: 2026-10-13T22:07:32-04:00*
