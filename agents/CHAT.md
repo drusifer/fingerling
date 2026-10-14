@@ -238,3 +238,7 @@ OK
 [<small>2026-10-14 17:36:55</small>] [**make**]->[**all**] *build*:
  Build PASSED | make clean | /home/drusifer/Projects/fingerling/build/build.out
 === make clean @ 2026-10-14 17:36:55 ===
+
+---
+[<small>2026-10-14 17:38:09</small>] [**Mouse**]->[**All**] *sm handoff*:
+ Prep for clear. Since Sprint 12 (all merged and pushed): built-in meta profile over {meta, record} envelope, COUNT/FIRST, flat single-function state, MIN/MAX on text and dates, DATE/DATETIME types + TRUNC, IS_PRESENT vs IS_NULL fix, GH Archive example, formats v0, CI manual, make clean removes data. Resume: agents/mouse/state.md Next Steps.
