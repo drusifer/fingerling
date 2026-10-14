@@ -331,3 +331,8 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision (owner):** Checks that agents ran by hand become a smoke suite (`make smoke`) against the installed wheel, including the README's own examples; `make quality` reports smells (report only).
 **Consequences:** No ad hoc verification commands; UAT cites make targets. README drift now fails a gate.
 
+## 2026-10-14 — Built-in fingerprint metadata
+
+**Decision (owner):** Every fingerprint gets built-in metadata that needs no profile setting: `count`, wall-clock `first_seen` / `last_seen`, and the first and last 3 events (`first`, `last`), each with the time it was seen. `samples: N` in the profile changes the number (0 = none) and does not affect the profile id. Event-time tracking stays a user-defined aggregate: defaults assume nothing about an event's shape.
+**Consequences:** Built-in metadata sits beside `aggregates`, which hold only what the profile asked for. `total_occurrences` is now `count`; the set file is version 2 and version-1 files are refused (no compatibility before 1.0). Hand-rolled whole-event `LAST` aggregates in the telemetry pipeline and the eBPF example were removed.
+

@@ -105,13 +105,15 @@ def fingerprint_id(tokens: dict[str, str]) -> str: ...
 @dataclass
 class Fingerprint:
     tokens: dict[str, str]
-    total_occurrences: int
+    count: int                      # built in, like first_seen / last_seen (wall clock)
     first_seen: str
     last_seen: str
-    aggregates: dict[str, dict]     # aggregate key -> {"MIN": .., "AVG": {avg, sum, count}, "LAST": [..]}
+    aggregates: dict[str, dict]     # from the profile: key -> {"MIN": .., "AVG": {..}, "LAST": [..]}
+    first: list[dict]               # built in: first `samples` events [{"seen": ts, "event": ..}]
+    last: list[dict]                # built in: last `samples` events
 
 class FingerprintSet:
-    def __init__(self, aggregates: Sequence[Aggregate] = (), profile_id: str | None = None): ...
+    def __init__(self, aggregates=(), profile_id=None, samples: int = 3): ...
     def upsert(self, tokens: dict[str, str], event: Any, timestamp: str | None = None) -> str: ...
     def load(self, path: str, *, force: bool = False) -> None: ...  # ProfileMismatchError unless force
     def save(self, path: str) -> None: ...                           # temp file + os.replace
@@ -132,7 +134,7 @@ def load_profile(path: str) -> Profile: ...   # ProfileError.problems lists ever
 
 Aggregate state is keyed by function name, so changing `LAST`'s `n` keeps collected samples.
 Numeric functions accept ints, floats and numeric strings; other values are skipped and counted
-in `FingerprintSet.skipped_values`. The set file is version 1 (`version`, `profile_id`,
+in `FingerprintSet.skipped_values`. The set file is version 2 (`version`, `profile_id`,
 `fingerprints`).
 
 ### 4.3 `ringbuffer.py` (STORY-FING-03)
