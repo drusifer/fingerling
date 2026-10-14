@@ -62,6 +62,9 @@ Shared procedures in `skills/<name>/SKILL.md`:
 
 ## Templates
 
+**[templates/ARTIFACTS.md](templates/ARTIFACTS.md)** lists every artifact agents are expected to
+produce, which have a template and a review rubric, and how rubrics are written and applied.
+
 In `templates/`:
 
 | Template | For |
@@ -69,10 +72,11 @@ In `templates/`:
 | `_template_state.md` | Persona `state.md` |
 | `_template_CHAT.md` | Chat message format |
 | `_template_ARCH.md` | Architecture decision record |
-| `_template_LESSON.md` | Lesson entry |
+| `_template_LESSON.md` | Lesson entry (with LESSON rubric) |
 | `_template_finding.md` | Research finding |
 | `_template_tldr.md` | TLDR block formats |
-| `_template_SDLC.md`, `_template_SDLC.python.md`, `_template_SDLC.javascript.md` | `docs/SDLC.md` (base and per language) |
+| `_template_USER_STORIES.md` | Sprint stories document (with STORIES rubric) |
+| `_template_SDLC.md`, `_template_SDLC.python.md`, `_template_SDLC.javascript.md` | `docs/SDLC.md` (base and per language; with SDLC rubric) |
 | `_template_context.md`, `_template_current_task.md`, `_template_next_steps.md` | Superseded by the single `state.md`; kept for older projects |
 
 ## Tools

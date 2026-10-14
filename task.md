@@ -10,8 +10,8 @@
 **Points:** 10 · **Tier:** 1 · Implementer: Bob (templates and skills)
 
 ### Phase 1: Inventory and rubric format (STORY-FING-31, 2 pts)
-- [ ] **1.1** `agents/templates/ARTIFACTS.md`: inventory, rubric format, verdict line, how to add; link from the agents index. [Bob]
-- [ ] **1.2** UAT + review. [Trin, Morpheus]
+- [x] **1.1** `agents/templates/ARTIFACTS.md`: inventory, rubric format, verdict line, how to add; link from the agents index. [Bob]
+- [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Phase 2: Stories template and rubric (STORY-FING-32, 3 pts)
 - [ ] **2.1** `_template_USER_STORIES.md` with rubric appendix. [Bob]

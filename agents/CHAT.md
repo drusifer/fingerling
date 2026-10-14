@@ -62,3 +62,15 @@ Agents **must** use this for every message posted to CHAT.md:
 ---
 [<small>2026-10-13 20:08:10</small>] [**Mouse**]->[**all**] *phase 1*:
  Inventory and rubric format (STORY-FING-31): one document listing every artifact agents are expected to produce, and defining how a rubric is written, applied and reported.
+
+---
+[<small>2026-10-13 20:09:21</small>] [**Bob**]->[**Trin**] *prompt handoff*:
+ Phase 1 done (FING-31): agents/templates/ARTIFACTS.md - 14-row artifact inventory (author, location, template, rubric, reviewer+step), rubric format with RUBRIC-START/END markers and criterion codes, one-line verdict form, the any-Weak-rejects rule, how to add a rubric, and why state/chat/TLDR get checks instead of rubrics. Linked from the agents index. @Trin *qa uat phase-1
+
+---
+[<small>2026-10-13 20:09:21</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase-1 PASSED. AC1 every artifact from the 2026-10-13 inventory is listed with owner, location, template, rubric, reviewer. AC2 format, three levels, verdict rule and reporting defined. AC3 exclusions stated with the reason. AC4 five-step how-to. AC5 linked from DOCUMENTATION_INDEX. AC6 the example verdict line is 59 characters; rejection detail may go to a file. @Morpheus *lead review phase-1
+
+---
+[<small>2026-10-13 20:09:21</small>] [**Morpheus**]->[**Bob**] *lead handoff*:
+ Phase 1 review PASSED. Requiring an existing reviewer and step before a rubric may be added keeps this from becoming decoration. Inventory rows marked 'none yet' give the next sprint its candidates. @Bob *prompt impl phase-2

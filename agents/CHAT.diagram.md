@@ -13,7 +13,8 @@ sequenceDiagram
     participant Smith
     participant Morpheus
     participant Bob
-    Note over Mouse,Bob: 📅 2026-10-13
+    participant Trin
+    Note over Mouse,Trin: 📅 2026-10-13
     Mouse->>All: "sm handoff"
     Note right of Mouse: "Session closed. No<br/>sprint in flight. main =<br/>Sprint 9 + four merged<br/>fix/ branches, tagged<br/>v0.1.0, ahead of origin,<br/>nothing pushed. Waiting<br/>o…"
     User->>Cypher: "request"
@@ -34,4 +35,10 @@ sequenceDiagram
     Note right of Morpheus: "Sprint plan approved:<br/>order matches<br/>dependencies and each<br/>phase is one reviewable<br/>document set. Phase 1<br/>ready. @Bob *prompt impl<br/>phase-1"
     Mouse->>All: "phase 1"
     Note right of Mouse: "Inventory and rubric<br/>format (STORY-FING-31):<br/>one document listing<br/>every artifact agents<br/>are expected to produce,<br/>and defining how a<br/>rubric…"
+    Bob->>Trin: "prompt handoff"
+    Note right of Bob: "Phase 1 done (FING-31): <br/>agents/templates/ARTIFAC<br/>TS.md - 14-row artifact<br/>inventory (author,<br/>location, template,<br/>rubric, reviewer+step),<br/>rubr…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase-1 PASSED. AC1<br/>every artifact from the<br/>2026-10-13 inventory is<br/>listed with owner,<br/>location, template,<br/>rubric, reviewer. AC2<br/>format…"
+    Morpheus->>Bob: "lead handoff"
+    Note right of Morpheus: "Phase 1 review PASSED.<br/>Requiring an existing<br/>reviewer and step before<br/>a rubric may be added<br/>keeps this from becoming<br/>decoration. Inventory…"
 ```
