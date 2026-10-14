@@ -116,7 +116,7 @@ aggregates:
   | Function | Keeps |
   |---|---|
   | `SUM` | running sum of numbers |
-  | `MIN`, `MAX` | smallest / largest — numbers, or text such as ISO-8601 times |
+  | `MIN`, `MAX` | smallest / largest — numbers, dates and times (`type: DATETIME`/`DATE`), or text |
   | `AVG` | the average, plus the sum and count that make it mergeable |
   | `COUNT` | how many values the path selected |
   | `{name: FIRST, n: N}` | the `N` earliest values of the path |
@@ -148,8 +148,8 @@ fingerprints:
       recent_paths: [/items/17, /items/42, /items/3]     # one function: its value directly
     meta:                                   # built in, for every fingerprint
       count: 3
-      first_seen: '2026-10-13T01:25:42.821783+00:00'
-      last_seen: '2026-10-13T01:25:42.822552+00:00'
+      first_seen: 2026-10-13 01:25:42.821783+00:00
+      last_seen: 2026-10-13 01:25:42.822552+00:00
       first: [{meta: {seen: '2026-10-13T01:25:42.821783+00:00'}, record: {...}}, ...]
       last: [..., {meta: {seen: '2026-10-13T01:25:42.822552+00:00'}, record: {...}}]
 ```
@@ -227,6 +227,10 @@ if wrong) — the same way aggregate functions are.
 | `GLOB` | `pattern` | `"TRUE"` if the whole value matches the shell-style pattern (`*`, `?`, `[a-z]`), case-sensitive |
 | `REGEX` | `pattern`, optional `flags` | `"TRUE"` if the regular expression matches anywhere in the value; anchor with `^` and `$` |
 | `REGSUB` | `pattern`, `replace`, optional `flags` | the value with every match replaced (`\1` refers to a group); `"NULL"` if absent |
+| `TRUNC` | `unit` | a `DATE`/`DATETIME` value cut to `year` … `second` (the field needs `type`) |
+
+A field or aggregate can declare `type: DATETIME` or `type: DATE` for ISO-8601 values: they are
+compared as real times in UTC; a value that is not valid ISO-8601 counts as missing.
 
 In a YAML profile, write patterns in single quotes; see the package README for examples and flags.
 

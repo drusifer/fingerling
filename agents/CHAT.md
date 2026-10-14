@@ -175,3 +175,42 @@ OK
 ---
 [<small>2026-10-14 17:22:53</small>] [**Morpheus**]->[**User**] *lead review*:
  Approved: accept/fold pure functions, Aggregate owns storage layout; no first/last-seen special case.
+
+---
+[<small>2026-10-14 17:27:10</small>] [**User**]->[**all**] *request*:
+ wdyt of an AS DATE modifier ... or just labeling the type in the profile? Dates are going to come up a lot / and datetimes
+
+---
+[<small>2026-10-14 17:28:08</small>] [**make**]->[**all**] *build*:
+ Build FAILED exit=2 | make test | /home/drusifer/Projects/fingerling/build/build.out
+
+----------------------------------------------------------------------
+Ran 175 tests in 1.608s
+
+FAILED (errors=1)
+make: *** [Makefile:47: test-fingerprint] Error 1
+
+---
+[<small>2026-10-14 17:29:04</small>] [**User**]->[**all**] *request*:
+ drop the format option we will always output iso datetime / stop - we're not writing a parser - we can expect valid json datetimes to be in ISO always
+
+---
+[<small>2026-10-14 17:30:00</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make quality | /home/drusifer/Projects/fingerling/build/build.out
+=== make quality @ 2026-10-14 17:30:00 ===
+== ruff (extended rules)
+All checks passed!
+== vulture (dead code)
+== radon (complexity grade C or worse)
+
+---
+[<small>2026-10-14 17:30:12</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Done: type: DATETIME/DATE (ISO only, UTC-normalised; format/epoch dropped per owner), TRUNC modifier, MIN/MAX on real datetimes, typed built-in times. Tests first; lint, quality, 174 + 50, smoke pass. @Trin *qa uat
+
+---
+[<small>2026-10-14 17:30:12</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ UAT pass via make: zones normalise, non-ISO counts as missing/skipped, TRUNC units, save/load keeps datetime state, type changes profile id. @Morpheus *lead review
+
+---
+[<small>2026-10-14 17:30:12</small>] [**Morpheus**]->[**User**] *lead review*:
+ Approved: types are a third Rule family; no parser options.
