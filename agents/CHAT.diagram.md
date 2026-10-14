@@ -13,7 +13,8 @@ sequenceDiagram
     participant Morpheus
     participant Mouse
     participant Neo
-    Note over User,Neo: 📅 2026-10-14
+    participant Trin
+    Note over User,Trin: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "Owner (/sprint): add %s<br/>for aggregate values.<br/>Clarified: stored in the<br/>set file AND shown by<br/>fingerprint show, for<br/>SUM and COUNT (incl.<br/>bui…"
     Cypher->>Smith: "pm handoff"
@@ -28,4 +29,10 @@ sequenceDiagram
     Note right of Morpheus: "Plan approved: storage<br/>before display, so Phase<br/>2 reads real shares.<br/>@Neo *swe impl phase-1"
     Mouse->>All: "phase 1"
     Note right of Mouse: "Phase 1: shares of SUM<br/>and COUNT stored in the<br/>set file (FING-46)"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Phase 1 done, tests<br/>first:<br/>Fingerprint.share,<br/>FingerprintSet.save<br/>recomputes SUM/COUNT<br/>shares for meta +<br/>profile aggregates via<br/>Aggregate.v…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase 1 pass: AC1-2<br/>exact 66.67/33.33 and<br/>SUM 40/60, MAX unshared,<br/>single-fn COUNT direct,<br/>AC3 merge into existing<br/>set recomputes (25/7…"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Phase 1 approved: D1-D3<br/>as designed, _store<br/>promoted to store() and<br/>value() added so share<br/>and fold share one<br/>layout rule. @Neo *swe<br/>impl p…"
 ```

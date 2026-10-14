@@ -8,8 +8,8 @@
 **Points:** 5 · **Tier:** 2
 
 ### Phase 1: Shares in the set file (STORY-FING-46, 3 pts) — Neo
-- [ ] **1.1** `Fingerprint.share`; `Aggregate.value`; shares computed in `save`; README. [Neo]
-- [ ] **1.2** UAT + review. [Trin, Morpheus]
+- [x] **1.1** `Fingerprint.share`; `Aggregate.value`; shares computed in `save`; README. [Neo]
+- [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Phase 2: Shares in `show` (STORY-FING-47, 2 pts) — Neo
 - [ ] **2.1** `COUNT %` and value/% columns; help and README. [Neo]
