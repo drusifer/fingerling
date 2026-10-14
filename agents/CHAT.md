@@ -140,3 +140,11 @@ All checks passed!
 ---
 [<small>2026-10-14 13:59:20</small>] [**Morpheus**]->[**User**] *lead review*:
  Approved: the two modifiers own their token rule; other modifiers unchanged.
+
+---
+[<small>2026-10-14 14:00:17</small>] [**User**]->[**all**] *request*:
+ update the fix skill - add an instruction to first figure out what the bug is and tell me before trying to fix it
+
+---
+[<small>2026-10-14 14:00:24</small>] [**Bob**]->[**User**] *prompt update*:
+ Fix loop updated: new step 0 - Neo diagnoses without changing code, tells the user actual vs expected, cause and proposed fix, and waits for confirmation. Same rule on Neo's *swe fix. Applied here and in bob_protocol (uncommitted there).
