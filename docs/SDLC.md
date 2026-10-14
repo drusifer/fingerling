@@ -72,6 +72,7 @@ stop with "No .venv - run 'make install' first" if it is missing. Agents invoke 
 | `check` | `python -m compileall -q` over all sources | syntax check only |
 | `run` | `.venv/bin/fingerprint $(ARGS)` | the CLI |
 | `fingerprint` | `.venv/bin/fingerprint merge $(ARGS)` | project-specific |
+| `gharchive` | downloads one GH Archive hour (`GH_HOUR`) into `data/` once, then `fingerprint merge` with `examples/gharchive.yaml` into `data/gharchive/gh.fingerprints.yaml` | example at scale; needs network and `curl` |
 | `demo`, `demo-live` | `examples/demo.py` (the latter under `sudo`) | parked |
 | `clean` | removes `__pycache__`, `*.egg-info`, `.ruff_cache`, `dist` | keeps `.venv` |
 | `distclean` | `clean` + removes `.venv/` | |

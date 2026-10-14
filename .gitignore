@@ -227,3 +227,6 @@ __marimo__/
 # Stray build output
 build-err.out
 *.bak
+
+# downloaded sample data (make gharchive)
+data/
