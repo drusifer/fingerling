@@ -8,8 +8,8 @@
 **Points:** 2 · **Tier:** 2
 
 ### Phase 1: `op: SIZE` (STORY-FING-45, 2 pts) — Neo
-- [ ] **1.1** `Op` family + `Size`; schema `op` and op/type exclusion with a readable message; `Aggregate.op`; docs and GH Archive example. [Neo]
-- [ ] **1.2** UAT + review. [Trin, Morpheus]
+- [x] **1.1** `Op` family + `Size`; schema `op` and op/type exclusion with a readable message; `Aggregate.op`; docs and GH Archive example. [Neo]
+- [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]

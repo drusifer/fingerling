@@ -13,7 +13,9 @@ sequenceDiagram
     participant Morpheus
     participant Mouse
     participant Neo
-    Note over User,Neo: 📅 2026-10-14
+    participant Trin
+    participant Tank
+    Note over User,Tank: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "Owner:<br/>SUM(SIZE(payload)) style<br/>weighted aggregates,<br/>agreed design is op:<br/>SIZE on the aggregate,<br/>not a SUM parameter.<br/>Sprint 14."
     Cypher->>Smith: "pm handoff"
@@ -28,4 +30,10 @@ sequenceDiagram
     Note right of Morpheus: "Plan approved. Per<br/>Smith: the op+type<br/>message comes from a<br/>description on the<br/>schema's not-subschema,<br/>so it stays schema-<br/>driven. @Neo *swe…"
     Mouse->>All: "phase 1"
     Note right of Mouse: "Phase 1: op: SIZE on<br/>aggregates (FING-45)"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Phase 1 done, tests<br/>first: Op family + Size<br/>in aggregators.py,<br/>schema $defs.op,<br/>aggregate.op,<br/>not(op+type) with a<br/>description that<br/>schema_e…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase 1 pass: AC1<br/>héllo+{a:1} = SUM 13/MAX<br/>7/AVG 6.5, AC2 LAST<br/>keeps sizes, AC3 null=4,<br/>absent adds 0 and no<br/>skip, AC4 BOGUS message<br/>ex…"
+    Morpheus->>Tank: "lead handoff"
+    Note right of Morpheus: "Phase 1 approved: D1-D4<br/>as designed. The not-<br/>description hook in<br/>schema_errors is<br/>generic, so future<br/>cross-key rules get<br/>readable messages…"
 ```

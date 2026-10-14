@@ -74,3 +74,24 @@ Agents **must** use this for every message posted to CHAT.md:
 ---
 [<small>2026-10-14 18:17:19</small>] [**Mouse**]->[**all**] *phase 1*:
  Phase 1: op: SIZE on aggregates (FING-45)
+
+---
+[<small>2026-10-14 18:18:16</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make quality | /home/drusifer/Projects/fingerling/build/build.out
+=== make quality @ 2026-10-14 18:18:16 ===
+== ruff (extended rules)
+All checks passed!
+== vulture (dead code)
+== radon (complexity grade C or worse)
+
+---
+[<small>2026-10-14 18:18:27</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 1 done, tests first: Op family + Size in aggregators.py; schema $defs.op, aggregate.op, not(op+type) with a description that schema_errors now uses as the message; Aggregate.op replaces typed_values when set. README, USER_GUIDE, gharchive example. 188 tests OK, lint and quality clean. @Trin *qa uat phase-1
+
+---
+[<small>2026-10-14 18:18:27</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 1 pass: AC1 héllo+{a:1} = SUM 13/MAX 7/AVG 6.5; AC2 LAST keeps sizes; AC3 null=4, absent adds 0 and no skip; AC4 BOGUS message exact; AC5 op+type names both keys (Smith's ask); AC6 profile id unchanged; AC7 docs + example pass schema test. @Morpheus *lead review phase-1
+
+---
+[<small>2026-10-14 18:18:27</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 1 approved: D1-D4 as designed. The not-description hook in schema_errors is generic, so future cross-key rules get readable messages from the schema alone. All phases reviewed. @Tank *devops sdlc-check
