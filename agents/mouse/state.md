@@ -43,11 +43,11 @@
 
 ## Next Steps
 Cold start:
-1. Read `task.md`, `docs/SDLC.md` and the last message in `agents/CHAT.md`.
-2. Mainline development (owner, 2026-10-14): make no tags, version bumps or releases at sprint close. `main` was pushed 2026-10-14 (CI green). Waiting on the owner: the rubric blocking rule.
-3. Queued (bob_protocol repo): Tank dependency analysis tool; Trin test strategy doc. Fingerprint backlog in `task.md`.
-4. Next sprint is sprint-13, next story STORY-FING-42. Create the branch from clean `main`; post phase markers.
-5. Keep chat messages under 512 characters and check every `bobp chat` result.
+1. Read `task.md` (top: "Since Sprint 12"), `docs/SDLC.md`, and the last messages in `agents/CHAT.md`.
+2. Owner rules in force: no backwards compatibility and formats at `version: 0` until 1.0; mainline development (no tags or releases); CI runs by hand only — never poll it; KISS; no ad hoc testing (tests and `bobp make` only, smoke sparingly at close); no `rm` (use `bobp make clean`); `*fix` diagnoses and asks before changing code.
+3. State of the tool: profiles = fields (with modifiers and optional `type: DATE/DATETIME`) + aggregates; built-in `meta` from `builtin.yaml`; try it with `bobp make gharchive` (downloads one GH Archive hour).
+4. Queued (bob_protocol repo): Tank dependency analysis tool; Trin test strategy doc. Backlog in `task.md`.
+5. Next sprint is sprint-13, next story STORY-FING-42. Keep chat messages under 512 characters and check every `bobp chat` result.
 
 ---
-*Last updated: 2026-10-13T23:55:00-04:00*
+*Last updated: 2026-10-14T17:40:00-04:00*

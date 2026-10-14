@@ -2,6 +2,17 @@
 
 **No sprint in flight.** Last sprint: 12 (below).
 
+## Since Sprint 12 (each on its own `fix/` branch, merged to `main`, pushed)
+- [x] `fix/disable-ci` — CI runs by hand only (owner).
+- [x] `fix/fingerprint-metadata`, `fix/builtin-profile` — built-in metadata is `builtin.yaml` over the envelope `{meta: {seen}, record}`, written to a `meta` section; new `COUNT`, `FIRST(n)`.
+- [x] `fix/flat-aggregate-state` — one-function aggregates store the value directly; `MIN`/`MAX` order text; `first_seen`/`last_seen` = `MIN`/`MAX`.
+- [x] `fix/date-types` — `type: DATETIME`/`DATE` (ISO only, UTC) and `TRUNC`.
+- [x] `fix/is-present-vs-is-null` — missing key and explicit null are told apart.
+- [x] `fix/gharchive-example` — `examples/gharchive.yaml` + `make gharchive`.
+- [x] `fix/formats-v0` — profile and set formats stay `version: 0` until 1.0.
+- [x] `fix/clean-data` — `make clean` removes downloaded `data/`.
+- [x] `fix/fix-skill-diagnose-first` — `*fix` diagnoses and confirms with the owner first (also in bob_protocol).
+
 ## Sprint 12: Domain Model and Consolidated Validation
 
 **Status:** Complete — launched 2026-10-14 (13/13 pts); merged to `main`; no release (mainline)
@@ -155,6 +166,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 - **bob_protocol, for Trin:** a test strategy document Trin owns, laying out the project's testing practices and conventions: the test pyramid applied to the tools available in the project's ecosystem. Queued 2026-10-13 by the owner during Sprint 11; not started.
 
 ## Backlog (unscheduled)
+- Fingerprint tool: JSON Schema for set files, generated from the profile (offered 2026-10-14); "skipped aggregate values" counts events where the path is absent (noisy on GH Archive).
 - **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
 - Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge.
