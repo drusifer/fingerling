@@ -128,3 +128,15 @@ All checks passed!
 [<small>2026-10-14 13:58:55</small>] [**make**]->[**all**] *build*:
  Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
 127.0.0.1 - - [14/Oct/2026 13:58:54] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
+
+---
+[<small>2026-10-14 13:59:20</small>] [**Neo**]->[**Trin**] *swe fix*:
+ Fixed: IS_PRESENT = key exists (even null), IS_NULL = explicit null only. missing F/F, null T/T, value T/F. Tests first; lint, 157 + 50 pass. Docs and DECISIONS updated. @Trin *qa uat
+
+---
+[<small>2026-10-14 13:59:20</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ UAT pass via make test: three-state test covers missing/null/value; golden quickstart ids unchanged. @Morpheus *lead review
+
+---
+[<small>2026-10-14 13:59:20</small>] [**Morpheus**]->[**User**] *lead review*:
+ Approved: the two modifiers own their token rule; other modifiers unchanged.
