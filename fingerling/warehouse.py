@@ -11,9 +11,8 @@ from fingerprint_sampler.model import Field
 
 TELEMETRY_AGGREGATES: tuple[Aggregate, ...] = (
     Aggregate("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
-    Aggregate("samples", "$", {"name": "LAST", "n": 3}),
 )
-"""What the pre-aggregator warehouse hardcoded: duration bounds and the last 3 raw events."""
+"""Duration bounds; every fingerprint also keeps its first and last events as built-in samples."""
 
 
 def build_whitelist(

@@ -117,7 +117,7 @@ aggregates:
   |---|---|
   | `SUM`, `MIN`, `MAX` | running sum / smallest / largest value |
   | `AVG` | the average, plus the sum and count that make it mergeable |
-  | `{name: LAST, n: N}` | the `N` most recent values — use path `$` to keep whole events as samples |
+  | `{name: LAST, n: N}` | the `N` most recent values of the path (whole events are built in) |
 
   Numeric functions accept numbers and numeric strings. An event where the path matches nothing,
   or a value isn't numeric, is skipped for that aggregate and counted in the summary.
@@ -134,21 +134,29 @@ Two profiles ship as starting points: `packages/fingerprint-sampler/examples/acc
 ### The fingerprint set file
 
 ```yaml
-version: 1
+version: 2
 profile_id: 37087e1858c85f7cb976959311d01b65
 fingerprints:
   cc986aed647e7d173dcc791d402d3e89:
     tokens: {method: GET, route: "/items/{id}", status_class: 'TRUE'}
-    total_occurrences: 3
+    count: 3
     first_seen: '2026-10-13T01:25:42.821783+00:00'
     last_seen: '2026-10-13T01:25:42.822552+00:00'
     aggregates:
       latency_ms: {MIN: 9.0, MAX: 12.5, AVG: {avg: 10.83, sum: 32.5, count: 3}}
       recent_paths: {LAST: [/items/17, /items/42, /items/3]}
+    first:                                  # up to 3 earliest events, each with when it was seen
+    - {seen: '2026-10-13T01:25:42.821783+00:00', event: {...}}
+    last:                                   # up to 3 latest events
+    - {seen: '2026-10-13T01:25:42.822552+00:00', event: {...}}
 ```
 
 - `tokens` shows what the ID stands for.
-- `first_seen` / `last_seen` are the times the tool ingested the events, not times from the events.
+- **Built in, for every fingerprint:** `count`, `first_seen` / `last_seen`, and the first and last
+  3 events (`first`, `last`) with the time each was seen. Profile setting `samples: N` changes the
+  number (`0` keeps none). Times are wall clock — when the tool read the event — so they assume
+  nothing about the events' shape; a time field inside the events belongs in `aggregates`.
+- **From your profile:** everything under `aggregates`.
 - `profile_id` is derived from the profile's `fields`. A set can only be merged under the profile
   that built it, because fingerprints from different field definitions aren't comparable. Changing
   `aggregates` is always allowed: a new aggregate starts accumulating from that run, and changing
@@ -240,15 +248,14 @@ from fingerprint_sampler.fingerprint_set import FingerprintSet
 
 fingerprints = FingerprintSet(aggregates=[
     Aggregate("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
-    Aggregate("samples", "$", {"name": "LAST", "n": 3}),
 ])
 fingerprint_id = fingerprints.upsert(tokens, records[0])
 
 record = fingerprints.get(fingerprint_id)
 record.tokens                               # the tokens behind the ID
-record.total_occurrences                    # grows each time the same token set is seen again
+record.count                                # grows each time the same token set is seen again
 record.aggregates["duration_ms"]["MAX"]
-record.aggregates["samples"]["LAST"]        # up to 3 raw events, most recent last
+record.last                                 # up to 3 latest events: [{"seen": ..., "event": ...}]
 
 fingerprints.save("fingerprints.yaml")         # atomic
 fingerprints.load("fingerprints.yaml")         # continue folding from stored state

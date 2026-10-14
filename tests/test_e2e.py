@@ -99,7 +99,7 @@ class EndToEndPipelineTests(unittest.TestCase):
 
         self.assertEqual(fid_1, fid_2)
         self.assertEqual(len(warehouse), 1)
-        self.assertEqual(warehouse.get(fid_1).total_occurrences, 2)
+        self.assertEqual(warehouse.get(fid_1).count, 2)
 
 
 if __name__ == "__main__":

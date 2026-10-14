@@ -20,6 +20,3 @@ aggregates:
   - key: duration_ms
     path: "$.duration_ms"
     fn: [MIN, MAX, AVG]
-  - key: samples
-    path: "$"
-    fn: {name: LAST, n: 3}

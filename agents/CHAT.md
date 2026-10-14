@@ -42,3 +42,18 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_12.md` (2026-10-14 01:26:39) — Sprint 12 - Domain Model and Consolidated Validation (2026-10-14). Tier 1, 13/13 pts, STORY-FING-38..41, branch sprint-12. make quality (extended ruff, vulture, radon) as a report; modifiers and aggregate functions became Rule classes with one build-and-check path; the tokenizer moved to fingerling; shims, aliases and dead code removed; Warehouse renamed FingerprintSet; worst functions split until make quality was clean. Mid-sprint the owner flagged ad hoc testing, so a smoke suite on the installed wheel was added (FING-41), then trimmed to 3 tests at close. No release (mainline development).
 
 ---
+
+---
+[<small>2026-10-14 01:45:50</small>] [**User**]->[**all**] *request*:
+ /bloop time for some meta data for the profiles (aka freebies). these can be optional if there is a reasonable default. consolidate to differentiate default behavior vs user provided profiles. for each field 1) 3x each of first/last samples with wall clock first/last detection date, not event-time from a JSONPath (that can be user defined) 2) count aggs for each unique key
+
+---
+[<small>2026-10-14 01:48:46</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make smoke | /home/drusifer/Projects/fingerling/build/build.out
+fingerprint_sampler-0.2.0-py3-none-any.whl
+...
+----------------------------------------------------------------------
+fingerprint_sampler-0.2.0.tar.gz
+Ran 3 tests in 1.339s
+
+OK
