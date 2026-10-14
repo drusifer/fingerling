@@ -54,3 +54,39 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_15.md` (2026-10-14 19:19:55) — Sprint 15, Shares of the Set (Tier 2, 5 pts, 0 fix cycles). Owner asked for percentages of aggregate values; clarified as share of the set total for SUM and COUNT, stored and shown. FING-46: each fingerprint's share section in the set file, recomputed on every save. FING-47: fingerprint show prints COUNT % and a value + % column per SUM/COUNT aggregate. No release (mainline).
 
 ---
+
+---
+[<small>2026-10-14 19:46:45</small>] [**User**]->[**all**] *request*:
+ Owner (/sprint): lightweight history. Each merge also writes a file with just that run's data in a subdir, besides merging into the primary set. Answers: <set>.history/ beside the set; always on; keep -o (revisit later), no history for -o.
+
+---
+[<small>2026-10-14 19:47:12</small>] [**Cypher**]->[**Smith**] *pm handoff*:
+ Sprint 16 (Run History, Tier 2, 3 pts): FING-48 a run file per merge in <set>.history/, run: header, exit 3 if history fails. docs/sprints/USER_STORIES_SPRINT16.md. Self-check rubric STORIES: OUT=S TEST=S FAIL=S SCOPE=S SIZE=A DESIGN=A. @Smith *user review sprint-16
+
+---
+[<small>2026-10-14 19:47:12</small>] [**Morpheus**]->[**Smith**] *lead handoff*:
+ Arch D1-D5: run = second FingerprintSet fed the same events/timestamps; FingerprintSet.run header written by save, ignored by load; _history_path in cli.py with -2/-3 suffixes; set saved first, history OSError -> exit 3; -o skips history. No build-env change. @Smith *user feedback
+
+---
+[<small>2026-10-14 19:47:12</small>] [**Smith**]->[**Cypher**] *user reject*:
+ *user reject REASON: AC8 does not say which exit wins when lines were skipped (1) AND history failed (3). FIX: state 3 takes precedence, since a missing run file is the bigger surprise. Rest is fine: rubric STORIES: OUT=S TEST=A FAIL=S SCOPE=S SIZE=A DESIGN=A. @Cypher revise
+
+---
+[<small>2026-10-14 19:47:18</small>] [**Cypher**]->[**Smith**] *pm handoff*:
+ Revised AC8: exit 3 takes precedence over 1. @Smith *user review sprint-16
+
+---
+[<small>2026-10-14 19:47:18</small>] [**Smith**]->[**Mouse**] *user approve*:
+ *user approve. rubric STORIES: OUT=S TEST=S FAIL=S SCOPE=S SIZE=A DESIGN=A. Arch approved: run files readable by show with no new command; the 'history:' summary line tells the user where it went. @Mouse *sm plan sprint
+
+---
+[<small>2026-10-14 19:47:28</small>] [**Mouse**]->[**Morpheus**] *sm handoff*:
+ Sprint 16 planned in task.md: Phase 1 run set + header (D1-D2), Phase 2 history files, exit 3, docs (D3-D5); close with Tank sdlc-check. @Morpheus *lead review sprint plan
+
+---
+[<small>2026-10-14 19:47:28</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Plan approved: the data model lands before the file layout. @Neo *swe impl phase-1
+
+---
+[<small>2026-10-14 19:47:28</small>] [**Mouse**]->[**all**] *phase 1*:
+ Phase 1: the run as a set - run header and per-run fold (FING-48 D1-D2)

@@ -1,6 +1,22 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 15 (below).
+## Sprint 16: Run History
+
+**Status:** In progress
+**Branch:** `sprint-16`
+**Source:** `docs/sprints/USER_STORIES_SPRINT16.md` (story + architecture D1-D5)
+**Points:** 3 · **Tier:** 2
+
+### Phase 1: The run as a set (STORY-FING-48, D1-D2) — Neo
+- [ ] **1.1** `FingerprintSet.run` header (saved, ignored on load); `_fold_stream` feeds a run set with shared timestamps. [Neo]
+- [ ] **1.2** UAT + review. [Trin, Morpheus]
+
+### Phase 2: History files (STORY-FING-48, D3-D5) — Neo
+- [ ] **2.1** `<set>.history/<UTC>.yaml` with suffixes; summary line; `-o` skips; exit 3; help, README, USER_GUIDE. [Neo]
+- [ ] **2.2** UAT + review. [Trin, Morpheus]
+
+### Close
+- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 15: Shares of the Set
 
