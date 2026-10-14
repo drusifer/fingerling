@@ -19,7 +19,7 @@ define need_uv
 	@command -v uv >/dev/null || { echo "uv is not installed - run 'pipx install uv' (see docs/SDLC.md)"; exit 1; }
 endef
 
-.PHONY: help install install-hooks check test test-fingerprint test-fingerling test-all lint format secrets build release-check run fingerprint demo demo-live clean distclean via_index
+.PHONY: help install install-hooks check test test-fingerprint test-fingerling test-all lint quality format secrets build release-check run fingerprint demo demo-live clean distclean via_index
 
 help: ## Show available make targets
 	@echo ""
@@ -63,6 +63,12 @@ lint: ## Static checks: ruff lint + format check (changes nothing)
 	$(need_venv)
 	@.venv/bin/ruff check .
 	@.venv/bin/ruff format --check .
+
+quality: ## Report smells in the published package: extended ruff, dead code, complexity (never fails)
+	$(need_venv)
+	@echo "== ruff (extended rules)"; .venv/bin/ruff check $(FP)/src --select C90,SIM,PL,RET,ARG,PIE,FBT --output-format concise --exit-zero
+	@echo "== vulture (dead code)"; .venv/bin/vulture $(FP)/src --min-confidence 60 || true
+	@echo "== radon (complexity grade C or worse)"; .venv/bin/radon cc -s -nc $(FP)/src
 
 format: ## Rewrite files to the project style (ruff format + import sorting)
 	$(need_venv)

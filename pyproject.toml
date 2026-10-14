@@ -26,7 +26,11 @@ fingerling = "fingerling.__main__:main"
 
 [dependency-groups]
 # Development tools; installed by `make install` (uv sync), never shipped.
-dev = ["ruff>=0.6"]
+dev = [
+    "radon>=6.0.1",
+    "ruff>=0.6",
+    "vulture>=2.16",
+]
 
 [tool.uv.workspace]
 members = ["packages/*"]

@@ -63,6 +63,7 @@ stop with "No .venv - run 'make install' first" if it is missing. Agents invoke 
 | `test-fingerling` | `unittest discover -s tests` | parked modules + compatibility shims |
 | `test-all` | both suites on Python 3.14 and 3.15 in throwaway uv environments | downloads interpreters on first use |
 | `lint` | `ruff check .` and `ruff format --check .` | changes nothing |
+| `quality` | extended `ruff` rules, `vulture`, `radon cc -nc` over `packages/fingerprint-sampler/src` | report only, always exits 0; Trin reads it at UAT |
 | `format` | `ruff check --select I --fix .` and `ruff format .` | rewrites files |
 | `secrets` | `gitleaks detect --source .` | git-aware: scans history and tree |
 | `build` | `uv build --package fingerprint-sampler --out-dir dist`, then runs the built wheel in a clean environment | wheel + sdist in `dist/` (gitignored) |

@@ -1,6 +1,29 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 11 (below). Next up: see *Owner actions* and *Queued requests*.
+**Sprint 12 in flight** on branch `sprint-12`.
+
+## Sprint 12: Domain Model and Consolidated Validation
+
+**Status:** In progress
+**Branch:** `sprint-12`
+**Source:** `docs/sprints/USER_STORIES_SPRINT12.md` (stories + architecture D1-D7)
+**Points:** 10 · **Tier:** 1
+
+### Phase 0: Lint report (STORY-FING-38, 2 pts) — Tank
+- [x] **0.1** `vulture`, `radon` dev deps; `make quality`; SDLC section 3. [Tank]
+- [x] **0.2** Baseline findings posted; UAT + review. [Trin, Morpheus]
+
+### Phase 1: Domain model (STORY-FING-39, 5 pts) — Neo
+- [ ] **1.1** `Rule` base; Modifier and Aggregator families; Field, Aggregate, Path in `model.py`/`aggregators.py`; schema `aggregator` definition; `check_profile` loop. [Neo]
+- [ ] **1.2** Tokenizer moved to `fingerling`; parked code on `Field`; docs and examples; UAT + review. [Neo, Trin, Morpheus]
+
+### Phase 2: Smells and YAGNI (STORY-FING-40, 3 pts) — Neo
+- [ ] **2.1** Shims, aliases and dead API deleted; `Warehouse` → `FingerprintSet`; `_cmd_merge` and `load` split. [Neo]
+- [ ] **2.2** `make quality` clean (or findings justified); UAT + review. [Neo, Trin, Morpheus]
+
+### Close
+- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
+
 
 ## Sprint 11: Structured Modifiers and Profile Checking
 

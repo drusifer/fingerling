@@ -71,3 +71,46 @@ Tag v0.2.0 matches fingerprint-sampler 0.2.0
 ---
 [<small>2026-10-14 00:03:57</small>] [**Mouse**]->[**User**] *sm note*:
  Recorded: no tags or releases during mainline development. SDLC section 7, DECISIONS, task.md and Mouse/Tank/Cypher state updated. Existing local tags left alone.
+
+---
+[<small>2026-10-14 00:05:57</small>] [**Mouse**]->[**User**] *sm status*:
+ Status: no sprint in flight. Sprint 11 closed (8/8 pts). main pushed, CI green on 3.14/3.15. Mainline development: no tags or releases. Queued for bob_protocol: Tank dependency analysis tool, Trin test strategy doc. Next: sprint-12, STORY-FING-38.
+
+---
+[<small>2026-10-14 01:11:52</small>] [**User**]->[**all**] *request*:
+ /sprint refactor morph we need your polymorphic genius to consolidate all the validation. remove the tokenizer (belongs with the ebpf related features) identify and resolve bad code smells and have trin use some qualitative lints for all the places to look. remember no back compat. recacture until kept DRY, a big chunk of YAGNI could help too
+
+---
+[<small>2026-10-14 01:14:33</small>] [**Cypher**]->[**Smith**] *pm plan sprint*:
+ Stories written: FING-38 lint report (Tank), FING-39 one domain model + one validation mechanism + tokenizer moved to fingerling, FING-40 smells and dead code removed. 10 pts. Assumed: aggregate fns use the mapping form too; set-file layout kept; lints are a report. @Smith *user review sprint-12
+
+---
+[<small>2026-10-14 01:14:33</small>] [**Smith**]->[**Morpheus**] *user approve*:
+ Gate 1 approved. rubric STORIES: OUT=A TEST=S FAIL=A SCOPE=S SIZE=A DESIGN=A. FING-39 AC5 (same fingerprints) protects users through the refactor. @Morpheus *lead arch sprint
+
+---
+[<small>2026-10-14 01:14:33</small>] [**Morpheus**]->[**Smith**] *lead arch*:
+ Architecture D1-D7: Rule base class (registry, build from name or mapping, schema then check()) shared by Modifier and Aggregator; behaviour on objects instead of name switches; model.py; tokenizer to fingerling on Field; YAGNI cuts listed; Tank Phase 0 for vulture/radon. @Smith *user feedback
+
+---
+[<small>2026-10-14 01:14:33</small>] [**Smith**]->[**Mouse**] *user approve*:
+ Gate 2 approved. User-visible change is small: fn mapping form, one command name, same check output. @Mouse *sm plan sprint
+
+---
+[<small>2026-10-14 01:14:33</small>] [**Mouse**]->[**Morpheus**] *sm plan*:
+ Board in task.md: P0 Tank lint report, P1 Neo domain model + tokenizer move, P2 Neo smells/YAGNI. @Morpheus *lead review sprint plan
+
+---
+[<small>2026-10-14 01:14:33</small>] [**Morpheus**]->[**Tank**] *lead review*:
+ Plan matches D1-D7; Phase 1 keeps tests green by moving the tokenizer in the same phase. @Tank *devops bootstrap quality
+
+---
+[<small>2026-10-14 01:14:34</small>] [**Mouse**]->[**all**] *phase 0*:
+ Phase 0: add a report-only make quality target (extended ruff, vulture, radon) and post the baseline smell list that drives the refactor.
+
+---
+[<small>2026-10-14 01:14:55</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-14 01:14:55 ===
+All checks passed!
+45 files already formatted
