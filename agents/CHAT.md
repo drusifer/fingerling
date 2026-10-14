@@ -104,3 +104,18 @@ fingerprint_sampler-0.2.0.tar.gz
 ---
 [<small>2026-10-14 02:00:29</small>] [**Smith**]->[**User**] *user approve*:
  Approved: aggregates vs meta is clear in the file; docs say parsed record (owner nit fixed).
+
+---
+[<small>2026-10-14 13:53:21</small>] [**User**]->[**all**] *request*:
+ okay let's do that to get me going (GH Archive example profile + make target to fetch an hour)
+
+---
+[<small>2026-10-14 13:54:54</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-14 13:54:54 ===
+All checks passed!
+41 files already formatted
+
+---
+[<small>2026-10-14 13:54:55</small>] [**Neo**]->[**User**] *swe done*:
+ GH Archive example done: examples/gharchive.yaml + make gharchive (GH_HOUR, downloads once to data/, gitignored). One hour: 180,387 events -> 88 fingerprints. Lint and tests pass.

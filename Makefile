@@ -19,7 +19,7 @@ define need_uv
 	@command -v uv >/dev/null || { echo "uv is not installed - run 'pipx install uv' (see docs/SDLC.md)"; exit 1; }
 endef
 
-.PHONY: help install install-hooks check test test-fingerprint test-fingerling test-all smoke lint quality format secrets build release-check run fingerprint demo demo-live clean distclean via_index
+.PHONY: help install install-hooks check test test-fingerprint test-fingerling test-all smoke lint quality format secrets build release-check run fingerprint gharchive demo demo-live clean distclean via_index
 
 help: ## Show available make targets
 	@echo ""
@@ -113,6 +113,15 @@ run: ## Run the fingerprint CLI (ARGS="merge --help")
 fingerprint: ## Merge JSONL events into a fingerprint set (ARGS="-p PROFILE -s SET [EVENTS|-]"; ARGS=--help for more)
 	$(need_venv)
 	@.venv/bin/fingerprint merge $(ARGS)
+
+GH_HOUR ?= 2024-01-01-15
+GH_DIR := data/gharchive
+
+gharchive: ## Fingerprint one hour of GitHub events from GH Archive (GH_HOUR=YYYY-MM-DD-H); downloads it once into data/
+	$(need_venv)
+	@mkdir -p $(GH_DIR)
+	@test -s $(GH_DIR)/$(GH_HOUR).json.gz || curl -sSfL -o $(GH_DIR)/$(GH_HOUR).json.gz https://data.gharchive.org/$(GH_HOUR).json.gz
+	@gunzip -c $(GH_DIR)/$(GH_HOUR).json.gz | .venv/bin/fingerprint merge -p $(FP)/examples/gharchive.yaml -s $(GH_DIR)/gh.fingerprints.yaml -
 
 demo: ## Run the interactive vaccination TUI (see docs/USER_GUIDE.md)
 	$(need_venv)

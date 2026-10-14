@@ -33,4 +33,8 @@ sequenceDiagram
     Note right of Morpheus: "Approved. FingerprintSet<br/>lost its special cases,<br/>built-ins are data<br/>through the same<br/>Aggregate path. @Smith<br/>*user test"
     Smith->>User: "user approve"
     Note right of Smith: "Approved: aggregates vs<br/>meta is clear in the<br/>file, docs say parsed<br/>record (owner nit<br/>fixed)."
+    User->>All: "request"
+    Note right of User: "okay let's do that to<br/>get me going (GH Archive<br/>example profile + make<br/>target to fetch an hour)"
+    Neo->>User: "swe done"
+    Note right of Neo: "GH Archive example done:<br/>examples/gharchive.yaml<br/>+ make gharchive<br/>(GH_HOUR, downloads once<br/>to data/, gitignored).<br/>One hour: 180,387<br/>events…"
 ```
