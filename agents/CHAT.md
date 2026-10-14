@@ -57,3 +57,17 @@ Installed into .venv
 ---
 [<small>2026-10-14 00:01:34</small>] [**Neo**]->[**User**] *swe fix*:
  README brought up to date for 0.2.0: what's new, real set-file layout, checking API in the library section; check_profile and Modifier exported, 2 tests. 156 + 59 tests, lint clean. Minor change, single step per bloop rule 2. Merging, moving the unpushed v0.2.0 tag to include it, pushing main on owner's instruction.
+
+---
+[<small>2026-10-14 00:01:35</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make release-check | /home/drusifer/Projects/fingerling/build/build.out
+=== make release-check @ 2026-10-14 00:01:35 ===
+Tag v0.2.0 matches fingerprint-sampler 0.2.0
+
+---
+[<small>2026-10-14 00:03:37</small>] [**User**]->[**all**] *request*:
+ dont make tags anymore okay? we'll be doing mainline development for a while
+
+---
+[<small>2026-10-14 00:03:57</small>] [**Mouse**]->[**User**] *sm note*:
+ Recorded: no tags or releases during mainline development. SDLC section 7, DECISIONS, task.md and Mouse/Tank/Cypher state updated. Existing local tags left alone.

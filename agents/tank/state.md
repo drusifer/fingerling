@@ -26,6 +26,8 @@ Agents *must* use this for keeping their context.md files organized
 
 - 2026-10-13 Sprint 11 Phase 0: Python floor 3.14 (owner), PYTHONS 3.14 3.15, CI matrix, ruff py314; jsonschema added. sdlc-check passed at close. Open: `make test-fingerprint ARGS=test_cli` ModuleNotFoundError; queued: dependency analysis tool in bob_protocol.
 
+- 2026-10-14 Owner: mainline development, no tags or releases until further notice (SDLC section 7).
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete

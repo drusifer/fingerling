@@ -314,3 +314,9 @@ review should trace every AC to a literal function signature, not just a data-fl
 
 **Decision (owner):** No effort on backwards compatibility while a SemVer project is below 1.0 — rip and replace.
 **Consequences:** Sprint 11 dropped the migration hint for the old string form and the guarantee that profile ids stay the same; old set files simply report a profile mismatch. The `fingerling` re-export shims and the `fingerling fingerprint` alias are compatibility code of the same kind, left for a later cleanup since the parked package is out of scope.
+
+## 2026-10-14 — Mainline development
+
+**Decision (owner):** No more tags or releases for now; the project is in mainline development.
+**Consequences:** Sprint close no longer bumps the version or tags; `main` is the only line. Nothing is published to PyPI. SDLC section 7 records the suspension; releasing resumes only when the owner says so.
+
