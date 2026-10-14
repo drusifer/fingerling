@@ -74,7 +74,7 @@ stop with "No .venv - run 'make install' first" if it is missing. Agents invoke 
 | `fingerprint` | `.venv/bin/fingerprint merge $(ARGS)` | project-specific |
 | `gharchive` | downloads one GH Archive hour (`GH_HOUR`) into `data/` once, then `fingerprint merge` with `examples/gharchive.yaml` into `data/gharchive/gh.fingerprints.yaml` | example at scale; needs network and `curl` |
 | `demo`, `demo-live` | `examples/demo.py` (the latter under `sudo`) | parked |
-| `clean` | removes `__pycache__`, `*.egg-info`, `.ruff_cache`, `dist` | keeps `.venv` |
+| `clean` | removes `__pycache__`, `*.egg-info`, `.ruff_cache`, `dist`, `data` (downloaded test data) | keeps `.venv` |
 | `distclean` | `clean` + removes `.venv/` | |
 | `help` | lists targets | default goal |
 | `via_index` | `via index .` | builds the code index for the `via` tool; uses the system `via` |
