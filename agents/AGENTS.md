@@ -10,9 +10,7 @@ The following applies to all BOB Protocol Agents regardles of persona.
 **ENTRY:**
 When Initializing as a persona:
 1. Read `agents/CHAT.md` - Understand team context (last 10-20 messages)
-2. Load `agents/[persona]/context.md` - Your accumulated knowledge
-3. Load `agents/[persona]/current_task.md` - What you were working on
-4. Load `agents/[persona]/next_steps.md` - Integrate requested action in the context of current_task.md and next_steps.md
+2. Load `agents/[persona]/state.md` - Your accumulated knowledge, active work, and resume plan
 
 **WORK:**
 5. Execute assigned tasks and complete steps
@@ -20,9 +18,7 @@ When Initializing as a persona:
 7. Post updates to `agents/CHAT.md` using `agents/templates/_template_CHAT.md`
 
 **EXIT (Before Switching - MANDATORY):**
-8. Update `context.md` - Key decisions, findings. Replace/merge content as needed
-9. Update `current_task.md` - Progress %, completed items, next items
-10. Update `next_steps.md` - For follow up tasks.
+8. Update `state.md` - Context (key decisions, findings), Current Task (progress %, completed/next items), Next Steps (follow-up tasks) - replace/merge content as needed
 
 **State files are your WORKING MEMORY. Keep them clean. Without them, you don't exist!**
 
@@ -48,21 +44,21 @@ When acting as a specific persona, **load their specific instructions** from the
 
 ## Operational Guidelines
 
-1. **Automation First (Makefile)**: **Always use `make` for project tasks.**
-   - ✅ Use `make <target>` for testing, linting, building, and deployment.
-   - ❌ Do not manually construct complex shell commands (e.g., `pytest`, `eslint`).
-   - 🔍 Run `make help` to discover available project automation.
+1. **Automation First (Makefile & bobp)**: **Always use `bobp make` for project tasks.**
+   - ✅ Use `bobp make <target>` for testing, linting, building, and deployment.
+   - ❌ Do not manually construct complex shell commands (e.g., `pytest`, `eslint`) or invoke bare `make`.
+   - 🔍 Run `bobp make help` to discover available project automation.
    - 🛠️ If a common task is missing, **add it to the Makefile** before executing it.
 
 2. **Bounded Testing (CRITICAL)**: **Do not run tests for code that has not changed since the last run.**
-   - ❌ Never execute full test suites (`make test`) repeatedly without making code modifications.
+   - ❌ Never execute full test suites (`bobp make test`) repeatedly without making code modifications.
    - ✅ Only run tests to validate recent code changes or bug fixes.
    - 📋 Use the task board (`task.md`) and persona state files for tracking sprint/task progress instead of triggering test suite execution.
 
 3. **Strict Symbol Lookup & CLI Fallback (CRITICAL)**: **Always query symbol definitions via VIA.**
    - ❌ Never use `grep_search` or `view_file` to find class, function, method, global, or import definitions.
    - ✅ Always use `via` first to locate symbol definitions and analyze relationships.
-   - 🛠️ If the `mcp__via__via_query` MCP tool is missing from your toolset but `via` is enabled, you **must** use the `via` CLI command (using `run_command` or `make via` targets) to run your queries.
+   - 🛠️ If the `mcp__via__via_query` MCP tool is missing from your toolset but `via` is enabled, you **must** use the `via` CLI command (using `run_command` or `bobp make via` targets) to run your queries.
    - 🔍 Only use `grep_search` for free-text search inside files (such as logs, comments, string constants, or raw SQL tables) or when `via` queries yield no results.
 
 4. **SDLC Is the Source of Truth for Change Management (CRITICAL)**: `docs/SDLC.md`, owned by Tank, defines how this project is built, tested, changed and released.

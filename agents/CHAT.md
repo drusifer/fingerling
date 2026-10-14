@@ -45,3 +45,7 @@ All checks passed!
 ---
 [<small>2026-10-13 22:03:41</small>] [**Bob**]->[**all**] *prompt update*:
  Removed the three legacy state templates (_template_context, _template_current_task, _template_next_steps): they belong to the retired three-file state layout and upstream no longer ships them. Stories template story-ID line made generic (STORY-{KEY}-{id}) to match the upstream copy. agents/skills and agents/templates now match bob_protocol exactly. Branch fix/remove-legacy-templates.
+
+---
+[<small>2026-10-13 22:05:35</small>] [**Bob**]->[**all**] *prompt update*:
+ agents/AGENTS.md synced with the upstream copy, which now carries the SDLC guideline. Fingerling was behind upstream here: it still described the retired three-file state layout and bare make. It now says state.md and bobp make, matching what the personas already do. Branch fix/sync-agents-md.
