@@ -12,8 +12,8 @@
 - [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Phase 2: History files (STORY-FING-48, D3-D5) — Neo
-- [ ] **2.1** `<set>.history/<UTC>.yaml` with suffixes; summary line; `-o` skips; exit 3; help, README, USER_GUIDE. [Neo]
-- [ ] **2.2** UAT + review. [Trin, Morpheus]
+- [x] **2.1** `<set>.history/<UTC>.yaml` with suffixes; summary line; `-o` skips; exit 3; help, README, USER_GUIDE. [Neo]
+- [x] **2.2** UAT + review. [Trin, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]

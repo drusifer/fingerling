@@ -47,7 +47,8 @@ set, so `fingerprint show` reads it.
    `{started, finished, source, events, skipped_lines, set}`. `source` is the events file, or
    `stdin`.
 4. Two runs that start in the same second do not overwrite each other: the second file is named
-   `...Z-2.yaml`, the next `...Z-3.yaml`, and so on.
+   `...Z_2.yaml`, the next `...Z_3.yaml`, and so on, so names still list in run order (`_` sorts
+   after `.yaml`; `-` would sort before it — found in UAT, revised from `-2`).
 5. The summary on stderr adds the line `  history: <path of the run file>`.
 6. With `-o`, no run file is written. A run that exits 2 or is interrupted writes no run file.
 7. A run where no event was read (for example, an empty input) still writes a run file with no
@@ -87,7 +88,7 @@ memory cost is at most one more copy of the fingerprints this run touched.
 so `show` and `merge` read run files like any set. The set format stays `version: 0`.
 
 **D3 — Paths and naming live in `cli.py`.** `_history_path(set_path, started)` returns
-`<set without its last extension>.history/<YYYY-MM-DDTHHMMSSZ>.yaml`, adding `-2`, `-3`, ... while
+`<set without its last extension>.history/<YYYY-MM-DDTHHMMSSZ>.yaml`, adding `_2`, `_3`, ... while
 the name is taken. It creates the directory with `os.makedirs(exist_ok=True)`. The file is
 written with `FingerprintSet.save`, which is already atomic.
 

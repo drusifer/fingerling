@@ -14,7 +14,8 @@ sequenceDiagram
     participant Mouse
     participant Neo
     participant Trin
-    Note over User,Trin: 📅 2026-10-14
+    participant Tank
+    Note over User,Tank: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "Owner (/sprint):<br/>lightweight history.<br/>Each merge also writes a<br/>file with just that<br/>run's data in a subdir,<br/>besides merging into the<br/>primary…"
     Cypher->>Smith: "pm handoff"
@@ -39,4 +40,12 @@ sequenceDiagram
     Note right of Trin: "UAT phase 1 pass: header<br/>position and content,<br/>absent when unset, load<br/>ignores it (run None,<br/>records intact), all CLI<br/>tests unchanged so th…"
     Morpheus->>Neo: "lead handoff"
     Note right of Morpheus: "Phase 1 approved: D1-D2<br/>as designed, shared<br/>timestamp keeps run and<br/>set meta consistent.<br/>@Neo *swe impl phase-2"
+    Mouse->>All: "phase 2"
+    Note right of Mouse: "Phase 2: history files<br/>in <set>.history/, exit<br/>3, docs (FING-48 D3-D5)"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Phase 2 done, tests<br/>first: _history_path (<s<br/>et>.history/<UTC>.yaml,<br/>makedirs),<br/>_write_history with run<br/>header after the set is<br/>saved, 'hist…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase 2 pass after<br/>one design catch:<br/>collision suffix -2<br/>sorted BEFORE the base<br/>name ('-' < '.'),<br/>breaking run order, now<br/>_2 (AC4 revis…"
+    Morpheus->>Tank: "lead handoff"
+    Note right of Morpheus: "Phase 2 approved: D3-D5<br/>as designed with the _N<br/>suffix, history after<br/>the set keeps the<br/>primary set<br/>authoritative. All<br/>phases reviewed. @Ta…"
 ```

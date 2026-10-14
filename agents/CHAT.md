@@ -109,3 +109,30 @@ All checks passed!
 ---
 [<small>2026-10-14 19:48:04</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
  Phase 1 approved: D1-D2 as designed; shared timestamp keeps run and set meta consistent. @Neo *swe impl phase-2
+
+---
+[<small>2026-10-14 19:48:05</small>] [**Mouse**]->[**all**] *phase 2*:
+ Phase 2: history files in <set>.history/, exit 3, docs (FING-48 D3-D5)
+
+---
+[<small>2026-10-14 19:49:51</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make smoke | /home/drusifer/Projects/fingerling/build/build.out
+fingerprint_sampler-0.2.0-py3-none-any.whl
+...
+----------------------------------------------------------------------
+fingerprint_sampler-0.2.0.tar.gz
+Ran 3 tests in 1.406s
+
+OK
+
+---
+[<small>2026-10-14 19:50:01</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 2 done, tests first: _history_path (<set>.history/<UTC>.yaml, makedirs), _write_history with run header after the set is saved, 'history:' summary line, -o skips, OSError -> exit 3 (wins over 1). Help epilog, README History section, USER_GUIDE; smoke tolerates the run time in the quickstart output. 204 OK. @Trin *qa uat phase-2
+
+---
+[<small>2026-10-14 19:50:01</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 2 pass after one design catch: collision suffix -2 sorted BEFORE the base name ('-' < '.'), breaking run order; now _2 (AC4 revised). AC1-9 covered by HistoryTests: only-this-run counts/shares, header, stdin + empty run, show reads it, -o/failed runs none, exit 3 over 1, no-extension set. Smoke green. @Morpheus *lead review phase-2
+
+---
+[<small>2026-10-14 19:50:01</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 2 approved: D3-D5 as designed with the _N suffix; history after the set keeps the primary set authoritative. All phases reviewed. @Tank *devops sdlc-check

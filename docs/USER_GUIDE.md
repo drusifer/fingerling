@@ -72,13 +72,19 @@ tail -n 1000 app.jsonl | .venv/bin/fingerprint merge -p app.yaml -s app.fingerpr
 | `--force-profile` | Merge even though `SET` was built with a different profile. |
 
 A summary goes to stderr; stdout is left empty. Exit status: `0` set written and every line used ·
-`1` set written but some lines were skipped · `2` nothing written.
+`1` set written but some lines were skipped · `2` nothing written · `3` set written but its
+history file was not.
+
+Each run that updates the set also writes just its own fingerprints, with a `run:` header (times,
+source, counts), to `<set without extension>.history/<UTC start time>.yaml`; `fingerprint show`
+reads these files. A run with `-o` writes no history.
 
 ```
 fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log.jsonl
   fingerprints: 4 new, 0 updated, 4 total in set
   skipped: 0 malformed lines, 0 unusable aggregate values
   wrote web.fingerprints.yaml (profile 37087e1858c85f7cb976959311d01b65)
+  history: web.fingerprints.history/2026-10-14T193005Z.yaml
 ```
 
 ### Profiles
