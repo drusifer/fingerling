@@ -119,3 +119,12 @@ All checks passed!
 ---
 [<small>2026-10-14 13:54:55</small>] [**Neo**]->[**User**] *swe done*:
  GH Archive example done: examples/gharchive.yaml + make gharchive (GH_HOUR, downloads once to data/, gitignored). One hour: 180,387 events -> 88 fingerprints. Lint and tests pass.
+
+---
+[<small>2026-10-14 13:57:35</small>] [**User**]->[**all**] *request*:
+ *fix IS_PRESESNT != IS_NULL
+
+---
+[<small>2026-10-14 13:58:55</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+127.0.0.1 - - [14/Oct/2026 13:58:54] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -

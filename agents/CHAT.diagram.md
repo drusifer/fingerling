@@ -37,4 +37,6 @@ sequenceDiagram
     Note right of User: "okay let's do that to<br/>get me going (GH Archive<br/>example profile + make<br/>target to fetch an hour)"
     Neo->>User: "swe done"
     Note right of Neo: "GH Archive example done:<br/>examples/gharchive.yaml<br/>+ make gharchive<br/>(GH_HOUR, downloads once<br/>to data/, gitignored).<br/>One hour: 180,387<br/>events…"
+    User->>All: "request"
+    Note right of User: "*fix IS_PRESESNT !=<br/>IS_NULL"
 ```
