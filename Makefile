@@ -6,7 +6,7 @@
 # Agents run targets as `bobp make <target>` (captures output, posts status). Team tooling such
 # as chat and TL;DR summaries is provided by bobp itself (`bobp chat`, `bobp tldr`), not here.
 PYTHON := .venv/bin/python
-PYTHONS := 3.10 3.11 3.12 3.13
+PYTHONS := 3.14 3.15
 # The published package (docs/SDLC.md section 7).
 FP := packages/fingerprint-sampler
 
@@ -50,7 +50,7 @@ test-fingerling: ## Tests of the parked fingerling modules and the compatibility
 	$(need_venv)
 	@$(PYTHON) -m unittest discover -s tests
 
-test-all: ## Run the test suite on every supported Python (3.10-3.13) in throwaway environments
+test-all: ## Run the test suite on every supported Python (3.14, 3.15) in throwaway environments
 	$(need_uv)
 	@for v in $(PYTHONS); do \
 		echo "== Python $$v =="; \

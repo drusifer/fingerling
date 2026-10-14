@@ -1,6 +1,29 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 10 (below). Next up: see *Owner actions* and *Queued requests*.
+**Sprint 11 in flight** on branch `sprint-11`.
+
+## Sprint 11: Structured Modifiers and Profile Checking
+
+**Status:** In progress
+**Branch:** `sprint-11`
+**Source:** `docs/sprints/USER_STORIES_SPRINT11.md` (stories + architecture D1-D7)
+**Points:** 8 · **Tier:** 2 (fast-track)
+
+### Phase 0: Current Python (STORY-FING-35, 2 pts) — Tank
+- [ ] **0.1** Floor 3.14 in both manifests, `.python-version`, `PYTHONS`, CI matrix, ruff target; `jsonschema` added and installs on 3.14/3.15. [Tank]
+- [ ] **0.2** SDLC sections 1, 3, 8 + DECISIONS entry; UAT + review. [Tank, Trin, Morpheus]
+
+### Phase 1: Modifier arguments as YAML (STORY-FING-36, 3 pts) — Neo
+- [ ] **1.1** `Modifier` object, mapping form, flags; string parser deleted; parked code and tests moved to the mapping form. [Neo]
+- [ ] **1.2** Example profiles and docs; UAT + review. [Neo, Trin, Morpheus]
+
+### Phase 2: Profile checking (STORY-FING-37, 3 pts) — Neo
+- [ ] **2.1** `profile.schema.json`, `check_profile`, hand-written structure checks deleted. [Neo]
+- [ ] **2.2** `fingerprint check`; `merge` uses it; editor hint in README and examples; UAT + review. [Neo, Trin, Morpheus]
+
+### Close
+- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge, release 0.2.0 [Tank, Oracle, Smith, All]
+
 
 ## Sprint 10: Artifact Rubrics
 
@@ -100,7 +123,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 - Confirm that any Weak rubric criterion should block a gate (assumed in Sprint 10).
 
 ## Queued requests (next up)
-- None. (Artifact rubrics delivered in Sprint 10.)
+- **bob_protocol (`~/Projects/bob_protocol`), for Tank:** a dependency analysis tool for validating the third-party packages a project uses: scanning, reputation score, vulnerability checks and similar. Queued 2026-10-13 by the owner during Sprint 11; not started.
 
 ## Backlog (unscheduled)
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).

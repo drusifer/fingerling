@@ -16,7 +16,7 @@ are agreed but not yet built are listed in section 11.
 
 | | Python |
 |---|---|
-| Runtime version | 3.10 - 3.13 — `requires-python = ">=3.10"` in `pyproject.toml`; all four are tested |
+| Runtime version | 3.14 and later — `requires-python = ">=3.14"` in both manifests; 3.14 and 3.15 are tested; development uses 3.14 (`.python-version`) |
 | Manifest | root `pyproject.toml` (the parked `fingerling` package, the uv workspace, dev tools in `[dependency-groups] dev`, tool config) and `packages/fingerprint-sampler/pyproject.toml` (the published package) |
 | Lockfile | `uv.lock` (committed; one for the whole workspace) |
 | Package manager | `uv` (workspace: root + `packages/*`); build backend `hatchling` |
@@ -59,9 +59,9 @@ stop with "No .venv - run 'make install' first" if it is missing. Agents invoke 
 | `install` | `uv sync --all-packages --all-extras` + `install-hooks` | exact install from `uv.lock`; idempotent |
 | `install-hooks` | `git config core.hooksPath .githooks` | enables the gitleaks pre-commit hook |
 | `test` | `test-fingerprint` then `test-fingerling` | both suites |
-| `test-fingerprint` | `unittest discover` in `packages/fingerprint-sampler` | `ARGS="test_cli"` runs one module |
+| `test-fingerprint` | `unittest discover` in `packages/fingerprint-sampler` | `ARGS` is passed to `unittest` in place of `discover`; it does not currently find a single module (backlog) |
 | `test-fingerling` | `unittest discover -s tests` | parked modules + compatibility shims |
-| `test-all` | both suites on Python 3.10, 3.11, 3.12, 3.13 in throwaway uv environments | downloads interpreters on first use |
+| `test-all` | both suites on Python 3.14 and 3.15 in throwaway uv environments | downloads interpreters on first use |
 | `lint` | `ruff check .` and `ruff format --check .` | changes nothing |
 | `format` | `ruff check --select I --fix .` and `ruff format .` | rewrites files |
 | `secrets` | `gitleaks detect --source .` | git-aware: scans history and tree |
@@ -205,12 +205,12 @@ Both workflows call only `make` targets, so CI cannot drift from the local gates
 
 | Workflow | Trigger | Does |
 |---|---|---|
-| `.github/workflows/ci.yml` | every push (any branch) and pull request | Matrix over Python 3.10-3.13: `make install`, `make lint`, `make test`. Separate job: `make secrets` over the full history. |
+| `.github/workflows/ci.yml` | every push (any branch) and pull request | Matrix over Python 3.14 and 3.15: `make install`, `make lint`, `make test`. Separate job: `make secrets` over the full history. |
 | `.github/workflows/publish.yml` | push of a tag `v*` | Reruns the CI gates; `make release-check`; `make build`; publishes `dist/` to PyPI by trusted publishing (no stored token). |
 
-**Exercised so far:** `main` was pushed by the project owner's instruction on 2026-10-13, which
-triggers the CI workflow for the first time. Agents have not looked at the result, so whether it
-passed is not recorded here. The publish workflow has never run: no version tag has been pushed.
+**Exercised so far:** the CI workflow ran on the pushes of `main` on 2026-10-13 and passed
+(Python 3.10-3.13 at the time, and the secret scan). The publish workflow has never run: no
+version tag has been pushed.
 
 **One-time setup by the project owner, before the first tag is pushed:**
 
@@ -224,7 +224,7 @@ There is no deploy target; KubeArmor enforcement in the demo is simulated.
 
 ## 9. Known deviations
 
-- **CI's first result is unknown and publishing is unexercised** (section 8).
+- **Publishing is unexercised** (section 8).
 - **`uv` and `gitleaks` are machine prerequisites**, not installed by `make install`.
 - **Parked modules are outside the manual gates.** `make demo-live` needs a terminal, root and
   `bpftrace` and has not been run since before Sprint 8; by the owner's decision no process is
@@ -237,7 +237,7 @@ Run by Tank at sprint close (`*devops sdlc-check`):
 1. `make distclean && make install && make lint && make test && make secrets && make build`
    passes, and `make test-all` passes on every supported Python.
 2. Every third-party import is declared in the manifest of the package that uses it —
-   `fingerprint_sampler` imports only PyYAML and python-jsonpath, and never imports `fingerling` —
+   `fingerprint_sampler` imports only PyYAML, python-jsonpath and jsonschema, and never imports `fingerling` —
    and `uv lock --check` reports the lockfile is up to date.
 3. `.venv/pyvenv.cfg` still says `include-system-site-packages = false`.
 4. Every target in section 3 exists and still does what the table says; new targets are listed;
@@ -259,8 +259,7 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-13 at Sprint 10 close (`*devops sdlc-check`), by Tank — from-clean
-rebuild; lint clean; 127 + 59 tests on Python 3.10, 3.11, 3.12 and 3.13; gitleaks clean;
-`make build` wheel runs in a clean environment; lockfile current; one Makefile. Section 8
-corrected after the Sprint 10 rubric review; section 6 step 7 and conformance item 7 tightened the
-same day after Sprint 10 was merged with an incomplete chat record.*
+*Last verified: 2026-10-13 in Sprint 11 Phase 0, by Tank — Python floor raised to 3.14 (owner's
+decision); from-clean `make install` on 3.14; lint clean; 145 + 59 tests on 3.14 and 3.15;
+`jsonschema` added to fingerprint-sampler. Section 8 now records the first CI result. Sections
+1, 3, 8, 9 and conformance item 2 updated.*

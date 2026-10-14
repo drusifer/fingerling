@@ -10,7 +10,7 @@ name = "fingerling"
 version = "0.8.0"
 description = "Adaptive software immune system built on fingerprint-sampler (parked; not published)."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 classifiers = ["Private :: Do Not Upload"]
 dependencies = [
     "fingerprint-sampler",
@@ -39,7 +39,7 @@ packages = ["fingerling"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py314"
 src = [".", "packages/fingerprint-sampler/src"]
 # agents/ is BobProtocol tooling, maintained in its own repository. Markdown is excluded so
 # hand-aligned code sketches in the docs are left alone.

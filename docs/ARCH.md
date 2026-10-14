@@ -19,7 +19,7 @@ published, general-purpose tool for any JSONL event stream. **This is the active
 | `fingerprint_sampler/profile.py` | FING-24 | YAML profile loading + validation, `profile_id` |
 | `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28 | `fingerprint merge` — merge a stream into a set |
 
-It depends only on PyYAML and python-jsonpath and never imports `fingerling`.
+It depends only on PyYAML, python-jsonpath and jsonschema and never imports `fingerling`.
 
 **`fingerling`** (`fingerling/`, repository root) — the detection-and-response pipeline built on
 fingerprint IDs. **Parked** and unpublished: kept importable and tested, not developed.
@@ -167,7 +167,7 @@ class TelemetryHTTPRequestHandler(BaseHTTPRequestHandler):
 
 ## 5. Technical Stack
 
-- **Language:** Python 3.10 - 3.13
+- **Language:** Python 3.14 and later (3.14 and 3.15 tested)
 - **Stdlib:** `hashlib`, `dataclasses`, `collections.deque`, `http.server`, `json`, `argparse`
 - **Third-party:** `PyYAML`, `python-jsonpath`; `rich` for the parked demo only
 - **Tooling:** `uv` (workspace + lockfile), `hatchling`, `ruff`, `gitleaks`, GitHub Actions — see `docs/SDLC.md`
