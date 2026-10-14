@@ -13,7 +13,8 @@ sequenceDiagram
     participant Morpheus
     participant Mouse
     participant Neo
-    Note over User,Neo: 📅 2026-10-14
+    participant Trin
+    Note over User,Trin: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "Owner (/sprint):<br/>lightweight history.<br/>Each merge also writes a<br/>file with just that<br/>run's data in a subdir,<br/>besides merging into the<br/>primary…"
     Cypher->>Smith: "pm handoff"
@@ -32,4 +33,10 @@ sequenceDiagram
     Note right of Morpheus: "Plan approved: the data<br/>model lands before the<br/>file layout. @Neo *swe<br/>impl phase-1"
     Mouse->>All: "phase 1"
     Note right of Mouse: "Phase 1: the run as a<br/>set - run header and<br/>per-run fold (FING-48<br/>D1-D2)"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Phase 1 done, tests<br/>first:<br/>FingerprintSet.run<br/>header saved between<br/>profile_id and<br/>fingerprints, never<br/>loaded, _fold_stream<br/>feeds the primar…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase 1 pass: header<br/>position and content,<br/>absent when unset, load<br/>ignores it (run None,<br/>records intact), all CLI<br/>tests unchanged so th…"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Phase 1 approved: D1-D2<br/>as designed, shared<br/>timestamp keeps run and<br/>set meta consistent.<br/>@Neo *swe impl phase-2"
 ```

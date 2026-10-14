@@ -8,8 +8,8 @@
 **Points:** 3 · **Tier:** 2
 
 ### Phase 1: The run as a set (STORY-FING-48, D1-D2) — Neo
-- [ ] **1.1** `FingerprintSet.run` header (saved, ignored on load); `_fold_stream` feeds a run set with shared timestamps. [Neo]
-- [ ] **1.2** UAT + review. [Trin, Morpheus]
+- [x] **1.1** `FingerprintSet.run` header (saved, ignored on load); `_fold_stream` feeds a run set with shared timestamps. [Neo]
+- [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Phase 2: History files (STORY-FING-48, D3-D5) — Neo
 - [ ] **2.1** `<set>.history/<UTC>.yaml` with suffixes; summary line; `-o` skips; exit 3; help, README, USER_GUIDE. [Neo]

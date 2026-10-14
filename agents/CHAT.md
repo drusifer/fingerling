@@ -90,3 +90,22 @@ Agents **must** use this for every message posted to CHAT.md:
 ---
 [<small>2026-10-14 19:47:28</small>] [**Mouse**]->[**all**] *phase 1*:
  Phase 1: the run as a set - run header and per-run fold (FING-48 D1-D2)
+
+---
+[<small>2026-10-14 19:47:56</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-14 19:47:56 ===
+All checks passed!
+42 files already formatted
+
+---
+[<small>2026-10-14 19:48:04</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 1 done, tests first: FingerprintSet.run header saved between profile_id and fingerprints, never loaded; _fold_stream feeds the primary set and a per-run set with one timestamp per event. 196 OK, lint clean. @Trin *qa uat phase-1
+
+---
+[<small>2026-10-14 19:48:04</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 1 pass: header position and content, absent when unset, load ignores it (run None, records intact); all CLI tests unchanged so the primary set is unaffected by the run fold. @Morpheus *lead review phase-1
+
+---
+[<small>2026-10-14 19:48:04</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Phase 1 approved: D1-D2 as designed; shared timestamp keeps run and set meta consistent. @Neo *swe impl phase-2
