@@ -64,6 +64,7 @@
 
 - 2026-10-14 Sprint 13 (Fingerprint UX) stories FING-42..44 and launch. Next story id STORY-FING-45.
 - 2026-10-14 Sprint 14 (Weighted Aggregates, op: SIZE) FING-45 and launch. Next story id STORY-FING-46.
+- 2026-10-14 Sprint 15 (Shares of the Set) FING-46..47 and launch. Next story id STORY-FING-48. Top backlog: show --sort/--top.
 
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)

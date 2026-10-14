@@ -1,9 +1,12 @@
 # Task Board
 
+**No sprint in flight.** Last sprint: 15 (below).
+
 ## Sprint 15: Shares of the Set
 
-**Status:** In progress
-**Branch:** `sprint-15`
+**Status:** Complete — launched 2026-10-14 (5/5 pts); merged to `main`; no release (mainline)
+**Branch:** `sprint-15` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_15.diagram.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT15.md` (stories + architecture D1-D5)
 **Points:** 5 · **Tier:** 2
 
@@ -16,7 +19,7 @@
 - [x] **2.2** UAT + review. [Trin, Morpheus]
 
 ### Close
-- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 14: Weighted Aggregates
 
@@ -216,10 +219,11 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 - **bob_protocol, for Trin:** a test strategy document Trin owns, laying out the project's testing practices and conventions: the test pyramid applied to the tools available in the project's ecosystem. Queued 2026-10-13 by the owner during Sprint 11; not started.
 
 ## Backlog (unscheduled)
+- **Top priority (Sprint 15 retro):** `fingerprint show --sort KEY` (any column, including `%` columns, e.g. `payload_bytes.SUM %`) and `--top N`.
 - Fingerprint tool: JSON Schema for set files, generated from the profile (offered 2026-10-14).
 - **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
-- Fingerprint tool: `fingerprint show --top N` and `--sort KEY` / aggregate columns, so a set can be ranked by e.g. `payload_bytes` (Sprint 13 and 14 retros); more aggregate ops (`LEN`, `ABS`); event-time timestamps (would make show's FIRST/LAST SEEN informative); set-to-set merge.
+- Fingerprint tool: more aggregate ops (`LEN`, `ABS`); event-time timestamps (would make show's FIRST/LAST SEEN informative); set-to-set merge.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
 - For Tank: `make test-fingerprint ARGS=test_cli` fails with ModuleNotFoundError although SDLC section 3 documents it; SDLC sections 8 and 9 still say the first CI result is unknown (it passed).
 - CI: run `make smoke` in the workflow (Sprint 12 retro).
