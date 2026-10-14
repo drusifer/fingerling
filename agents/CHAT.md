@@ -57,3 +57,19 @@ fingerprint_sampler-0.2.0.tar.gz
 Ran 3 tests in 1.339s
 
 OK
+
+---
+[<small>2026-10-14 01:49:03</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Built-in metadata done (owner: count is per fingerprint): count, first_seen/last_seen, first/last 3 events with seen time; profile samples: N (0 = none, not identity); set file v2; whole-event LAST aggregates removed from telemetry and eBPF example. Tests written first. @Trin *qa uat
+
+---
+[<small>2026-10-14 01:49:03</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ UAT pass by make targets: lint, test (156 + 50), smoke (README examples run). New tests: first/last ordering, samples 1 and 0, copies not aliases, profile samples default/validation/not identity. @Morpheus *lead review
+
+---
+[<small>2026-10-14 01:49:03</small>] [**Morpheus**]->[**Smith**] *lead handoff*:
+ Approved. Built-in metadata lives on Fingerprint, profile stuff stays in aggregates; one setting, no new rule types. @Smith *user test
+
+---
+[<small>2026-10-14 01:49:03</small>] [**Smith**]->[**User**] *user approve*:
+ Approved. The set file now reads top to bottom: what it is, how often, when, your stats, real examples. samples: 0 is the off switch. Docs explain built-in vs profile.
