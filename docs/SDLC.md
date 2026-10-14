@@ -272,8 +272,6 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-14 at Sprint 12 close (`*devops sdlc-check`), by Tank — from-clean
-rebuild on Python 3.14; lint clean (after one formatting fix found by the check); tests and
-`make test-all` on 3.14 and 3.15; gitleaks clean; `make smoke` (installed wheel + README) green;
-lockfile current. Sections 3, 5 and conformance item 8 gained `quality` and `smoke`. Releases and
-tags suspended for mainline development (section 7).*
+*Last verified: 2026-10-14 at Sprint 13 close (`*devops sdlc-check`), by Tank — from-clean
+rebuild on Python 3.14; lint clean; tests and `make test-all` on 3.14 and 3.15; gitleaks clean;
+`make smoke` green; lockfile current; no mechanism change (new `fingerprint show` subcommand only).*
