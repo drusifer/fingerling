@@ -135,8 +135,8 @@ is reported to Tank so one of them gets fixed.
 7. **Integrate** — after Tank's `*devops sdlc-check` passes and Cypher launches the sprint, and
    once the chat log is confirmed to hold every phase marker, Smith's approvals, the retro and
    the launch (a message `bobp chat` rejected was never recorded), agents
-   merge to `main` with `git merge --no-ff sprint-<N>`, apply the version bump and tag (section 7),
-   and delete the branch. **Agents never push**; the project owner pushes `main` and tags.
+   merge to `main` with `git merge --no-ff sprint-<N>`, apply the version bump and tag (section 7;
+   suspended during mainline development), and delete the branch. **Agents never push**; the project owner pushes `main` and tags.
 8. **Record** — the sprint chat report (below), `docs/DECISIONS.md` for decisions, user docs.
 
 ### Commit messages — Conventional Commits
@@ -193,6 +193,10 @@ before the merge.
   effort goes into compatibility — no shims, aliases, deprecation paths, migration messages or
   tests that pin old behaviour. Old forms are deleted outright; the minor bump and a line in
   `docs/DECISIONS.md` are the whole cost of a breaking change.
+- **Currently suspended — mainline development** (owner, 2026-10-14): agents create no tags,
+  make no version bumps and no release commits until the owner says otherwise. Sprints still
+  merge to `main`; the version stays `0.2.0`. Existing local tags `v0.1.0` and `v0.2.0` were
+  never pushed and are left as they are. The rules below apply again when releases resume.
 - **Bumped and tagged:** by Tank on `main` as part of the sprint merge — a
   `build: release v<version>` commit (version field + `uv lock`) and an annotated tag
   `v<version>`. `make release-check TAG=v<version>` must pass.
@@ -266,4 +270,5 @@ not yet built are listed here until they land.
 *Last verified: 2026-10-13 at Sprint 11 close (`*devops sdlc-check`), by Tank — from-clean
 rebuild on Python 3.14; lint clean; 154 + 59 tests on 3.14 and 3.15; gitleaks clean; `make build`
 wheel (with `profile.schema.json`) runs in a clean 3.15 environment; lockfile current; one
-Makefile. Section 7 gained the owner's no-backwards-compatibility-before-1.0 rule.*
+Makefile. Section 7 gained the owner's no-backwards-compatibility-before-1.0 rule. Section 7: releases and tags
+suspended for mainline development (owner, 2026-10-14).*

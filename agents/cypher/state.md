@@ -60,6 +60,8 @@
 
 - 2026-10-13 Sprint 11 stories FING-35..37 (Tier 2) and launch: fingerprint-sampler 0.2.0. Next story id STORY-FING-38.
 
+- 2026-10-14 Owner: mainline development, no tags or releases until further notice (SDLC section 7).
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete

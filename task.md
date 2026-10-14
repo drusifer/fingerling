@@ -118,8 +118,8 @@ and `agents/AGENTS.md` here match it.
 Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published package did not change.
 
 ## Owner actions (agents do not push or publish unless told)
-- One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
-- Release 0.2.0 is tagged `v0.2.0` locally (includes GLOB/REGEX/REGSUB and Sprint 11). `v0.1.0` was never published; delete it or leave it, then push `main` and `v0.2.0` after the PyPI setup.
+- One-time PyPI setup (`docs/SDLC.md` section 8) — only needed when releases resume.
+- Mainline development (owner, 2026-10-14): no tags or releases until the owner says so. Local tags `v0.1.0`/`v0.2.0` left as they are, never pushed.
 - Confirm that any Weak rubric criterion should block a gate (assumed in Sprint 10).
 
 ## Queued requests (next up)

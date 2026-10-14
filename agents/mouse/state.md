@@ -42,7 +42,7 @@
 ## Next Steps
 Cold start:
 1. Read `task.md`, `docs/SDLC.md` and the last message in `agents/CHAT.md`.
-2. Waiting on the owner: PyPI setup, then pushing `main` and tag `v0.2.0` (v0.1.0 was never pushed; the owner may delete it); the rubric blocking rule.
+2. Mainline development (owner, 2026-10-14): make no tags, version bumps or releases at sprint close. `main` was pushed 2026-10-14 (CI green). Waiting on the owner: the rubric blocking rule.
 3. Queued (bob_protocol repo): Tank dependency analysis tool; Trin test strategy doc. Fingerprint backlog in `task.md`.
 4. Next sprint is sprint-12, next story STORY-FING-38. Create the branch from clean `main`; post phase markers.
 5. Keep chat messages under 512 characters and check every `bobp chat` result.
