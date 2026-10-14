@@ -189,6 +189,10 @@ before the merge.
   version is `0.x`, a breaking change bumps the minor instead. The Conventional Commit types on
   the sprint branch determine the bump; Cypher states it in the launch message. A sprint that
   changes nothing in the published package makes no release.
+- **No backwards compatibility before 1.0** (owner, 2026-10-13): while the version is `0.x`, no
+  effort goes into compatibility — no shims, aliases, deprecation paths, migration messages or
+  tests that pin old behaviour. Old forms are deleted outright; the minor bump and a line in
+  `docs/DECISIONS.md` are the whole cost of a breaking change.
 - **Bumped and tagged:** by Tank on `main` as part of the sprint merge — a
   `build: release v<version>` commit (version field + `uv lock`) and an annotated tag
   `v<version>`. `make release-check TAG=v<version>` must pass.

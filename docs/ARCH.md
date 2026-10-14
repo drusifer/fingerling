@@ -70,13 +70,24 @@ flowchart TD
 class MaskEntry:
     key: str
     path: str
-    modifier: str
+    modifier: Modifier          # given as a bare name or mapping; normalised in __post_init__
+
+@dataclass(frozen=True)
+class Modifier:                 # STORY-FING-36
+    name: str
+    params: tuple[tuple[str, Any], ...]          # arguments, sorted by name
+    @classmethod
+    def of(cls, spec: Modifier | str | Mapping) -> Modifier: ...   # validates; ValueError
+    @property
+    def spec(self) -> str: ...  # bare name, or sorted compact JSON; feeds profile_id
+    def __call__(self, value) -> str: ...
 
 def compile_path(path: str) -> jsonpath.JSONPath: ...   # cached; ValueError if empty/invalid
+def compile_regex(pattern: str, flags: str = "") -> re.Pattern: ...   # cached; flags from "imsx"
 def find_values(record: Any, path: str) -> list[Any]: ...
-def validate_modifier(modifier: str) -> None: ...
-def apply_modifier(value, modifier: str) -> str: ...     # one value
-def tokenize_values(values: list, modifier: str) -> str: ...  # match-count rule
+def validate_modifier(modifier) -> None: ...
+def apply_modifier(value, modifier) -> str: ...     # one value
+def tokenize_values(values: list, modifier) -> str: ...  # match-count rule
 def tokenize(record: dict, mask_profile: list[MaskEntry]) -> dict[str, str]: ...
 def parse_jsonl(jsonl_text: str) -> list[dict]: ...
 ```

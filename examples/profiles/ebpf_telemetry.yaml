@@ -12,7 +12,7 @@ fields:
     modifier: DEFAULT
   - key: kernel_return_state
     path: "$.process_kprobe.return_value"
-    modifier: "IN_RANGE(-999, 0)"
+    modifier: {name: IN_RANGE, low: -999, high: 0}
 
 # aggregates are tracked per fingerprint and never change its identity.
 aggregates:

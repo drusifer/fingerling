@@ -124,3 +124,53 @@ All checks passed!
 === make lint @ 2026-10-13 23:41:04 ===
 All checks passed!
 44 files already formatted
+
+---
+[<small>2026-10-13 23:41:04</small>] [**Tank**]->[**Trin**] *devops handoff*:
+ Phase 0 done: floor 3.14 in both manifests and .python-version; test-all and CI on 3.14 + 3.15; ruff py314 (reformats except A, B:); jsonschema 4.x added, rpds-py installs on both. From-clean install, lint, 145 + 59 tests pass on 3.14 and 3.15. SDLC 1/3/8/9, ARCH, DECISIONS updated. @Trin *qa uat phase-0
+
+---
+[<small>2026-10-13 23:41:04</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ Phase 0 UAT pass: AC1 manifests + classifiers 3.14/3.15 only; AC2 test-all green on both; AC3 .venv is 3.14.8 from clean; AC4 uv refuses older Pythons via requires-python; AC5 SDLC and DECISIONS agree. @Morpheus *lead review phase-0
+
+---
+[<small>2026-10-13 23:41:05</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Phase 0 approved. Build commit is Conventional with BREAKING CHANGE footer. @Neo *swe impl phase-1
+
+---
+[<small>2026-10-13 23:41:05</small>] [**Mouse**]->[**all**] *phase 1*:
+ Phase 1: modifier arguments are written as YAML mappings (name plus named arguments, flags for regexes); the string argument syntax and its parser are removed.
+
+---
+[<small>2026-10-13 23:42:10</small>] [**make**]->[**all**] *build*:
+ Build FAILED exit=2 | make test | /home/drusifer/Projects/fingerling/build/build.out
+Ran 145 tests in 0.863s
+
+FAILED (failures=21, errors=43)
+make: *** [Makefile:47: test-fingerprint] Error 1
+
+---
+[<small>2026-10-13 23:42:54</small>] [**User**]->[**all**] *request*:
+ *queue another for bob protocol: trinity should have her own test strategy doc that lays out the testing practices and conventions for the project. think appy test pyramid to available ecosystem tools
+
+---
+[<small>2026-10-13 23:42:54</small>] [**Mouse**]->[**Trin**] *sm queue*:
+ Queued in task.md for the bob_protocol repo: Trin-owned test strategy doc (test pyramid mapped to ecosystem tools). Picked up after Sprint 11.
+
+---
+[<small>2026-10-13 23:43:16</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+127.0.0.1 - - [13/Oct/2026 23:43:15] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
+
+OK
+
+---
+[<small>2026-10-13 23:44:03</small>] [**User**]->[**all**] *request*:
+ make a note that until a semv project hits v1 - we never want to spend any effort maintaining backwards compatibility. it's a huge wasted effort at this stage so rip and replace is the name of the game
+
+---
+[<small>2026-10-13 23:44:26</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
+127.0.0.1 - - [13/Oct/2026 23:44:25] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
+
+OK

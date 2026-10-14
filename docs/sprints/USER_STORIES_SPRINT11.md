@@ -64,10 +64,12 @@ second layer of quoting.
 3. Tokens are the same as before for the same arguments: e.g. `{name: REGSUB, pattern: '\d+',
    replace: N}` turns `/items/17` into `/items/N`; `{name: IN_RANGE, low: 200, high: 399}` on 404
    gives `FALSE`.
-4. A string with arguments (`"IN_RANGE(200, 399)"`) is refused at load time with a message that
-   shows the mapping form to use instead.
+4. A string with arguments (`"IN_RANGE(200, 399)"`) is refused at load time as an unknown
+   modifier. (Revised mid-sprint: the owner ruled out compatibility work before 1.0, so there is
+   no migration hint.)
 5. The example profiles, both READMEs and the user guide use only the new form.
-6. A profile whose fields use only bare-name modifiers has the same profile id as before.
+6. Writing a mapping's keys in a different order does not change the profile id. (Was "bare-name
+   profiles keep their old id" — dropped mid-sprint under the owner's no-compatibility rule.)
 
 ## STORY-FING-37: Check a profile before using it
 **Points:** 3
@@ -119,7 +121,7 @@ Mechanism-class change: Tank, approved by the owner on 2026-10-13.
 mapping`; the mapping selects its argument rules with one `if {name: const X} then {…}` per
 modifier, each with `required` and `additionalProperties: false`. No `oneOf`/`anyOf` on
 modifiers: they produce "not valid under any of the given schemas" instead of the real reason.
-A string containing `(` gets its own rule whose message shows the mapping form (AC 36.4).
+A string with arguments is simply not one of the allowed names (AC 36.4).
 
 **D4 — Two-layer check, one report.** `profile.check_profile(data, source) -> list[str]`:
 schema errors first (all of them, sorted by location); only if the structure is valid, the
@@ -130,7 +132,7 @@ list; the hand-written structural checks in `profile.py` are deleted.
 
 **D5 — Modifier object.** `tokenizer.Modifier` (frozen, hashable): `name` + sorted `params`;
 callable on a value; `spec` is the canonical text used by `profile_id` — the bare name for
-argument-free modifiers (keeps AC 36.6), otherwise compact sorted JSON. `MaskEntry.modifier`
+argument-free modifiers, otherwise compact sorted JSON (AC 36.6). `MaskEntry.modifier`
 accepts a string or mapping and is normalised to a `Modifier` in `__post_init__`. The string
 argument parser (`_parse_modifier`, `_split_args`) is deleted.
 
