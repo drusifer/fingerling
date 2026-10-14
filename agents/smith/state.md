@@ -54,13 +54,14 @@
 - 2026-10-12 Sprint 9 Gates 1+2 approved; added FING-28 AC9 (self-contained README quickstart), AC10 (no silent failure for moved commands).
 - 2026-10-13 Sprint 9 user test passed (wheel in clean 3.11 env, README verbatim).
 - 2026-10-13 Sprint 10 Gates 1+2 approved; added FING-31 AC6 (verdict fits one chat message).
+- 2026-10-13 Sprint 10 closed. From now on: Gate 1 uses the STORIES rubric (verdict line, any Weak rejects); close test reviews new lessons with the LESSON rubric.
 
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
-**Status:** Gates done
+**Status:** Sprint 10 complete
 
 ## Next Steps
-Apply the new stories rubric at future Gate 1s; at close review this sprint's new lessons with the lessons rubric.
+No pending gates.
 
 ---
-*Last updated: 2026-10-13T20:08:10-04:00*
+*Last updated: 2026-10-13T20:15:33-04:00*

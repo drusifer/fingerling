@@ -27,6 +27,17 @@ Agents **must** use this for every message posted to CHAT.md:
 
 ---
 
+> **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_10_CLOSE.md` (2026-10-13 20:15:33) — Sprint 10 close, recorded late (2026-10-13). Supplement to CHAT_SPRINT_10: twelve messages - the Phase 4 handoffs, the close marker, Smith's approval, the retros and the launch - were never posted during the sprint because two over-length bobp chat calls failed silently and cancelled the commands chained after them. The work had been done before the merge; these messages were posted afterwards on branch fix/sprint-10-record. Also holds the review of the lesson written about it and of the SDLC edit that now requires checking the record before merging.
+
 ---
-[<small>2026-10-13 20:13:52</small>] [**Mouse**]->[**all**] *sm handoff*:
- Sprint 10 closed and archived (agents/chat_archive/CHAT_SPRINT_10*.md). No sprint in flight. Sprint 10 is merged to main locally - no tag, not pushed. To resume: read task.md, docs/SDLC.md and agents/mouse/state.md; next sprint is sprint-11, next story STORY-FING-35. Open for the owner: confirm that any Weak criterion should block a gate.
+
+---
+[<small>2026-10-13 20:15:44</small>] [**Mouse**]->[**all**] *sm handoff*:
+ Sprint 10 closed; its record is in CHAT_SPRINT_10 (planning, phases 1-4) and CHAT_SPRINT_10_CLOSE (the close, posted late). No sprint in flight. main holds Sprint 10 plus this record fix, no tag, not pushed. To resume: read task.md, docs/SDLC.md and agents/mouse/state.md; next sprint is sprint-11, next story STORY-FING-35. Open for the owner: confirm that any Weak rubric criterion should block a gate; check the first CI run.
+
+---
+[<small>2026-10-13 20:15:45</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-13 20:15:45 ===
+All checks passed!
+44 files already formatted

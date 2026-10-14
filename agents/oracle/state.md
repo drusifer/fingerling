@@ -36,13 +36,14 @@
 - 2026-10-13 SUPERSEDED: the `Makefile.prj` / `_IS_BOB_ENTRY` / `MKF_ACTIVE` gap noted above no
   longer exists — the project has a single Makefile (docs/SDLC.md section 3).
 - 2026-10-13 2026-10-13 docs groom (branch fix/docs-groom): sprint stories moved to docs/sprints/USER_STORIES_SPRINT<N>.md (POC file renamed SPRINT1) with live references updated; removed tracked strays build-err.out and agents/CHAT.md.bak; README has a full documentation map; agents/DOCUMENTATION_INDEX.md rewritten for the current layout; memory.md filled in; USER_GUIDE uses fingerprint_sampler imports and labels parked sections; lessons files cross-linked; file:// and dead links fixed (0 broken). Not touched: persona Summary files (71), agents/tools stale copies, docs/SDLC.md (Tank's).
+- 2026-10-13 Sprint 10 groomed: SDLC rubric applied (pass), 3 lessons + 3 decisions recorded; chat archived as CHAT_SPRINT_10 (incomplete) and CHAT_SPRINT_10_CLOSE (the late-posted close).
 
 ## Current Task
-**Task:** docs groom (branch fix/docs-groom)
-**Status:** Docs groom complete
+**Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
+**Status:** Sprint 10 complete
 
 ## Next Steps
-Open for the owner: USER_GUIDE GitOps and sandbox sections are labelled unverified, not re-checked; agents/PROJECT.md still says 'Project: bob_protocol' (generated file); cypher/SKILL.md names docs/USER_STORIES.md generically while this project uses docs/sprints/.
+Before running chat-report at close, check the log has the close marker, Smith's approval, the retro and the launch.
 
 ---
-*Last updated: 2026-10-13T10:08:50-04:00*
+*Last updated: 2026-10-13T20:15:33-04:00*

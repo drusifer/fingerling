@@ -32,13 +32,14 @@
 - 2026-10-12 Sprint 9 P0 UAT passed.
 - 2026-10-13 Sprint 9 P1 UAT passed: isolated wheel install on 3.10, sdist tests 127/127 without fingerling, pre-split set merge 0 new/4 updated, README quickstart verbatim.
 - 2026-10-13 Sprint 9 closed: 127 + 59 tests on 3.10-3.13. Unverified: GitHub workflows, --svg chat report.
+- 2026-10-13 Sprint 10 closed. Verify claims about past file versions with git log --follow / git show; verify that handoff messages actually reached CHAT.md.
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Sprint 9 complete
+**Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
+**Status:** Sprint 10 complete
 
 ## Next Steps
 No pending UAT.
 
 ---
-*Last updated: 2026-10-13T00:09:31-04:00*
+*Last updated: 2026-10-13T20:15:33-04:00*

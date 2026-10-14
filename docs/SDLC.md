@@ -132,7 +132,9 @@ is reported to Tank so one of them gets fixed.
    user-facing behaviour at sprint close.
 6. **Commit** — agents commit on the sprint branch as work passes review (at least once per
    phase), using Conventional Commits (below).
-7. **Integrate** — after Tank's `*devops sdlc-check` passes and Cypher launches the sprint, agents
+7. **Integrate** — after Tank's `*devops sdlc-check` passes and Cypher launches the sprint, and
+   once the chat log is confirmed to hold every phase marker, Smith's approvals, the retro and
+   the launch (a message `bobp chat` rejected was never recorded), agents
    merge to `main` with `git merge --no-ff sprint-<N>`, apply the version bump and tag (section 7),
    and delete the branch. **Agents never push**; the project owner pushes `main` and tags.
 8. **Record** — the sprint chat report (below), `docs/DECISIONS.md` for decisions, user docs.
@@ -245,7 +247,8 @@ Run by Tank at sprint close (`*devops sdlc-check`):
 6. `.venv/` and `*.egg-info/` are ignored; `requires-python` unchanged or deliberately bumped;
    `git config core.hooksPath` is `.githooks`.
 7. This sprint's changes followed section 6: made on the sprint branch, Conventional Commit
-   messages, right class and approval, chat report produced, nothing pushed by agents.
+   messages, right class and approval, chat report produced with a section for every phase and
+   for close, nothing pushed by agents.
 8. `.venv/bin/fingerprint merge --help` and `.venv/bin/fingerling fingerprint --help` run, and a
    second `make install` changes nothing.
 9. The workflows under `.github/workflows/` invoke only `make` targets that exist.
@@ -256,7 +259,8 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-13 at Sprint 10 close (`*devops sdlc-check`, branch `sprint-10`), by Tank —
-from-clean rebuild; lint clean; 127 + 59 tests on Python 3.10, 3.11, 3.12 and 3.13; gitleaks
-clean; `make build` wheel runs in a clean environment; lockfile current; one Makefile. Section 8
-corrected after the Sprint 10 rubric review found it out of date.*
+*Last verified: 2026-10-13 at Sprint 10 close (`*devops sdlc-check`), by Tank — from-clean
+rebuild; lint clean; 127 + 59 tests on Python 3.10, 3.11, 3.12 and 3.13; gitleaks clean;
+`make build` wheel runs in a clean environment; lockfile current; one Makefile. Section 8
+corrected after the Sprint 10 rubric review; section 6 step 7 and conformance item 7 tightened the
+same day after Sprint 10 was merged with an incomplete chat record.*
