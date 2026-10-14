@@ -1,11 +1,12 @@
 # Task Board
 
-**Sprint 10 in flight** (below). Previous: Sprint 9.
+**No sprint in flight.** Last sprint: 10 (below). Next up: see *Owner actions* and *Queued requests*.
 
 ## Sprint 10: Artifact Rubrics
 
-**Status:** In progress
-**Branch:** `sprint-10`
+**Status:** Complete — launched 2026-10-13 (10/10 pts); merged to `main`; no release (published package unchanged); not pushed
+**Branch:** `sprint-10` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_10.diagram.md` · calibration: `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT10.md` (stories + architecture D1-D7)
 **Points:** 10 · **Tier:** 1 · Implementer: Bob (templates and skills)
 
@@ -28,7 +29,7 @@
 - [ ] **4.2** `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md`; UAT + review. [Bob, Trin, Morpheus]
 
 ### Close
-- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · merge (no release) [Tank, Oracle, Smith, All]
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 9: Fingerprint Package + SDLC Tooling
 
@@ -82,14 +83,15 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 
 ## Owner actions (agents do not push or publish)
 - One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
-- `git push origin main` — first run of the CI workflow; watch the parked tests on the runner.
+- `main` was pushed on 2026-10-13 (through Sprint 9 and the maintenance branches); check the first CI run's result. Sprint 10 is merged locally and not yet pushed.
 - `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0.
 - In `~/Projects/bob_protocol`: commit the uncommitted `chat_report.py`, `tldr.py`, `setup_agent_links.py` changes and tests, and copy this project's skill/template/persona edits upstream (list in `agents/bob/state.md`).
 
 ## Queued requests (next up)
-- **Artifact rubrics** (User, 2026-10-13): inventory the output artifacts each persona and skill is expected to produce; for templated artifacts, add a rubric appendix to the template for qualitative judgement of agent-produced content; recommend which skills to pilot first.
+- None. (Artifact rubrics delivered in Sprint 10.)
 
 ## Backlog (unscheduled)
+- Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
 - Fingerprint tool: `fingerprint show` (table/report view of a set); `GLOB`/`REGEX` modifiers; reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
 - Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.

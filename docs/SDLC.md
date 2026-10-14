@@ -206,8 +206,9 @@ Both workflows call only `make` targets, so CI cannot drift from the local gates
 | `.github/workflows/ci.yml` | every push (any branch) and pull request | Matrix over Python 3.10-3.13: `make install`, `make lint`, `make test`. Separate job: `make secrets` over the full history. |
 | `.github/workflows/publish.yml` | push of a tag `v*` | Reruns the CI gates; `make release-check`; `make build`; publishes `dist/` to PyPI by trusted publishing (no stored token). |
 
-**Not yet exercised:** neither workflow has run, because nothing has been pushed since they were
-written. Treat the first push as their test.
+**Exercised so far:** `main` was pushed by the project owner's instruction on 2026-10-13, which
+triggers the CI workflow for the first time. Agents have not looked at the result, so whether it
+passed is not recorded here. The publish workflow has never run: no version tag has been pushed.
 
 **One-time setup by the project owner, before the first tag is pushed:**
 
@@ -221,7 +222,7 @@ There is no deploy target; KubeArmor enforcement in the demo is simulated.
 
 ## 9. Known deviations
 
-- **CI and publishing are written but unexercised** until the owner pushes (section 8).
+- **CI's first result is unknown and publishing is unexercised** (section 8).
 - **`uv` and `gitleaks` are machine prerequisites**, not installed by `make install`.
 - **Parked modules are outside the manual gates.** `make demo-live` needs a terminal, root and
   `bpftrace` and has not been run since before Sprint 8; by the owner's decision no process is
@@ -255,6 +256,7 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-13 on branch `fix/single-makefile`, by Tank — one Makefile, `make help`
-lists the targets in section 3, lint clean. Full gates last run at Sprint 9 close (same day); no
-code has changed since.*
+*Last verified: 2026-10-13 at Sprint 10 close (`*devops sdlc-check`, branch `sprint-10`), by Tank —
+from-clean rebuild; lint clean; 127 + 59 tests on Python 3.10, 3.11, 3.12 and 3.13; gitleaks
+clean; `make build` wheel runs in a clean environment; lockfile current; one Makefile. Section 8
+corrected after the Sprint 10 rubric review found it out of date.*

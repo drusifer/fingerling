@@ -139,3 +139,13 @@ TUI step rather than renumbering.
 **What happened:** Parked modules and their tests import `fingerling.tokenizer` / `fingerling.warehouse`; those now re-export the same objects from `fingerprint_sampler`, so the split needed no edits to parked code. A set file written before the split merged with identical IDs afterwards.
 **Applying it:** Verify a move with an artifact produced by the old layout, and with the new package installed alone in a clean environment.
 
+## 2026-10-13 — Sprint 10: Artifact Rubrics
+
+**Lesson:** When a report cites an earlier version of a file, look it up in git first — memory of a session is not history.
+**What happened:** The first draft of `docs/sprints/SPRINT10_RUBRIC_CALIBRATION.md` scored a "first version" of `docs/SDLC.md` that still had open questions. Trin ran `git log --follow -- docs/SDLC.md`: six commits, none containing that draft — it had been revised in the working tree before the baseline commit `0b10273`. The report was assessing a document nobody could open.
+**Applying it:** Before describing any past state of a file, run `git log --follow -- <file>` and `git show <commit>:<file>`, and cite the commit hash beside the claim. If the state was never committed, say so and label it a recollection.
+
+**Lesson:** When writing a check that searches for a marker, run it against the repository before documenting it.
+**What happened:** The rule "no file outside `agents/templates/` contains `RUBRIC-START`" was written into three documents and then run: it matched four files that only *mention* the marker in prose (two skills, the chat log, the sprint stories). The check was failing on a clean repository.
+**Applying it:** Match the marker's syntactic form, not the word — here a line beginning `<!-- RUBRIC-START` — and run the exact command once on the current tree before putting it in a skill or a conformance list.
+

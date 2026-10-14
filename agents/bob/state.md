@@ -34,16 +34,22 @@ None.
   the new remove_legacy_tools() in bob_protocol's setup_agent_links.py, which runs on every
   `bobp setup-agent-links` / `bobp update`. References in oracle, judge, personas skills and
   PROJECT.md repointed to bobp subcommands.
+- 2026-10-13 Sprint 10 (artifact rubrics): new agents/templates/ARTIFACTS.md (inventory + rubric
+  format), _template_USER_STORIES.md (STORIES rubric), SDLC rubric on the 3 SDLC templates, LESSON
+  rubric on _template_LESSON.md. Wired into cypher, smith, tank, oracle SKILL.md and the sprint
+  and build-env skills. Verdict rule: any Weak rejects (assumed for the owner).
 
 ## Current Task
-**Status:** Complete — legacy tool copies removed
+**Status:** Sprint 10 complete
 
 ## Next Steps
-- Pending bob_protocol sync (uncommitted there): chat_report.py per-phase report, tldr.py via
-  CLI + index, setup_agent_links.py remove_legacy_tools, tests. Local-only edits to upstream:
-  build-env skill, SDLC templates, sprint/bloop/mouse/morpheus/cypher/tank/neo/oracle/judge/
-  personas skill edits, AGENTS.md guideline 4, DOCUMENTATION_INDEX.md, HELP.md, _template_tldr.md.
+- Pending bob_protocol sync (owner): tool changes uncommitted in ~/Projects/bob_protocol
+  (chat_report.py, tldr.py, setup_agent_links.py + tests); and everything edited locally under
+  agents/ since 2026-10-12 — build-env skill, SDLC/USER_STORIES/LESSON templates and ARTIFACTS.md,
+  sprint/bloop/judge/personas skills, all persona SKILL.md edits, AGENTS.md guideline 4,
+  DOCUMENTATION_INDEX.md, HELP.md.
+- Next rubric: architecture template. Runnable checks for state.md / chat / TLDR.
 - Known broken upstream: `bobp prep-tldr` (imports via as a library).
 
 ---
-*Last updated: 2026-10-13T19:58:49-04:00*
+*Last updated: 2026-10-13T20:13:52-04:00*
