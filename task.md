@@ -1,6 +1,25 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 12 (below).
+**No sprint in flight.** Last sprint: 13 (below).
+
+## Sprint 13: Fingerprint UX
+
+**Status:** Complete — launched 2026-10-14 (5/5 pts); merged to `main`; no release (mainline)
+**Branch:** `sprint-13` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_13.diagram.md`
+**Source:** `docs/sprints/USER_STORIES_SPRINT13.md` (stories + architecture D1-D4)
+**Points:** 5 · **Tier:** 2
+
+### Phase 1: Small fixes (STORY-FING-43, -44, 2 pts) — Neo
+- [x] **1.1** Absent path adds 0 to the skipped count; wording "unusable aggregate values"; README/USER_GUIDE. [Neo]
+- [x] **1.2** `schema_errors` says which rules need arguments; UAT + review. [Neo, Trin, Morpheus]
+
+### Phase 2: `fingerprint show` (STORY-FING-42, 3 pts) — Neo
+- [x] **2.1** `show` subcommand, table, errors, help; docs. [Neo]
+- [x] **2.2** UAT + review. [Trin, Morpheus]
+
+### Close
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Since Sprint 12 (each on its own `fix/` branch, merged to `main`, pushed)
 - [x] `fix/disable-ci` — CI runs by hand only (owner).
@@ -166,14 +185,13 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 - **bob_protocol, for Trin:** a test strategy document Trin owns, laying out the project's testing practices and conventions: the test pyramid applied to the tools available in the project's ecosystem. Queued 2026-10-13 by the owner during Sprint 11; not started.
 
 ## Backlog (unscheduled)
-- Fingerprint tool: JSON Schema for set files, generated from the profile (offered 2026-10-14); "skipped aggregate values" counts events where the path is absent (noisy on GH Archive).
+- Fingerprint tool: JSON Schema for set files, generated from the profile (offered 2026-10-14).
 - **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
-- Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge.
+- Fingerprint tool: `fingerprint show --top N` (Sprint 13 retro); event-time timestamps (would make show's FIRST/LAST SEEN informative); set-to-set merge.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
 - For Tank: `make test-fingerprint ARGS=test_cli` fails with ModuleNotFoundError although SDLC section 3 documents it; SDLC sections 8 and 9 still say the first CI result is unknown (it passed).
 - CI: run `make smoke` in the workflow (Sprint 12 retro).
 - Tooling (via): the index misses most project functions (e.g. `load_profile`) even after `via index --force .`, still lists deleted files, `--via calls` returns the anchor instead of callers, and the MCP tool's `--canned` queries are rejected. Found 2026-10-13 in Sprint 11; work fell back to grep.
-- Usability (fingerprint): a bare `modifier: GLOB` is reported as "'GLOB' is not one of ['DEFAULT', 'IS_PRESENT', 'IS_NULL']", which does not say GLOB needs a mapping. Smith, Sprint 11.
 - Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.
 - Parked (not scheduled while the fingerprint tool is the focus): n-gram/Jaccard stage, `examples/demo.py` markup sweep and smoke test, `sudo make demo-live` verification, `tests/test_server.py` private access, USER_GUIDE GitOps/sandbox sections.

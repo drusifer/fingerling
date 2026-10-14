@@ -348,3 +348,6 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision (owner, 2026-10-14):** Dates and times are declared with `type: DATETIME` or `type: DATE` on a field or aggregate, not a modifier: the type says what the input is, which fields and aggregates both need. Values are ISO-8601 only — no formats, epochs or parsing options ("we're not writing a parser"). Times are normalised to UTC (no zone = UTC). `TRUNC` buckets typed values for fields.
 **Consequences:** `MIN`/`MAX` compare real datetimes across zones; the set stores YAML timestamps. Built-in `first_seen`/`last_seen` are typed. A field's type is part of the profile id.
 
+
+**Decision (Sprint 13, 2026-10-14):** An aggregate path that selects nothing in an event is not a skip; only a present value that a function cannot use (or that does not convert to the declared `type`) is counted, reported as "unusable aggregate values". A bare rule name that needs arguments (`GLOB`, `LAST`, ...) is reported as such, with the required arguments read from the profile schema.
+**Consequences:** The skipped count is 0 on data where fields are optional (GH Archive), so a non-zero count points to a real problem. New rules get the "needs arguments" message without code changes. `fingerprint show SET` prints a set as a table (no options yet).

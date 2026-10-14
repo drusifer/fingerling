@@ -77,7 +77,7 @@ A summary goes to stderr; stdout is left empty. Exit status: `0` set written and
 ```
 fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log.jsonl
   fingerprints: 4 new, 0 updated, 4 total in set
-  skipped: 0 malformed lines, 0 aggregate values
+  skipped: 0 malformed lines, 0 unusable aggregate values
   wrote web.fingerprints.yaml (profile 37087e1858c85f7cb976959311d01b65)
 ```
 
@@ -123,14 +123,17 @@ aggregates:
   | `{name: LAST, n: N}` | the `N` most recent values of the path |
 
   One function stores its value directly; several store a map by function name. Numbers and
-  numeric strings count as numbers. A value a function can't use, or an event where the path
-  matches nothing, is skipped for that aggregate and counted in the summary.
+  numeric strings count as numbers. A value a function can't use is skipped for that aggregate
+  and counted in the summary; an event where the path matches nothing is not counted.
 
 Profiles are checked before any event is read, against a JSON Schema plus the checks a schema
 cannot express (regexes, JSONPaths, ranges, duplicate keys). Every problem is listed with its
 file and location, e.g. `app.yaml: fields[2] (key 'port') → modifier: 'values' is a required
 property`. Run `fingerprint check app.yaml` to check a profile on its own (exit 0 valid, 1 not);
 see the package README for using the schema in an editor.
+
+Run `fingerprint show app.fingerprints.yaml` to read a set as a table: one row per fingerprint,
+most frequent first, with its count, first and last seen (UTC) and tokens.
 
 Two profiles ship as starting points: `packages/fingerprint-sampler/examples/access_log.yaml`
 (web access logs) and `examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).

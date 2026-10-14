@@ -18,7 +18,7 @@ published, general-purpose tool for any JSONL event stream. **This is the active
 | `fingerprint_sampler/fingerprint_set.py` | FING-02, -25, -40 | `FingerprintSet`: MD5 IDs, stateful upsert, versioned atomic YAML file |
 | `fingerprint_sampler/profile.py` | FING-24, -37 | YAML profile loading; `check_profile` reports every problem (schema layer, then semantic layer); `profile_id` |
 | `fingerprint_sampler/schema.py`, `profile.schema.json` | FING-37 | The published profile JSON Schema (Draft 2020-12) and the `jsonschema` validator over it; also validates a single modifier for `Modifier.of` |
-| `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28, -37 | `fingerprint merge` — merge a stream into a set; `fingerprint check` — list a profile's problems |
+| `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28, -37, -42 | `fingerprint merge` — merge a stream into a set; `fingerprint check` — list a profile's problems; `fingerprint show` — a set as a table |
 
 It depends only on PyYAML, python-jsonpath and jsonschema and never imports `fingerling`.
 

@@ -62,6 +62,8 @@
 
 - 2026-10-14 Owner: mainline development, no tags or releases until further notice (SDLC section 7).
 
+- 2026-10-14 Sprint 13 (Fingerprint UX) stories FING-42..44 and launch. Next story id STORY-FING-45.
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete
