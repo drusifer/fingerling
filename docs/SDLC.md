@@ -272,6 +272,6 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-14 at Sprint 14 close (`*devops sdlc-check`), by Tank — from-clean
+*Last verified: 2026-10-14 at Sprint 15 close (`*devops sdlc-check`), by Tank — from-clean
 rebuild on Python 3.14; lint clean; tests and `make test-all` on 3.14 and 3.15; gitleaks clean;
-`make smoke` green; lockfile current; no mechanism change (new aggregate `op: SIZE` only).*
+`make smoke` green; lockfile current; no mechanism change (set file gains `share`, still version 0).*

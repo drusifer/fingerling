@@ -50,3 +50,7 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_14.md` (2026-10-14 18:20:56) — Sprint 14, Weighted Aggregates (Tier 2, 2 pts, 0 fix cycles). FING-45: an aggregate can carry op: SIZE, so every function aggregates each value's size in bytes (UTF-8 for text, compact JSON otherwise), e.g. SUM(SIZE(payload)). The owner agreed to put op on the aggregate rather than as a SUM parameter. op and type are exclusive. No release (mainline).
 
 ---
+
+> **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_15.md` (2026-10-14 19:19:55) — Sprint 15, Shares of the Set (Tier 2, 5 pts, 0 fix cycles). Owner asked for percentages of aggregate values; clarified as share of the set total for SUM and COUNT, stored and shown. FING-46: each fingerprint's share section in the set file, recomputed on every save. FING-47: fingerprint show prints COUNT % and a value + % column per SUM/COUNT aggregate. No release (mainline).
+
+---

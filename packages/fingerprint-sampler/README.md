@@ -100,15 +100,18 @@ fingerprints:
         record: {level: INFO, logger: db, msg: query ok, took_ms: 3}
       - meta: {seen: '2026-10-14T03:59:19.796991+00:00'}
         record: {level: INFO, logger: db, msg: query ok (cached), took_ms: 1}
+    share:
+      meta:
+        count: 50.0
 ```
 
 To read a set without the YAML, print it as a table with `fingerprint show app.fingerprints.yaml`:
 
 ```
-ID        COUNT  FIRST SEEN           LAST SEEN            component  failed  level
-b738d17a  2      2026-10-14 03:59:19  2026-10-14 03:59:19  db         FALSE   INFO
-5c56a234  1      2026-10-14 03:59:19  2026-10-14 03:59:19  db         TRUE    ERROR
-0a13defd  1      2026-10-14 03:59:19  2026-10-14 03:59:19  http       FALSE   INFO
+ID        COUNT  COUNT %  FIRST SEEN           LAST SEEN            component  failed  level
+b738d17a  2      50.0     2026-10-14 03:59:19  2026-10-14 03:59:19  db         FALSE   INFO
+5c56a234  1      25.0     2026-10-14 03:59:19  2026-10-14 03:59:19  db         TRUE    ERROR
+0a13defd  1      25.0     2026-10-14 03:59:19  2026-10-14 03:59:19  http       FALSE   INFO
 ```
 
 ## Usage
@@ -170,8 +173,11 @@ completes modifier names:
 fingerprint show SET
 ```
 
-Prints one row per fingerprint, most frequent first: the first 8 characters of its ID, its count,
-when it was first and last seen (UTC), and one column per token. A set with no fingerprints prints
+Prints one row per fingerprint, most frequent first: the first 8 characters of its ID, its count
+and `COUNT %` (its share of all events), when it was first and last seen (UTC), then a value and
+a `%` column for each `SUM` or `COUNT` aggregate (`payload_bytes.SUM`, `payload_bytes.SUM %`), and
+one column per token. Shares come from the set file's `share` section; a set written before
+shares existed shows `-` until its next merge. A set with no fingerprints prints
 `SET: no fingerprints`. Long values are not cut; pipe to `less -S` to scroll sideways. Exit
 status: `0` printed · `2` the set file could not be read (the message says why).
 
@@ -304,6 +310,11 @@ every problem at once.
   uses the same aggregate functions you can. It reads each record wrapped in an envelope,
   `{meta: {seen: <time read>}, record: <the parsed record>}`, so the fields the tool adds can never
   clash with the record's own, and the stored first/last records carry the time they were seen.
+- `share` gives each fingerprint's percentage of the whole set for every value that adds up:
+  `share.meta.count` is its share of all events, and `share.aggregates` holds the share of each
+  `SUM` and `COUNT`, laid out like `aggregates` (`payload_bytes: {SUM: 31.25}`, or `requests: 25.0`
+  for a single-function aggregate). It is recomputed on every write; a value whose total is 0 has
+  no share.
 - Times are wall clock, when the tool read the record, so they work for any JSONL. To track a
   time field inside your records, add it to your profile's `aggregates`.
 - A set records the profile that built it (`profile_id`, derived from `fields`). Merging under a
