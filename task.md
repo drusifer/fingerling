@@ -1,11 +1,12 @@
 # Task Board
 
-**Sprint 12 in flight** on branch `sprint-12`.
+**No sprint in flight.** Last sprint: 12 (below).
 
 ## Sprint 12: Domain Model and Consolidated Validation
 
-**Status:** In progress
-**Branch:** `sprint-12`
+**Status:** Complete — launched 2026-10-14 (13/13 pts); merged to `main`; no release (mainline)
+**Branch:** `sprint-12` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_12.diagram.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT12.md` (stories + architecture D1-D7)
 **Points:** 13 · **Tier:** 1
 
@@ -26,7 +27,7 @@
 - [x] **3.2** `make smoke` + SDLC gate; UAT + review. [Tank, Morpheus]
 
 ### Close
-- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 
 ## Sprint 11: Structured Modifiers and Profile Checking
@@ -156,9 +157,10 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 ## Backlog (unscheduled)
 - **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
-- Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
+- Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
 - For Tank: `make test-fingerprint ARGS=test_cli` fails with ModuleNotFoundError although SDLC section 3 documents it; SDLC sections 8 and 9 still say the first CI result is unknown (it passed).
+- CI: run `make smoke` in the workflow (Sprint 12 retro).
 - Tooling (via): the index misses most project functions (e.g. `load_profile`) even after `via index --force .`, still lists deleted files, `--via calls` returns the anchor instead of callers, and the MCP tool's `--canned` queries are rejected. Found 2026-10-13 in Sprint 11; work fell back to grep.
 - Usability (fingerprint): a bare `modifier: GLOB` is reported as "'GLOB' is not one of ['DEFAULT', 'IS_PRESENT', 'IS_NULL']", which does not say GLOB needs a mapping. Smith, Sprint 11.
 - Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.

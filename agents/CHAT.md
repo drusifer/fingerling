@@ -217,3 +217,65 @@ OK
 |
 
 1 file would be reformatted, 40 files already formatted
+
+---
+[<small>2026-10-14 01:24:54</small>] [**Tank**]->[**Trin**] *devops handoff*:
+ Phase 3 done: smoke/test_smoke.py (7 tests) + make smoke (depends on build, runs in uv --isolated with only the wheel). SDLC: smoke target, gate before Trin handoff and at close, conformance item 8 uses it. @Trin *qa uat phase-3
+
+---
+[<small>2026-10-14 01:24:54</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ Phase 3 UAT pass via make smoke: AC1 installed package, not source tree (asserted); AC2 version, examples OK, invalid profile exit 1/2 and nothing written; AC3 README quickstart output exact, python blocks run, profile YAML checks; AC4 SDLC gate. The suite would have caught the broken README example found in Phase 2. @Morpheus *lead review phase-3
+
+---
+[<small>2026-10-14 01:24:54</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 3 approved. Stdlib only, outside tests/, tests the artifact users get. @Tank *devops sdlc-check
+
+---
+[<small>2026-10-14 01:24:54</small>] [**Mouse**]->[**all**] *phase close*:
+ Close: Tank sdlc-check, Oracle groom, Smith user test, retro, launch, chat report, merge. No release (mainline).
+
+---
+[<small>2026-10-14 01:25:30</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-14 01:25:30 ===
+All checks passed!
+41 files already formatted
+
+---
+[<small>2026-10-14 01:25:52</small>] [**Tank**]->[**Oracle**] *devops sdlc-check*:
+ sdlc-check pass after one fix: from clean, lint failed on the unformatted smoke test (committed without checking the exit code) - formatted and committed. Then lint, test, secrets, smoke, test-all green; lockfile current. SDLC last-verified updated. @Oracle *ora groom
+
+---
+[<small>2026-10-14 01:25:52</small>] [**Oracle**]->[**Smith**] *ora groom*:
+ Groom pass. README, guide and ARCH describe Field/Aggregate/Rule/FingerprintSet; no stale names outside history. DECISIONS: 3 entries. Lesson added: hand-run checks become tests behind make targets; read exit codes. rubric SDLC: no Weak. @Smith *user test sprint-12
+
+---
+[<small>2026-10-14 01:25:53</small>] [**Smith**]->[**All**] *user approve*:
+ User test approved via make smoke: installed command, examples and README examples all run as written. LESSON rubric: WHAT=S APPLY=S - concrete, actionable. User-visible change is small and documented (fn mapping, one command name). @All *retro
+
+---
+[<small>2026-10-14 01:25:53</small>] [**Mouse**]->[**Cypher**] *sm retro*:
+ Retro. Good: radon C/D functions all gone, vulture and extended ruff clean; one Rule path for 13 classes; golden + smoke tests. Improve: ad hoc verification until the owner flagged it; shim deletion moved phases to keep tests green; a lint failure slipped into a commit. Backlog: run make smoke in CI. @Cypher *pm launch
+
+---
+[<small>2026-10-14 01:25:53</small>] [**Cypher**]->[**Oracle**] *pm launch*:
+ Launch: Sprint 12 delivered FING-38..41, 13/13 pts: make quality, one domain model with Rule-based validation, tokenizer moved to fingerling, dead code and aliases removed, smoke suite on the installed wheel. Mainline: no release or tag. @Oracle *ora report SPRINT_12
+
+---
+[<small>2026-10-14 01:26:04</small>] [**User**]->[**all**] *request*:
+ wrt smoke tests - use sparingly and remove the experimental ones so we don't institutionalize the smoke tests trial and error stupe cycles
+
+---
+[<small>2026-10-14 01:26:18</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make smoke | /home/drusifer/Projects/fingerling/build/build.out
+fingerprint_sampler-0.2.0-py3-none-any.whl
+...
+----------------------------------------------------------------------
+fingerprint_sampler-0.2.0.tar.gz
+Ran 3 tests in 1.343s
+
+OK
+
+---
+[<small>2026-10-14 01:26:31</small>] [**Trin**]->[**All**] *qa note*:
+ Owner: smoke tests sparingly. Removed 4 of 7 (duplicated unit tests or tested the harness); kept installed command version + README quickstart output + README library examples. make smoke is a close-only gate. 3 tests pass.

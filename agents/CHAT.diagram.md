@@ -15,7 +15,8 @@ sequenceDiagram
     participant Morpheus
     participant Tank
     participant Trin
-    Note over User,Trin: 📅 2026-10-14
+    participant Oracle
+    Note over User,Oracle: 📅 2026-10-14
     User->>All: "request"
     Note right of User: "fix then push main"
     Neo->>User: "swe fix"
@@ -82,4 +83,26 @@ sequenceDiagram
     Note right of Smith: "Gate 2 (D8) approved.<br/>@Mouse *sm plan"
     Mouse->>All: "phase 3"
     Note right of Mouse: "Phase 3: a smoke suite<br/>that installs the built<br/>wheel in a clean<br/>environment and runs the<br/>real command, the<br/>shipped examples and the<br/>README'…"
+    Tank->>Trin: "devops handoff"
+    Note right of Tank: "Phase 3 done:<br/>smoke/test_smoke.py (7<br/>tests) + make smoke<br/>(depends on build, runs<br/>in uv --isolated with<br/>only the wheel). SDLC:<br/>smoke target,…"
+    Trin->>Morpheus: "qa uat"
+    Note right of Trin: "Phase 3 UAT pass via<br/>make smoke: AC1<br/>installed package, not<br/>source tree (asserted),<br/>AC2 version, examples<br/>OK, invalid profile exit<br/>1/2 and…"
+    Morpheus->>Tank: "lead handoff"
+    Note right of Morpheus: "Phase 3 approved. Stdlib<br/>only, outside tests/,<br/>tests the artifact users<br/>get. @Tank *devops sdlc-<br/>check"
+    Mouse->>All: "phase close"
+    Note right of Mouse: "Close: Tank sdlc-check,<br/>Oracle groom, Smith user<br/>test, retro, launch,<br/>chat report, merge. No<br/>release (mainline)."
+    Tank->>Oracle: "devops sdlc-check"
+    Note right of Tank: "sdlc-check pass after<br/>one fix: from clean,<br/>lint failed on the<br/>unformatted smoke test<br/>(committed without<br/>checking the exit code)<br/>- formatted…"
+    Oracle->>Smith: "ora groom"
+    Note right of Oracle: "Groom pass. README,<br/>guide and ARCH describe <br/>Field/Aggregate/Rule/Fin<br/>gerprintSet, no stale<br/>names outside history.<br/>DECISIONS: 3 entries.<br/>Less…"
+    Smith->>All: "user approve"
+    Note right of Smith: "User test approved via<br/>make smoke: installed<br/>command, examples and<br/>README examples all run<br/>as written. LESSON<br/>rubric: WHAT=S APPLY=S -<br/>conc…"
+    Mouse->>Cypher: "sm retro"
+    Note right of Mouse: "Retro. Good: radon C/D<br/>functions all gone,<br/>vulture and extended<br/>ruff clean, one Rule<br/>path for 13 classes,<br/>golden + smoke tests.<br/>Improve: ad…"
+    Cypher->>Oracle: "pm launch"
+    Note right of Cypher: "Launch: Sprint 12<br/>delivered FING-38..41,<br/>13/13 pts: make quality,<br/>one domain model with<br/>Rule-based validation,<br/>tokenizer moved to<br/>fingerlin…"
+    User->>All: "request"
+    Note right of User: "wrt smoke tests - use<br/>sparingly and remove the<br/>experimental ones so we<br/>don't institutionalize<br/>the smoke tests trial<br/>and error stupe cycles"
+    Trin->>All: "qa note"
+    Note right of Trin: "Owner: smoke tests<br/>sparingly. Removed 4 of<br/>7 (duplicated unit tests<br/>or tested the harness),<br/>kept installed command<br/>version + README<br/>quickst…"
 ```

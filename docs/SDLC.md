@@ -102,7 +102,7 @@ is a Mechanism-class change. `agents/` (BobProtocol tooling) and Markdown are ex
 |---|---|---|
 | Lint + format | `make lint` | every handoff to Trin; sprint close |
 | Tests | `make test` | every handoff to Trin; sprint close |
-| Smoke (installed wheel + README) | `make smoke` | every handoff to Trin; sprint close |
+| Smoke (installed wheel + README) | `make smoke` | sprint close only; keep the suite small — behaviour is tested in the unit tests |
 | Tests, all Pythons | `make test-all` | sprint close |
 | Secret scan | `make secrets` | sprint close; staged changes are scanned on every commit by the hook |
 | Package build | `make build` | sprint close; before any tag |
@@ -270,8 +270,8 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-13 at Sprint 11 close (`*devops sdlc-check`), by Tank — from-clean
-rebuild on Python 3.14; lint clean; 154 + 59 tests on 3.14 and 3.15; gitleaks clean; `make build`
-wheel (with `profile.schema.json`) runs in a clean 3.15 environment; lockfile current; one
-Makefile. Section 7 gained the owner's no-backwards-compatibility-before-1.0 rule. Section 7: releases and tags
-suspended for mainline development (owner, 2026-10-14).*
+*Last verified: 2026-10-14 at Sprint 12 close (`*devops sdlc-check`), by Tank — from-clean
+rebuild on Python 3.14; lint clean (after one formatting fix found by the check); tests and
+`make test-all` on 3.14 and 3.15; gitleaks clean; `make smoke` (installed wheel + README) green;
+lockfile current. Sections 3, 5 and conformance item 8 gained `quality` and `smoke`. Releases and
+tags suspended for mainline development (section 7).*

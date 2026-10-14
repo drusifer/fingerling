@@ -88,13 +88,11 @@ README — to be a test suite behind one make target,
 ### Acceptance Criteria
 1. `make smoke` builds the wheel, installs it into a throwaway environment with no project
    checkout on the path, and runs the smoke tests there; it fails if any test fails.
-2. The suite runs the installed `fingerprint` command: `--version` matches the package version;
-   `check` passes every shipped example profile; an invalid profile gives exit 1 from `check`
-   and exit 2 from `merge` with nothing written.
+2. The installed `fingerprint --version` matches the package version.
 3. The README is executed: the Quickstart shell block runs and prints exactly the output block
-   shown under it; every `python` block runs without error; every YAML block that is a whole
-   profile passes `fingerprint check`.
-4. The SDLC lists `make smoke` as a gate before handoff to Trin and at sprint close.
+   shown under it; every `python` block under "As a library" runs without error.
+4. The SDLC lists `make smoke` as a sprint-close gate. (Revised at close on the owner's
+   instruction: smoke tests are used sparingly; checks that duplicate unit tests were removed.)
 
 ---
 
