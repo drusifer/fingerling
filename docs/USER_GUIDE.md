@@ -126,6 +126,10 @@ aggregates:
   numeric strings count as numbers. A value a function can't use is skipped for that aggregate
   and counted in the summary; an event where the path matches nothing is not counted.
 
+  `op: SIZE` aggregates each value's size in bytes instead (UTF-8 for text, compact JSON
+  otherwise), e.g. `{key: payload_bytes, path: $.payload, op: SIZE, fn: [SUM, AVG, MAX]}` for
+  data volume per fingerprint. It cannot be combined with `type`.
+
 Profiles are checked before any event is read, against a JSON Schema plus the checks a schema
 cannot express (regexes, JSONPaths, ranges, duplicate keys). Every problem is listed with its
 file and location, e.g. `app.yaml: fields[2] (key 'port') → modifier: 'values' is a required

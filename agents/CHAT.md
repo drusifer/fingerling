@@ -46,3 +46,7 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_13.md` (2026-10-14 17:46:52) — Sprint 13, Fingerprint UX (Tier 2, 5 pts, 0 fix cycles). FING-43: an aggregate path that selects nothing is no longer counted as skipped; the summary says 'unusable aggregate values'. FING-44: a bare rule that needs arguments (GLOB, LAST, ...) is reported with the arguments it needs, derived from the profile schema. FING-42: 'fingerprint show SET' prints a set as a table, most frequent first. No release (mainline).
 
 ---
+
+> **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_14.md` (2026-10-14 18:20:56) — Sprint 14, Weighted Aggregates (Tier 2, 2 pts, 0 fix cycles). FING-45: an aggregate can carry op: SIZE, so every function aggregates each value's size in bytes (UTF-8 for text, compact JSON otherwise), e.g. SUM(SIZE(payload)). The owner agreed to put op on the aggregate rather than as a SUM parameter. op and type are exclusive. No release (mainline).
+
+---
