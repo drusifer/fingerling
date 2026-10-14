@@ -13,13 +13,14 @@ published, general-purpose tool for any JSONL event stream. **This is the active
 
 | Module | Story | Responsibility |
 |---|---|---|
-| `fingerprint_sampler/tokenizer.py` | FING-01, -07, -23 | JSONPath extraction (via `python-jsonpath`, full syntax) + modifier engine |
+| `fingerprint_sampler/tokenizer.py` | FING-01, -07, -23, -36 | JSONPath extraction (via `python-jsonpath`, full syntax) + modifier engine (`Modifier`: bare name or mapping) |
 | `fingerprint_sampler/aggregators.py` | FING-25 | Per-fingerprint `SUM`/`AVG`/`MIN`/`MAX`/`LAST(n)` state, mergeable across runs |
 | `fingerprint_sampler/warehouse.py` | FING-02, -25 | The fingerprint set: MD5 IDs, stateful upsert, versioned atomic YAML file |
-| `fingerprint_sampler/profile.py` | FING-24 | YAML profile loading + validation, `profile_id` |
-| `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28 | `fingerprint merge` — merge a stream into a set |
+| `fingerprint_sampler/profile.py` | FING-24, -37 | YAML profile loading; `check_profile` reports every problem (schema layer, then semantic layer); `profile_id` |
+| `fingerprint_sampler/schema.py`, `profile.schema.json` | FING-37 | The published profile JSON Schema (Draft 2020-12) and the `jsonschema` validator over it; also validates a single modifier for `Modifier.of` |
+| `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28, -37 | `fingerprint merge` — merge a stream into a set; `fingerprint check` — list a profile's problems |
 
-It depends only on PyYAML and python-jsonpath and never imports `fingerling`.
+It depends only on PyYAML, python-jsonpath and jsonschema and never imports `fingerling`.
 
 **`fingerling`** (`fingerling/`, repository root) — the detection-and-response pipeline built on
 fingerprint IDs. **Parked** and unpublished: kept importable and tested, not developed.
@@ -70,13 +71,24 @@ flowchart TD
 class MaskEntry:
     key: str
     path: str
-    modifier: str
+    modifier: Modifier          # given as a bare name or mapping; normalised in __post_init__
+
+@dataclass(frozen=True)
+class Modifier:                 # STORY-FING-36
+    name: str
+    params: tuple[tuple[str, Any], ...]          # arguments, sorted by name
+    @classmethod
+    def of(cls, spec: Modifier | str | Mapping) -> Modifier: ...   # validates; ValueError
+    @property
+    def spec(self) -> str: ...  # bare name, or sorted compact JSON; feeds profile_id
+    def __call__(self, value) -> str: ...
 
 def compile_path(path: str) -> jsonpath.JSONPath: ...   # cached; ValueError if empty/invalid
+def compile_regex(pattern: str, flags: str = "") -> re.Pattern: ...   # cached; flags from "imsx"
 def find_values(record: Any, path: str) -> list[Any]: ...
-def validate_modifier(modifier: str) -> None: ...
-def apply_modifier(value, modifier: str) -> str: ...     # one value
-def tokenize_values(values: list, modifier: str) -> str: ...  # match-count rule
+def validate_modifier(modifier) -> None: ...
+def apply_modifier(value, modifier) -> str: ...     # one value
+def tokenize_values(values: list, modifier) -> str: ...  # match-count rule
 def tokenize(record: dict, mask_profile: list[MaskEntry]) -> dict[str, str]: ...
 def parse_jsonl(jsonl_text: str) -> list[dict]: ...
 ```
@@ -167,7 +179,7 @@ class TelemetryHTTPRequestHandler(BaseHTTPRequestHandler):
 
 ## 5. Technical Stack
 
-- **Language:** Python 3.10 - 3.13
+- **Language:** Python 3.14 and later (3.14 and 3.15 tested)
 - **Stdlib:** `hashlib`, `dataclasses`, `collections.deque`, `http.server`, `json`, `argparse`
 - **Third-party:** `PyYAML`, `python-jsonpath`; `rich` for the parked demo only
 - **Tooling:** `uv` (workspace + lockfile), `hatchling`, `ruff`, `gitleaks`, GitHub Actions — see `docs/SDLC.md`

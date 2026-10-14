@@ -5,6 +5,8 @@ import tempfile
 import textwrap
 import unittest
 
+import yaml
+
 from fingerprint_sampler.aggregators import AggregateEntry
 from fingerprint_sampler.profile import (
     Profile,
@@ -13,7 +15,7 @@ from fingerprint_sampler.profile import (
     parse_profile,
     profile_id,
 )
-from fingerprint_sampler.tokenizer import MaskEntry, tokenize, validate_modifier
+from fingerprint_sampler.tokenizer import MaskEntry, tokenize
 
 EXAMPLE_PROFILES = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "examples"
@@ -23,7 +25,11 @@ VALID = {
     "version": 1,
     "fields": [
         {"key": "syscall", "path": "$.fn", "modifier": "DEFAULT"},
-        {"key": "port_ok", "path": "$.args[*].dport", "modifier": "ANY(80, 443)"},
+        {
+            "key": "port_ok",
+            "path": "$.args[*].dport",
+            "modifier": {"name": "ANY", "values": [80, 443]},
+        },
     ],
     "aggregates": [
         {"key": "duration", "path": "$.ms", "fn": ["MIN", "max", "AVG"]},
@@ -45,7 +51,7 @@ class ParseProfileTests(unittest.TestCase):
             profile.fields,
             (
                 MaskEntry("syscall", "$.fn", "DEFAULT"),
-                MaskEntry("port_ok", "$.args[*].dport", "ANY(80, 443)"),
+                MaskEntry("port_ok", "$.args[*].dport", {"name": "ANY", "values": [80, 443]}),
             ),
         )
         self.assertEqual(
@@ -76,23 +82,29 @@ class ValidationTests(unittest.TestCase):
             self.assertIn(fragment, message)
 
     def test_missing_or_empty_fields(self):
-        self.assert_invalid({"version": 1}, "'fields' must be a non-empty list")
-        self.assert_invalid(variant(fields=[]), "'fields' must be a non-empty list")
+        self.assert_invalid({"version": 1}, "(top level): 'fields' is a required property")
+        self.assert_invalid(variant(fields=[]), "fields: [] should be non-empty")
 
     def test_not_a_mapping(self):
-        self.assert_invalid(["nope"], "expected a mapping")
+        self.assert_invalid(["nope"], "['nope'] is not of type 'object'")
 
     def test_unknown_modifier_names_the_entry(self):
         fields = [{"key": "bin", "path": "$.b", "modifier": "BOGUS(*)"}]
-        self.assert_invalid(variant(fields=fields), "fields[0]", "'bin'", "Unknown modifier")
+        self.assert_invalid(
+            variant(fields=fields), "fields[0] (key 'bin') → modifier", "'BOGUS(*)' is not one of"
+        )
 
     def test_invalid_regex_names_the_entry(self):
-        fields = [{"key": "bin", "path": "$.b", "modifier": "REGEX([a-)"}]
-        self.assert_invalid(variant(fields=fields), "fields[0]", "'bin'", "not a valid regex")
+        fields = [{"key": "bin", "path": "$.b", "modifier": {"name": "REGEX", "pattern": "[a-"}}]
+        self.assert_invalid(variant(fields=fields), "fields[0]", "'bin'", "Invalid regex")
 
     def test_bad_modifier_arguments(self):
-        fields = [{"key": "rc", "path": "$.rc", "modifier": "IN_RANGE(0)"}]
-        self.assert_invalid(variant(fields=fields), "'rc'", "IN_RANGE takes 2")
+        fields = [{"key": "rc", "path": "$.rc", "modifier": {"name": "IN_RANGE", "low": 0}}]
+        self.assert_invalid(
+            variant(fields=fields),
+            "fields[0] (key 'rc') → modifier",
+            "'high' is a required property",
+        )
 
     def test_bad_path_names_the_entry(self):
         fields = VALID["fields"] + [{"key": "broken", "path": "$.a[", "modifier": "DEFAULT"}]
@@ -104,60 +116,107 @@ class ValidationTests(unittest.TestCase):
 
     def test_aggregate_without_fn(self):
         self.assert_invalid(
-            variant(aggregates=[{"key": "lat", "path": "$.ms"}]), "'lat'", "'fn' is required"
+            variant(aggregates=[{"key": "lat", "path": "$.ms"}]),
+            "aggregates[0] (key 'lat')",
+            "'fn' is a required property",
         )
 
     def test_duplicate_keys(self):
         fields = [{"key": "a", "path": "$.a"}, {"key": "a", "path": "$.b"}]
-        self.assert_invalid(variant(fields=fields), "duplicate key(s) in fields: a")
+        self.assert_invalid(variant(fields=fields), "fields: duplicate key(s): a")
         aggregates = [
             {"key": "x", "path": "$.a", "fn": "SUM"},
             {"key": "x", "path": "$.b", "fn": "SUM"},
         ]
-        self.assert_invalid(variant(aggregates=aggregates), "duplicate key(s) in aggregates: x")
+        self.assert_invalid(variant(aggregates=aggregates), "aggregates: duplicate key(s): x")
 
     def test_misspelled_setting_is_caught_not_ignored(self):
         fields = [{"key": "a", "path": "$.a", "modifer": "IS_PRESENT"}]
-        self.assert_invalid(variant(fields=fields), "'a'", "unknown setting(s) ['modifer']")
-        self.assert_invalid(variant(agregates=[]), "unknown top-level setting(s) ['agregates']")
+        self.assert_invalid(
+            variant(fields=fields), "fields[0] (key 'a')", "('modifer' was unexpected)"
+        )
+        self.assert_invalid(variant(agregates=[]), "(top level)", "('agregates' was unexpected)")
 
     def test_missing_key_or_path(self):
-        self.assert_invalid(variant(fields=[{"path": "$.a"}]), "fields[0]", "'key' is required")
-        self.assert_invalid(variant(fields=[{"key": "a"}]), "'a'", "'path' is required")
+        self.assert_invalid(
+            variant(fields=[{"path": "$.a"}]), "fields[0]: 'key' is a required property"
+        )
+        self.assert_invalid(
+            variant(fields=[{"key": "a"}]), "fields[0] (key 'a'): 'path' is a required property"
+        )
 
     def test_unsupported_version(self):
-        self.assert_invalid(variant(version=2), "version 2")
+        self.assert_invalid(variant(version=2), "version: 1 was expected")
+
+    def test_every_problem_is_reported_not_just_the_first(self):
+        data = {
+            "fields": [
+                {"key": "route", "path": "$.p", "modifier": {"name": "REGSUB", "pattern": "a"}},
+                {"key": "x", "path": "$.x", "modifier": "GLOB"},
+            ],
+            "extra": 1,
+        }
+        with self.assertRaises(ProfileError) as ctx:
+            parse_profile(data, source="p.yaml")
+        self.assertEqual(
+            ctx.exception.problems,
+            [
+                "p.yaml: (top level): Additional properties are not allowed ('extra' was unexpected)",
+                "p.yaml: fields[0] (key 'route') → modifier: 'replace' is a required property",
+                "p.yaml: fields[1] (key 'x') → modifier: "
+                "'GLOB' is not one of ['DEFAULT', 'IS_PRESENT', 'IS_NULL']",
+            ],
+        )
+
+    def test_semantic_problems_are_all_reported_too(self):
+        fields = [
+            {"key": "a", "path": "$.a[", "modifier": "DEFAULT"},
+            {"key": "b", "path": "$.b", "modifier": {"name": "IN_RANGE", "low": 5, "high": 1}},
+        ]
+        aggregates = [{"key": "c", "path": "$.c", "fn": "MEDIAN"}]
+        with self.assertRaises(ProfileError) as ctx:
+            parse_profile(variant(fields=fields, aggregates=aggregates), source="p.yaml")
+        self.assertEqual(len(ctx.exception.problems), 3)
+
+
+class SchemaFileTests(unittest.TestCase):
+    def test_schema_is_a_valid_draft_2020_12_schema(self):
+        from jsonschema import Draft202012Validator
+
+        from fingerprint_sampler.schema import profile_schema
+
+        Draft202012Validator.check_schema(profile_schema())
+
+    def test_every_shipped_example_passes_the_schema(self):
+        from fingerprint_sampler.schema import schema_errors
+
+        for name in sorted(os.listdir(EXAMPLE_PROFILES)):
+            if name.endswith(".yaml"):
+                with self.subTest(profile=name), open(os.path.join(EXAMPLE_PROFILES, name)) as f:
+                    self.assertEqual(schema_errors(yaml.safe_load(f)), [])
 
 
 class ValidateModifierTests(unittest.TestCase):
-    def test_accepts_every_supported_form(self):
-        for modifier in (
-            "DEFAULT",
-            "IS_PRESENT",
-            "IS_NULL",
-            "IN_RANGE(-999, 0)",
-            "ANY(80, 443)",
-        ) + (
-            "GLOB(/usr/*)",
-            "REGEX(.*)",
-            "REGSUB(a, b)",
-        ):
-            with self.subTest(modifier=modifier):
-                validate_modifier(modifier)
-
-    def test_rejects_malformed_forms(self):
-        for modifier in (
-            "",
-            "ANY()",
-            "IN_RANGE(a, b)",
-            "IN_RANGE(5, 1)",
-            "IN_RANGE(1, 2",
-            "DEFAULT(x)",
-            "BOGUS(.*)",
-            "REGEX(()",
-        ):
-            with self.subTest(modifier=modifier), self.assertRaises(ValueError):
-                validate_modifier(modifier)
+    def test_mapping_modifiers_load_from_yaml(self):
+        data = yaml.safe_load(
+            r"""
+fields:
+  - key: route
+    path: $.path
+    modifier: {name: REGSUB, pattern: '\d+', replace: N}
+  - key: greeting
+    path: $.text
+    modifier:
+      name: REGEX
+      pattern: ^hello\s.*\sgoodbye\.$
+      flags: i
+"""
+        )
+        profile = parse_profile(data)
+        tokens = tokenize(
+            {"path": "/items/17", "text": "Hello there goodbye."}, list(profile.fields)
+        )
+        self.assertEqual(tokens, {"route": "/items/N", "greeting": "TRUE"})
 
 
 class ProfileIdTests(unittest.TestCase):
@@ -176,10 +235,22 @@ class ProfileIdTests(unittest.TestCase):
             parse_profile(variant(aggregates=[])).profile_id, parse_profile(VALID).profile_id
         )
 
+    def test_mapping_key_order_does_not_change_the_id(self):
+        one = {"name": "REGSUB", "pattern": "a", "replace": "b"}
+        two = {"replace": "b", "pattern": "a", "name": "REGSUB"}
+        ids = {
+            parse_profile({"fields": [{"key": "k", "path": "$.k", "modifier": m}]}).profile_id
+            for m in (one, two)
+        }
+        self.assertEqual(len(ids), 1)
+
     def test_changes_when_identity_changes(self):
         base = parse_profile(VALID).profile_id
         changed_modifier = variant(
-            fields=[VALID["fields"][0], {**VALID["fields"][1], "modifier": "ANY(80)"}]
+            fields=[
+                VALID["fields"][0],
+                {**VALID["fields"][1], "modifier": {"name": "ANY", "values": [80]}},
+            ]
         )
         changed_path = variant(
             fields=[{**VALID["fields"][0], "path": "$.other"}, VALID["fields"][1]]

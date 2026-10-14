@@ -795,7 +795,9 @@ class TUIDemo:
                 MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT"),
                 MaskEntry("exec_target", "$.process_kprobe.args[0].exec_arg.filename", "DEFAULT"),
                 MaskEntry(
-                    "kernel_return_state", "$.process_kprobe.return_value", "IN_RANGE(-999, 0)"
+                    "kernel_return_state",
+                    "$.process_kprobe.return_value",
+                    {"name": "IN_RANGE", "low": -999, "high": 0},
                 ),
             ]
 

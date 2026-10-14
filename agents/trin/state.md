@@ -36,6 +36,8 @@
 
 - 2026-10-13 UAT of GLOB/REGEX/REGSUB passed: 145 + 59 tests on 3.10-3.13; CLI checked with the access-log example. Open for Tank: `make test-fingerprint ARGS=test_cli` raises ModuleNotFoundError although SDLC section 3 documents it.
 
+- 2026-10-13 Sprint 11 UAT passed all phases. Tests: 154 package + 59 root on 3.14 and 3.15. check exit 0/1, merge exit 2. Wheel verified from a clean 3.15 env with `uv run --isolated --no-project --with dist/*.whl`.
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete
@@ -44,4 +46,4 @@
 No pending UAT.
 
 ---
-*Last updated: 2026-10-13T23:20:00-04:00*
+*Last updated: 2026-10-13T23:55:00-04:00*

@@ -29,8 +29,16 @@ TELEMETRY_JSONL = "\n".join(
 
 MASK_PROFILE = [
     MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT"),
-    MaskEntry("dest_port", "$.process_kprobe.args[0].sock_arg.dport", "ANY(80, 443, 6379)"),
-    MaskEntry("kernel_return_state", "$.process_kprobe.return_value", "IN_RANGE(-999, 0)"),
+    MaskEntry(
+        "dest_port",
+        "$.process_kprobe.args[0].sock_arg.dport",
+        {"name": "ANY", "values": [80, 443, 6379]},
+    ),
+    MaskEntry(
+        "kernel_return_state",
+        "$.process_kprobe.return_value",
+        {"name": "IN_RANGE", "low": -999, "high": 0},
+    ),
 ]
 
 

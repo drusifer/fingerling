@@ -304,3 +304,13 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision:** Persona state, chat messages and TLDR blocks get no rubric.
 **Consequences:** Their failures are mechanical and are better caught by checks that can be run; none exist yet.
 
+## 2026-10-13 — Sprint 11: Structured Modifiers and Profile Checking
+
+**Decision (owner):** Python 3.14 and later only; 3.14 and 3.15 are tested. **Supersedes** "Python 3.10+" from Sprint 9.
+**Consequences:** Code may use current syntax and `re` features (ruff now formats `except A, B:` without parentheses). Users on older Pythons cannot install 0.2.0 or later. 3.15 was two weeks old, so the floor stays one release back until the dependency chain is known to work there; it installed cleanly.
+
+**Decision (owner):** Profiles are checked by a JSON Schema through `jsonschema`, a new runtime dependency of fingerprint-sampler, rather than by hand-written checks.
+**Consequences:** PyPI users also install `attrs`, `referencing` and `rpds-py`. Editors can check profiles while typing.
+
+**Decision (owner):** No effort on backwards compatibility while a SemVer project is below 1.0 — rip and replace.
+**Consequences:** Sprint 11 dropped the migration hint for the old string form and the guarantee that profile ids stay the same; old set files simply report a profile mismatch. The `fingerling` re-export shims and the `fingerling fingerprint` alias are compatibility code of the same kind, left for a later cleanup since the parked package is out of scope.

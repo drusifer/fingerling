@@ -19,7 +19,7 @@ A million near-identical log lines become a handful of entries you can actually 
 pip install fingerprint-sampler
 ```
 
-Python 3.10 or newer. Installs the `fingerprint` command (also available as
+Python 3.14 or newer. Installs the `fingerprint` command (also available as
 `fingerprint-sampler` and `python -m fingerprint_sampler`).
 
 ## Quickstart
@@ -108,6 +108,34 @@ fingerprint merge -p profile.yaml -s app.fingerprints.yaml -o /tmp/preview.yaml 
 The summary goes to stderr and stdout stays empty. Exit status: `0` set written and every line
 used · `1` set written but some lines were skipped (listed by line number) · `2` nothing written.
 
+### Check a profile
+
+```
+fingerprint check PROFILE [PROFILE ...]
+```
+
+Checks profiles without reading any events and lists **every** problem, one per line, with the
+file and where in it:
+
+```
+app.yaml: fields[0] (key 'route') → modifier: 'replace' is a required property
+app.yaml: fields[1] (key 'method') → modifier.flags: 'q' does not match '^[imsx]*$'
+```
+
+A valid profile prints `app.yaml: OK`. Exit status: `0` all valid · `1` problems found. The
+structure is checked against a JSON Schema (`profile.schema.json`, shipped in the package) by the
+standard [`jsonschema`](https://python-jsonschema.readthedocs.io/) validator. Regexes, JSONPaths,
+`IN_RANGE` bounds, duplicate keys and aggregate functions are checked as well. `merge` runs the
+same check first and writes nothing if it fails.
+
+**In your editor.** Put this line at the top of a profile, and an editor with YAML language-server
+support (for example VS Code with the Red Hat YAML extension) checks the profile as you type and
+completes modifier names:
+
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/drusifer/fingerling/main/packages/fingerprint-sampler/src/fingerprint_sampler/profile.schema.json
+```
+
 ## Profiles
 
 ```yaml
@@ -119,7 +147,7 @@ fields:
     path: "$.request.method"                 # modifier defaults to DEFAULT
   - key: status_ok
     path: "$.response.status"
-    modifier: "IN_RANGE(200, 399)"
+    modifier: {name: IN_RANGE, low: 200, high: 399}
   - key: slow_upstreams
     path: "$.upstreams[?(@.ms > 500)].name"  # full JSONPath, including filters
 
@@ -140,32 +168,46 @@ results are de-duplicated, sorted and joined, so array order never changes a fin
 **Modifiers** turn the selected value into a token. Pick ones that collapse high-cardinality
 values (IDs, timestamps, sizes) so similar events share a fingerprint:
 
-| Modifier | Token |
-|---|---|
-| `DEFAULT` | the value as a string; `NULL` if absent |
-| `IS_PRESENT` | `TRUE` / `FALSE` — present and non-null? |
-| `IS_NULL` | `TRUE` / `FALSE` — absent or null? |
-| `IN_RANGE(low, high)` | `TRUE` if `low <= value <= high` |
-| `ANY(v1, v2, ...)` | `TRUE` if the value is one of those listed |
-| `GLOB(pattern)` | `TRUE` if the whole value matches the shell-style pattern (`*`, `?`, `[a-z]`), case-sensitive |
-| `REGEX(pattern)` | `TRUE` if the regular expression matches anywhere in the value; anchor with `^` and `$` |
-| `REGSUB(pattern, replacement)` | the value with every match replaced (`\1` refers to a group); `NULL` if absent |
+| Modifier | Arguments | Token |
+|---|---|---|
+| `DEFAULT` | — | the value as a string; `NULL` if absent |
+| `IS_PRESENT` | — | `TRUE` / `FALSE` — present and non-null? |
+| `IS_NULL` | — | `TRUE` / `FALSE` — absent or null? |
+| `IN_RANGE` | `low`, `high` (numbers) | `TRUE` if `low <= value <= high` |
+| `ANY` | `values` (a list) | `TRUE` if the value is one of those listed |
+| `GLOB` | `pattern` | `TRUE` if the whole value matches the shell-style pattern (`*`, `?`, `[a-z]`), case-sensitive |
+| `REGEX` | `pattern`, optional `flags` | `TRUE` if the regular expression matches anywhere in the value; anchor with `^` and `$` |
+| `REGSUB` | `pattern`, `replace`, optional `flags` | the value with every match replaced (`\1` refers to a group); `NULL` if absent |
 
-`GLOB` and `REGEX` answer yes or no; `REGSUB` keeps the value but removes the part that varies:
+A modifier without arguments is written as its bare name (`modifier: IS_PRESENT`); one with
+arguments is a mapping with `name` and its arguments:
 
 ```yaml
-  - {key: in_tmp,   path: "$.file",         modifier: 'GLOB(/tmp/*)'}           # TRUE / FALSE
-  - {key: is_write, path: "$.request.method", modifier: 'REGEX(^(POST|PUT|PATCH)$)'}
-  - {key: route,    path: "$.request.path", modifier: 'REGSUB(\d+, N)'}         # /items/17 -> /items/N
-  - {key: subnet,   path: "$.peer",         modifier: 'REGSUB("^(\d+\.\d+)\..*", "\1.x.x")'}
+  - key: status_ok
+    path: $.response.status
+    modifier: {name: IN_RANGE, low: 200, high: 399}
+  - key: port_ok
+    path: $.dport
+    modifier: {name: ANY, values: [80, 443]}
+  - key: in_tmp
+    path: $.file
+    modifier: {name: GLOB, pattern: '/tmp/*'}                  # TRUE / FALSE
+  - key: route
+    path: $.request.path
+    modifier: {name: REGSUB, pattern: '\d+', replace: N}       # /items/17 -> /items/N
+  - key: greeting
+    path: $.body.text
+    modifier:
+      name: REGEX
+      pattern: '^hello\s.*\sgoodbye\.$'
+      flags: i
 ```
 
-Arguments are separated by commas and trimmed. Put an argument in single or double quotes when it
-contains a comma, starts or ends with a space, or is empty; inside quotes, double the quote
-character to include it. Backslashes are passed to the pattern unchanged, so write the modifier
-as a plain or single-quoted YAML string — a double-quoted YAML string needs every backslash
-doubled. Patterns use Python's `re` syntax. Changing a field's modifier changes the profile's
-identity, like any other change to `fields`.
+`flags` is any of `i` (ignore case), `m` (`^` and `$` match at line breaks), `s` (`.` matches a
+newline) and `x` (verbose). Patterns use Python's `re` syntax. Write patterns in single quotes:
+YAML leaves backslashes alone there, and a pattern starting with `*`, `[` or `{`, or containing
+`: ` or ` #`, would otherwise not parse as you meant. Changing a field's modifier changes the
+profile's identity, like any other change to `fields`.
 
 **Aggregates** are computed across every event that lands on the same fingerprint, over all runs:
 

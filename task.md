@@ -1,6 +1,30 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 10 (below). Next up: see *Owner actions* and *Queued requests*.
+**No sprint in flight.** Last sprint: 11 (below). Next up: see *Owner actions* and *Queued requests*.
+
+## Sprint 11: Structured Modifiers and Profile Checking
+
+**Status:** Complete — launched 2026-10-13 (8/8 pts); merged to `main`; released 0.2.0 (tag `v0.2.0` local, not pushed)
+**Branch:** `sprint-11` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_11.diagram.md`
+**Source:** `docs/sprints/USER_STORIES_SPRINT11.md` (stories + architecture D1-D7)
+**Points:** 8 · **Tier:** 2 (fast-track)
+
+### Phase 0: Current Python (STORY-FING-35, 2 pts) — Tank
+- [x] **0.1** Floor 3.14 in both manifests, `.python-version`, `PYTHONS`, CI matrix, ruff target; `jsonschema` added and installs on 3.14/3.15. [Tank]
+- [x] **0.2** SDLC sections 1, 3, 8 + DECISIONS entry; UAT + review. [Tank, Trin, Morpheus]
+
+### Phase 1: Modifier arguments as YAML (STORY-FING-36, 3 pts) — Neo
+- [x] **1.1** `Modifier` object, mapping form, flags; string parser deleted; parked code and tests moved to the mapping form. [Neo]
+- [x] **1.2** Example profiles and docs; UAT + review. [Neo, Trin, Morpheus]
+
+### Phase 2: Profile checking (STORY-FING-37, 3 pts) — Neo
+- [x] **2.1** `profile.schema.json`, `check_profile`, hand-written structure checks deleted. [Neo]
+- [x] **2.2** `fingerprint check`; `merge` uses it; editor hint in README and examples; UAT + review. [Neo, Trin, Morpheus]
+
+### Close
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge, release 0.2.0 [Tank, Oracle, Smith, All]
+
 
 ## Sprint 10: Artifact Rubrics
 
@@ -95,17 +119,19 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 
 ## Owner actions (agents do not push or publish unless told)
 - One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
-- Then `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0. The tag exists locally only.
-- Decide the release for the GLOB/REGEX/REGSUB feature: bump to 0.2.0 (SDLC section 7), or move the unpublished `v0.1.0` tag to include it. Not bumped or tagged.
+- Release 0.2.0 is tagged `v0.2.0` locally (includes GLOB/REGEX/REGSUB and Sprint 11). `v0.1.0` was never published; delete it or leave it, then push `main` and `v0.2.0` after the PyPI setup.
 - Confirm that any Weak rubric criterion should block a gate (assumed in Sprint 10).
 
 ## Queued requests (next up)
-- None. (Artifact rubrics delivered in Sprint 10.)
+- **bob_protocol (`~/Projects/bob_protocol`), for Tank:** a dependency analysis tool for validating the third-party packages a project uses: scanning, reputation score, vulnerability checks and similar. Queued 2026-10-13 by the owner during Sprint 11; not started.
+- **bob_protocol, for Trin:** a test strategy document Trin owns, laying out the project's testing practices and conventions: the test pyramid applied to the tools available in the project's ecosystem. Queued 2026-10-13 by the owner during Sprint 11; not started.
 
 ## Backlog (unscheduled)
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
 - Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
 - For Tank: `make test-fingerprint ARGS=test_cli` fails with ModuleNotFoundError although SDLC section 3 documents it; SDLC sections 8 and 9 still say the first CI result is unknown (it passed).
+- Tooling (via): the index misses most project functions (e.g. `load_profile`) even after `via index --force .`, still lists deleted files, `--via calls` returns the anchor instead of callers, and the MCP tool's `--canned` queries are rejected. Found 2026-10-13 in Sprint 11; work fell back to grep.
+- Usability (fingerprint): a bare `modifier: GLOB` is reported as "'GLOB' is not one of ['DEFAULT', 'IS_PRESENT', 'IS_NULL']", which does not say GLOB needs a mapping. Smith, Sprint 11.
 - Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.
 - Parked (not scheduled while the fingerprint tool is the focus): n-gram/Jaccard stage, `examples/demo.py` markup sweep and smoke test, `sudo make demo-live` verification, `tests/test_server.py` private access, USER_GUIDE GitOps/sandbox sections.

@@ -58,6 +58,8 @@
 
 - 2026-10-13 User-tested GLOB/REGEX/REGSUB: approved. Residual risk: double-quoted YAML halves backslashes silently; documented in the package README only.
 
+- 2026-10-13 Sprint 11 Gate 1 and user test approved. Backlog: bare `modifier: GLOB` error does not say a mapping is needed.
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete
@@ -66,4 +68,4 @@
 No pending gates.
 
 ---
-*Last updated: 2026-10-13T23:20:00-04:00*
+*Last updated: 2026-10-13T23:55:00-04:00*

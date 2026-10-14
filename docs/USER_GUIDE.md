@@ -95,7 +95,7 @@ fields:
     path: "$.request.method"                 # modifier defaults to DEFAULT
   - key: status_class
     path: "$.response.status"
-    modifier: "IN_RANGE(200, 399)"
+    modifier: {name: IN_RANGE, low: 200, high: 399}
   - key: slow_upstreams
     path: "$.upstreams[?(@.ms > 500)].name"  # full JSONPath, including filters
 
@@ -123,8 +123,11 @@ aggregates:
   Numeric functions accept numbers and numeric strings. An event where the path matches nothing,
   or a value isn't numeric, is skipped for that aggregate and counted in the summary.
 
-Profiles are validated before any event is read; an error names the file and the entry, e.g.
-`app.yaml: fields[2] (key 'port'): Unknown modifier: 'UPPER'`.
+Profiles are checked before any event is read, against a JSON Schema plus the checks a schema
+cannot express (regexes, JSONPaths, ranges, duplicate keys). Every problem is listed with its
+file and location, e.g. `app.yaml: fields[2] (key 'port') → modifier: 'values' is a required
+property`. Run `fingerprint check app.yaml` to check a profile on its own (exit 0 valid, 1 not);
+see the package README for using the schema in an editor.
 
 Two profiles ship as starting points: `packages/fingerprint-sampler/examples/access_log.yaml`
 (web access logs) and `examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).
@@ -192,29 +195,30 @@ from fingerprint_sampler.tokenizer import MaskEntry, parse_jsonl, tokenize
 mask_profile = [
     MaskEntry(key="hook_syscall", path="$.process_kprobe.function_name", modifier="DEFAULT"),
     MaskEntry(key="dest_port", path="$.process_kprobe.args[0].sock_arg.dport",
-              modifier="ANY(80, 443, 6379)"),
+              modifier={"name": "ANY", "values": [80, 443, 6379]}),
 ]
 
 records = parse_jsonl(jsonl_text)          # one dict per line
 tokens = tokenize(records[0], mask_profile)  # {"hook_syscall": "sys_connect", "dest_port": "TRUE"}
 ```
 
-**Modifiers** (the second positional part of a `MaskEntry`, e.g. `"IN_RANGE(-999, 0)"`):
+**Modifiers** (the third part of a `MaskEntry`): a bare name such as `"IS_PRESENT"`, or a
+mapping with `name` and the modifier's arguments, e.g. `{"name": "IN_RANGE", "low": -999, "high": 0}`.
+`MaskEntry` stores it as a validated `Modifier`, so a mistake raises `ValueError` when the entry is
+built.
 
-| Modifier | Behavior |
-|---|---|
-| `DEFAULT` | Passes the literal value through as a string; `"NULL"` if absent/null |
-| `IS_PRESENT` | `"TRUE"`/`"FALSE"` — is the field present and non-null? |
-| `IS_NULL` | `"TRUE"`/`"FALSE"` — is the field absent or explicitly null? |
-| `IN_RANGE(low, high)` | `"TRUE"` if `low <= value <= high`, else `"FALSE"` |
-| `ANY(v1, v2, ...)` | `"TRUE"` if the value matches one of the listed options |
-| `GLOB(pattern)` | `"TRUE"` if the whole value matches the shell-style pattern (`*`, `?`, `[a-z]`), case-sensitive |
-| `REGEX(pattern)` | `"TRUE"` if the regular expression matches anywhere in the value; anchor with `^` and `$` |
-| `REGSUB(pattern, replacement)` | The value with every match replaced, e.g. `REGSUB(\d+, N)` turns `/items/17` into `/items/N`; `"NULL"` if absent/null |
+| Modifier | Arguments | Token |
+|---|---|---|
+| `DEFAULT` | — | the value as a string; `"NULL"` if absent |
+| `IS_PRESENT` | — | `"TRUE"`/`"FALSE"` — present and non-null? |
+| `IS_NULL` | — | `"TRUE"`/`"FALSE"` — absent or null? |
+| `IN_RANGE` | `low`, `high` (numbers) | `"TRUE"` if `low <= value <= high` |
+| `ANY` | `values` (a list) | `"TRUE"` if the value is one of those listed |
+| `GLOB` | `pattern` | `"TRUE"` if the whole value matches the shell-style pattern (`*`, `?`, `[a-z]`), case-sensitive |
+| `REGEX` | `pattern`, optional `flags` | `"TRUE"` if the regular expression matches anywhere in the value; anchor with `^` and `$` |
+| `REGSUB` | `pattern`, `replace`, optional `flags` | the value with every match replaced (`\1` refers to a group); `"NULL"` if absent |
 
-Arguments are comma-separated and trimmed. Quote an argument (single or double quotes) when it
-contains a comma, leading or trailing space, or is empty: `REGEX('^a{2,3}$')`, `REGSUB('-\d+$', '')`.
-Backslashes reach the pattern unchanged. See the package README for YAML quoting advice.
+In a YAML profile, write patterns in single quotes; see the package README for examples and flags.
 
 A missing or `null` field never raises — every modifier degrades to a stable `"FALSE"`/`"NULL"`
 token instead.
@@ -427,8 +431,9 @@ fingerprints in it will not be comparable.
 Some input lines weren't valid JSON objects; they are listed on stderr by line number and skipped.
 
 **"`ValueError: Unknown modifier"` when calling `tokenize()`.**
-Your `MaskEntry.modifier` string doesn't match one of `DEFAULT`, `IS_PRESENT`, `IS_NULL`,
-`IN_RANGE(...)`, `ANY(...)`, `GLOB(...)`, `REGEX(...)` or `REGSUB(...)` (names are case-sensitive).
+The modifier's `name` isn't one of `DEFAULT`, `IS_PRESENT`, `IS_NULL`, `IN_RANGE`, `ANY`,
+`GLOB`, `REGEX` or `REGSUB` (names are case-sensitive), or a modifier that takes arguments was
+written as a string instead of a mapping with `name`.
 
 **"`ValueError: match_labels must not be empty`" from `compile_policy()`.**
 This is intentional — an empty `matchLabels` selector would match every pod in the namespace.

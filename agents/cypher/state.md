@@ -58,6 +58,8 @@
 - 2026-10-13 Sprint 10 (artifact rubrics) stories FING-31..34 written, 10 pts. Assumptions recorded: 3 pilots (stories, SDLC, lessons); any Weak criterion rejects at the gate; no scoring.
 - 2026-10-13 Sprint 10 launched: rubrics for stories/SDLC/lessons. Write future stories from agents/templates/_template_USER_STORIES.md and self-check with the STORIES rubric.
 
+- 2026-10-13 Sprint 11 stories FING-35..37 (Tier 2) and launch: fingerprint-sampler 0.2.0. Next story id STORY-FING-38.
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete
@@ -66,4 +68,4 @@
 No sprint in flight. Owner still to confirm that any Weak blocks a gate. Next story ID: STORY-FING-35.
 
 ---
-*Last updated: 2026-10-13T20:15:33-04:00*
+*Last updated: 2026-10-13T23:55:00-04:00*
