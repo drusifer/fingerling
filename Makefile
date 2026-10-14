@@ -19,7 +19,7 @@ define need_uv
 	@command -v uv >/dev/null || { echo "uv is not installed - run 'pipx install uv' (see docs/SDLC.md)"; exit 1; }
 endef
 
-.PHONY: help install install-hooks check test test-fingerprint test-fingerling test-all lint format secrets build release-check run fingerprint demo demo-live clean distclean via_index
+.PHONY: help install install-hooks check test test-fingerprint test-fingerling test-all smoke lint quality format secrets build release-check run fingerprint demo demo-live clean distclean via_index
 
 help: ## Show available make targets
 	@echo ""
@@ -64,6 +64,12 @@ lint: ## Static checks: ruff lint + format check (changes nothing)
 	@.venv/bin/ruff check .
 	@.venv/bin/ruff format --check .
 
+quality: ## Report smells in the published package: extended ruff, dead code, complexity (never fails)
+	$(need_venv)
+	@echo "== ruff (extended rules)"; .venv/bin/ruff check $(FP)/src --select C90,SIM,PL,RET,ARG,PIE,FBT --output-format concise --exit-zero
+	@echo "== vulture (dead code)"; .venv/bin/vulture $(FP)/src --min-confidence 60 --ignore-names total_occurrences,first_seen,last_seen || true
+	@echo "== radon (complexity grade C or worse)"; .venv/bin/radon cc -s -nc $(FP)/src
+
 format: ## Rewrite files to the project style (ruff format + import sorting)
 	$(need_venv)
 	@.venv/bin/ruff check --select I --fix .
@@ -89,6 +95,9 @@ build: ## Build the fingerprint-sampler wheel + sdist into dist/ and smoke-test 
 	@uv build --package fingerprint-sampler --out-dir dist --quiet
 	@uv run --isolated --no-project --quiet --with dist/*.whl fingerprint --version
 	@ls dist
+
+smoke: build ## Install the built wheel in a throwaway environment and run the smoke suite against it
+	@uv run --isolated --no-project --quiet --with dist/*.whl python -m unittest discover -s $(FP)/smoke -t $(FP)/smoke
 
 release-check: ## Fail unless TAG (e.g. TAG=v0.1.0) matches the fingerprint-sampler version
 	$(need_uv)

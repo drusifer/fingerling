@@ -36,6 +36,8 @@
 
 - 2026-10-13 Sprint 11 closed: 8/8 pts, 3 phases (0 Tank, 1-2 Neo), 0 fix cycles, Tier 2. Released 0.2.0 (tag v0.2.0 local). Queued for bob_protocol: Tank dependency analysis tool; Trin test strategy doc.
 
+- 2026-10-14 Sprint 12 closed: 13/13 pts (FING-38..41), 4 phases, 0 fix cycles; FING-41 smoke suite added mid-sprint and trimmed to 3 tests at close (owner: smoke sparingly). No release (mainline). Owner rules this sprint: no ad hoc testing; smoke sparingly; KISS.
+
 ## Current Task
 **Status:** No sprint in flight (Sprint 11 closed 2026-10-13).
 
@@ -44,7 +46,7 @@ Cold start:
 1. Read `task.md`, `docs/SDLC.md` and the last message in `agents/CHAT.md`.
 2. Mainline development (owner, 2026-10-14): make no tags, version bumps or releases at sprint close. `main` was pushed 2026-10-14 (CI green). Waiting on the owner: the rubric blocking rule.
 3. Queued (bob_protocol repo): Tank dependency analysis tool; Trin test strategy doc. Fingerprint backlog in `task.md`.
-4. Next sprint is sprint-12, next story STORY-FING-38. Create the branch from clean `main`; post phase markers.
+4. Next sprint is sprint-13, next story STORY-FING-42. Create the branch from clean `main`; post phase markers.
 5. Keep chat messages under 512 characters and check every `bobp chat` result.
 
 ---

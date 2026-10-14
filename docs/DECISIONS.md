@@ -320,3 +320,14 @@ review should trace every AC to a literal function signature, not just a data-fl
 **Decision (owner):** No more tags or releases for now; the project is in mainline development.
 **Consequences:** Sprint close no longer bumps the version or tags; `main` is the only line. Nothing is published to PyPI. SDLC section 7 records the suspension; releasing resumes only when the owner says so.
 
+## 2026-10-14 — Sprint 12: Domain Model and Consolidated Validation
+
+**Decision:** Every modifier and aggregate function is a `Rule` subclass, registered by `name`, built from a bare name or mapping, checked by the schema and then by its own `check()`. `Field` and `Aggregate` take the YAML keys as arguments.
+**Consequences:** One construction and validation path; `parse_fn`, the modifier dispatch table and the name switches are gone. Aggregate functions use the modifier convention (`{name: LAST, n: 3}`). Adding a rule is one class plus a schema definition.
+
+**Decision (owner):** The tokenizer module belongs with the eBPF features: it moved to `fingerling`, built on fingerprint-sampler's `Field`.
+**Consequences:** fingerprint-sampler reads JSONL and tokenizes through `Profile.tokens`. The `fingerling` shims, the `fingerling` command and the `fingerprint-sampler` script were deleted (no compatibility before 1.0). `Warehouse` became `FingerprintSet`.
+
+**Decision (owner):** Checks that agents ran by hand become a smoke suite (`make smoke`) against the installed wheel, including the README's own examples; `make quality` reports smells (report only).
+**Consequences:** No ad hoc verification commands; UAT cites make targets. README drift now fails a gate.
+

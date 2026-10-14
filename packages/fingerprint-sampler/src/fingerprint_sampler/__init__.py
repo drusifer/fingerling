@@ -7,21 +7,21 @@ grows across runs.
 
 from importlib.metadata import PackageNotFoundError, version
 
-from fingerprint_sampler.aggregators import AggregateEntry, make_entry
+from fingerprint_sampler.aggregators import Aggregate, Aggregator
+from fingerprint_sampler.fingerprint_set import (
+    Fingerprint,
+    FingerprintSet,
+    FingerprintSetError,
+    ProfileMismatchError,
+    fingerprint_id,
+)
+from fingerprint_sampler.model import Field, Modifier, Path, Rule
 from fingerprint_sampler.profile import (
     Profile,
     ProfileError,
     check_profile,
     load_profile,
     parse_profile,
-)
-from fingerprint_sampler.tokenizer import MaskEntry, Modifier, tokenize
-from fingerprint_sampler.warehouse import (
-    FingerprintRecord,
-    FingerprintSetError,
-    ProfileMismatchError,
-    Warehouse,
-    fingerprint_id,
 )
 
 try:
@@ -30,20 +30,21 @@ except PackageNotFoundError:  # running from a source tree that was never instal
     __version__ = "0+unknown"
 
 __all__ = [
-    "AggregateEntry",
-    "FingerprintRecord",
+    "Aggregate",
+    "Aggregator",
+    "Field",
+    "Fingerprint",
     "FingerprintSetError",
-    "MaskEntry",
     "Modifier",
     "Profile",
     "ProfileError",
     "ProfileMismatchError",
-    "Warehouse",
+    "Path",
+    "Rule",
+    "FingerprintSet",
     "__version__",
     "check_profile",
     "fingerprint_id",
     "load_profile",
-    "make_entry",
     "parse_profile",
-    "tokenize",
 ]

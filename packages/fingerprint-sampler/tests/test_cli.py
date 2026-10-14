@@ -26,7 +26,7 @@ fields:
   - {key: kind, path: "$.kind"}
 aggregates:
   - {key: size, path: "$.size", fn: [SUM, AVG, MIN, MAX]}
-  - {key: recent, path: "$.id", fn: "LAST(2)"}
+  - {key: recent, path: "$.id", fn: {name: LAST, n: 2}}
 """
 OTHER_PROFILE = """
 version: 1
@@ -384,6 +384,46 @@ class CheckTests(CliTestCase):
         self.assertFalse(os.path.exists(self.set_path))
 
 
+class GoldenFingerprintTests(CliTestCase):
+    """STORY-FING-39 AC5: the README quickstart gives the ids it has always documented."""
+
+    QUICKSTART_PROFILE = """
+version: 1
+fields:
+  - {key: level,     path: "$.level"}
+  - {key: component, path: "$.logger"}
+  - {key: failed,    path: "$.error", modifier: IS_PRESENT}
+aggregates:
+  - {key: took_ms, path: "$.took_ms", fn: [MIN, MAX, AVG]}
+  - {key: example, path: "$.msg",     fn: {name: LAST, n: 2}}
+"""
+    QUICKSTART_EVENTS = [
+        {"level": "INFO", "logger": "db", "msg": "query ok", "took_ms": 3},
+        {"level": "INFO", "logger": "db", "msg": "query ok (cached)", "took_ms": 1},
+        {
+            "level": "ERROR",
+            "logger": "db",
+            "msg": "query timed out",
+            "error": "TimeoutError",
+            "took_ms": 5000,
+        },
+        {"level": "INFO", "logger": "http", "msg": "GET /health", "took_ms": 0.4},
+    ]
+
+    def test_profile_id_and_fingerprint_ids_are_stable(self):
+        profile = self.write("profile.yaml", self.QUICKSTART_PROFILE)
+        events = self.write_events("events.jsonl", self.QUICKSTART_EVENTS)
+        code, _, _ = self.run_cli("merge", "-p", profile, "-s", self.set_path, events)
+        self.assertEqual(code, 0)
+        data = self.load_set()
+        self.assertEqual(data["profile_id"], "f50d7a5f85ddf9f7f4c72370f454ae2e")
+        self.assertEqual(len(data["fingerprints"]), 3)
+        db_ok = data["fingerprints"]["b738d17a6a5f7265cb4cef73937afd4f"]
+        self.assertEqual(db_ok["tokens"], {"level": "INFO", "component": "db", "failed": "FALSE"})
+        self.assertEqual(db_ok["total_occurrences"], 2)
+        self.assertEqual(db_ok["aggregates"]["example"]["LAST"], ["query ok", "query ok (cached)"])
+
+
 class ProfileMismatchTests(CliTestCase):
     def setUp(self):
         super().setUp()
@@ -413,7 +453,7 @@ class ProfileMismatchTests(CliTestCase):
         self.assertEqual(len(data["fingerprints"]), 4)  # 3 kept + 1 under the new profile
 
     def test_changing_only_aggregates_is_not_a_mismatch(self):
-        tweaked = self.write("tweaked.yaml", PROFILE.replace('fn: "LAST(2)"', 'fn: "LAST(5)"'))
+        tweaked = self.write("tweaked.yaml", PROFILE.replace("n: 2}", "n: 5}"))
         code, _, _ = self.run_cli("merge", "-p", tweaked, "-s", self.set_path, self.events)
         self.assertEqual(code, 0)
 
@@ -425,7 +465,7 @@ class AtomicWriteTests(CliTestCase):
             before = f.read()
 
         with mock.patch(
-            "fingerprint_sampler.warehouse.os.replace",
+            "fingerprint_sampler.fingerprint_set.os.replace",
             side_effect=OSError(28, "No space left on device"),
         ):
             code, _, err = self.fingerprint(self.write_events("run2.jsonl", EVENTS[3:]))
@@ -454,9 +494,7 @@ class EntryPointTests(unittest.TestCase):
     def test_help_has_worked_example_and_in_place_warning(self):
         result = self.run_module("merge", "--help")
         self.assertEqual(result.returncode, 0)
-        self.assertIn(
-            "usage: python -m fingerprint_sampler merge", result.stdout
-        )  # a command that exists
+        self.assertIn("usage: fingerprint merge", result.stdout)
         self.assertIn("example:", result.stdout)
         self.assertIn("updated in place", result.stdout)
         self.assertIn("--force-profile", result.stdout)

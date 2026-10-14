@@ -13,9 +13,9 @@ published, general-purpose tool for any JSONL event stream. **This is the active
 
 | Module | Story | Responsibility |
 |---|---|---|
-| `fingerprint_sampler/tokenizer.py` | FING-01, -07, -23, -36 | JSONPath extraction (via `python-jsonpath`, full syntax) + modifier engine (`Modifier`: bare name or mapping) |
+| `fingerprint_sampler/model.py` | FING-01, -23, -36, -39 | `Path`, the `Rule` base, the `Modifier` classes, `Field` |
 | `fingerprint_sampler/aggregators.py` | FING-25 | Per-fingerprint `SUM`/`AVG`/`MIN`/`MAX`/`LAST(n)` state, mergeable across runs |
-| `fingerprint_sampler/warehouse.py` | FING-02, -25 | The fingerprint set: MD5 IDs, stateful upsert, versioned atomic YAML file |
+| `fingerprint_sampler/fingerprint_set.py` | FING-02, -25, -40 | `FingerprintSet`: MD5 IDs, stateful upsert, versioned atomic YAML file |
 | `fingerprint_sampler/profile.py` | FING-24, -37 | YAML profile loading; `check_profile` reports every problem (schema layer, then semantic layer); `profile_id` |
 | `fingerprint_sampler/schema.py`, `profile.schema.json` | FING-37 | The published profile JSON Schema (Draft 2020-12) and the `jsonschema` validator over it; also validates a single modifier for `Modifier.of` |
 | `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28, -37 | `fingerprint merge` — merge a stream into a set; `fingerprint check` — list a profile's problems |
@@ -27,9 +27,8 @@ fingerprint IDs. **Parked** and unpublished: kept importable and tested, not dev
 
 | Module | Story | Responsibility |
 |---|---|---|
-| `fingerling/tokenizer.py`, `aggregators.py`, `profile.py` | FING-28 | One-line re-export shims over `fingerprint_sampler` |
-| `fingerling/warehouse.py` | FING-05, -28 | Re-exports the fingerprint set; owns `TELEMETRY_AGGREGATES` and the N-gram `build_whitelist` helper |
-| `fingerling/cli.py`, `__main__.py` | FING-28 | `fingerling fingerprint`, an alias for `fingerprint merge` |
+| `fingerling/tokenizer.py` | FING-39 | eBPF-side `tokenize(record, fields)` and `parse_jsonl` |
+| `fingerling/warehouse.py` | FING-05, -28 | Owns `TELEMETRY_AGGREGATES` and the N-gram `build_whitelist` helper |
 | `fingerling/ringbuffer.py` | FING-03 | FIFO sliding-window N-gram anomaly matcher |
 | `fingerling/policy.py` | FING-04, -06, -22 | KubeArmorPolicy YAML compiler (`block_pattern` adds `matchPattern`) |
 | `fingerling/server.py` | FING-08 | stdlib HTTP webhook telemetry ingestion server |
@@ -38,7 +37,7 @@ fingerprint IDs. **Parked** and unpublished: kept importable and tested, not dev
 | `fingerling/capture.py` | — | bpftrace `execve` capture → Tetragon-shaped JSONL |
 
 N-gram analysis is deliberately a later stage: it sees only the fingerprint IDs
-`Warehouse.upsert()` returns.
+`FingerprintSet.upsert()` returns.
 
 ## 2. Architectural Principles
 
@@ -52,9 +51,9 @@ N-gram analysis is deliberately a later stage: it sees only the fingerprint IDs
 ```mermaid
 flowchart TD
     A[Raw JSONL telemetry] --> B[Webhook Server: POST /telemetry]
-    B --> C[tokenizer.tokenize]
+    B --> C[fingerling.tokenizer.tokenize]
     C -- Mask Profile --> D[dict: key -> token]
-    D --> E[warehouse.upsert]
+    D --> E[FingerprintSet.upsert]
     E -- fingerprint_id --> F[ringbuffer.push]
     F -- anomaly score --> G{score == 1.0 and warm?}
     G -- yes --> H[policy.compile_policy]
@@ -64,84 +63,77 @@ flowchart TD
 
 ## 4. Class & Data Structures
 
-### 4.1 `fingerprint_sampler/tokenizer.py` (STORY-FING-01, -07, -23)
+### 4.1 `fingerprint_sampler/model.py` and `aggregators.py` (STORY-FING-01, -23, -25, -36, -39)
 
 ```python
-@dataclass(frozen=True)
-class MaskEntry:
-    key: str
-    path: str
-    modifier: Modifier          # given as a bare name or mapping; normalised in __post_init__
+class Path:                      # frozen; compiled once; ValueError if empty/invalid
+    text: str
+    def values(self, event) -> list: ...
 
-@dataclass(frozen=True)
-class Modifier:                 # STORY-FING-36
-    name: str
-    params: tuple[tuple[str, Any], ...]          # arguments, sorted by name
+class Rule:                      # base of every named, configurable behaviour
+    family: ClassVar[str]        # "modifier" | "aggregator": the schema definition that checks it
+    name: ClassVar[str]          # registers the subclass in its family's registry
     @classmethod
-    def of(cls, spec: Modifier | str | Mapping) -> Modifier: ...   # validates; ValueError
-    @property
-    def spec(self) -> str: ...  # bare name, or sorted compact JSON; feeds profile_id
-    def __call__(self, value) -> str: ...
+    def build(cls, spec: str | dict) -> Self: ...   # schema, then construct, then check()
+    def check(self) -> None: ...                     # what a schema cannot express
+    spec: str                    # bare name or sorted compact JSON; feeds profile_id
 
-def compile_path(path: str) -> jsonpath.JSONPath: ...   # cached; ValueError if empty/invalid
-def compile_regex(pattern: str, flags: str = "") -> re.Pattern: ...   # cached; flags from "imsx"
-def find_values(record: Any, path: str) -> list[Any]: ...
-def validate_modifier(modifier) -> None: ...
-def apply_modifier(value, modifier) -> str: ...     # one value
-def tokenize_values(values: list, modifier) -> str: ...  # match-count rule
-def tokenize(record: dict, mask_profile: list[MaskEntry]) -> dict[str, str]: ...
-def parse_jsonl(jsonl_text: str) -> list[dict]: ...
+class Modifier(Rule):            # token(value) -> str; absent token for missing/null
+    # Default, IsPresent, IsNull, InRange(low, high), AnyOf(values), Glob(pattern),
+    # Regex(pattern, flags), RegSub(pattern, replace, flags)
+
+class Aggregator(Rule):          # update(state, value); numeric ones only see numbers
+    # Sum, Min, Max, Avg, Last(n)
+
+@dataclass(frozen=True)
+class Field:                     # key, path, modifier (text/specs are built on creation)
+    def token(self, event) -> str: ...   # none -> missing; several -> sorted, de-duplicated, joined
+
+@dataclass(frozen=True)
+class Aggregate:                 # key, path, fn (one spec or a list)
+    def update(self, state: dict, event) -> int: ...   # returns values skipped
 ```
 
-Paths use full JSONPath (RFC 9535 plus the `[?(@.x == 1)]` filter form): filters, slices, unions,
-negative indexes, recursive descent. Empty/missing matches tokenize to `"FALSE"`/`"NULL"`, never
-raising.
+Field and Aggregate take the YAML keys as arguments, so the profile loader builds every section
+the same way. Adding a modifier or aggregate function is one class plus its schema definition.
 
-### 4.2 `fingerprint_sampler` set, aggregators and profiles (STORY-FING-02, -24, -25); `fingerling/warehouse.py` helpers (-05)
+### 4.2 `fingerprint_sampler/fingerprint_set.py` and `profile.py` (STORY-FING-02, -24, -37, -40)
 
 ```python
-@dataclass(frozen=True)
-class AggregateEntry:
-    key: str
-    path: str
-    fns: tuple[str, ...]            # e.g. ("MIN", "MAX", "LAST(3)")
-
-def make_entry(key, path, fns) -> AggregateEntry: ...          # validated
-def update(state: dict, entry: AggregateEntry, record) -> int: ...  # returns values skipped
-
 def fingerprint_id(tokens: dict[str, str]) -> str: ...
 
 @dataclass
-class FingerprintRecord:
+class Fingerprint:
     tokens: dict[str, str]
     total_occurrences: int
     first_seen: str
     last_seen: str
     aggregates: dict[str, dict]     # aggregate key -> {"MIN": .., "AVG": {avg, sum, count}, "LAST": [..]}
 
-class Warehouse:
-    def __init__(self, aggregates: Sequence[AggregateEntry] = (), profile_id: str | None = None): ...
-    def upsert(self, tokens: dict[str, str], record: Any, timestamp: str | None = None) -> str: ...
-    def load(self, path: str, force: bool = False) -> None: ...   # ProfileMismatchError unless force
-    def save(self, path: str) -> None: ...                         # temp file + os.replace
-
-TELEMETRY_AGGREGATES   # in fingerling.warehouse: duration_ms MIN/MAX + LAST(3) raw events
+class FingerprintSet:
+    def __init__(self, aggregates: Sequence[Aggregate] = (), profile_id: str | None = None): ...
+    def upsert(self, tokens: dict[str, str], event: Any, timestamp: str | None = None) -> str: ...
+    def load(self, path: str, *, force: bool = False) -> None: ...  # ProfileMismatchError unless force
+    def save(self, path: str) -> None: ...                           # temp file + os.replace
 
 @dataclass(frozen=True)
 class Profile:
-    fields: tuple[MaskEntry, ...]
-    aggregates: tuple[AggregateEntry, ...]
+    fields: tuple[Field, ...]
+    aggregates: tuple[Aggregate, ...]
     profile_id: str                 # property; MD5 over fields only
+    def tokens(self, event) -> dict[str, str]: ...
 
-def load_profile(path: str) -> Profile: ...   # ProfileError names file + entry
-
-def build_whitelist(records, mask_profile, n, warehouse=None) -> set[tuple[str, ...]]: ...  # in fingerling.warehouse
+def check_profile(data, source) -> tuple[Profile | None, list[str]]: ...  # schema, then build
+def load_profile(path: str) -> Profile: ...   # ProfileError.problems lists every problem
 ```
 
-Aggregator state is keyed by function name, so changing `n` in `LAST(n)` keeps collected
-samples. Numeric functions accept ints, floats and numeric strings; other values are skipped and
-counted in `Warehouse.skipped_values`. The set file is version 1 (`version`, `profile_id`,
-`fingerprints`); pre-Sprint-8 files are rejected with a clear error.
+`fingerling` keeps the eBPF side: `fingerling.tokenizer` (`tokenize(record, fields)`,
+`parse_jsonl`) and `fingerling.warehouse` (`TELEMETRY_AGGREGATES`, `build_whitelist`).
+
+Aggregate state is keyed by function name, so changing `LAST`'s `n` keeps collected samples.
+Numeric functions accept ints, floats and numeric strings; other values are skipped and counted
+in `FingerprintSet.skipped_values`. The set file is version 1 (`version`, `profile_id`,
+`fingerprints`).
 
 ### 4.3 `ringbuffer.py` (STORY-FING-03)
 
@@ -204,5 +196,5 @@ class TelemetryHTTPRequestHandler(BaseHTTPRequestHandler):
 
 16. **Two packages, one repository**: the fingerprint tool is `fingerprint-sampler`, a uv workspace member published on its own; `fingerling` is private and depends on it.
 17. **Move behind shims**: parked modules import the old `fingerling.*` paths, which re-export the same objects, so the split changed no parked code.
-18. **`fingerprint merge`**: a subcommand, so later commands (`show`, `report`) can be added without breaking users; `fingerling fingerprint` is kept as an alias.
+18. **`fingerprint merge`**: a subcommand, so later commands (`check`, `show`) sit beside it. (The `fingerling fingerprint` alias was removed in Sprint 12.)
 19. **One version stream**: only `fingerprint-sampler` is versioned, tagged (`v<version>`) and published.

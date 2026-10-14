@@ -156,3 +156,8 @@ TUI step rather than renumbering.
 **Lesson:** When a tool the project mandates does not work, say so at the time — do not quietly fall back to something else.
 **What happened:** `AGENTS.md` requires `via` for symbol lookups. Through the GLOB/REGEX change and most of Sprint 11, definitions and callers were found with grep instead, and nobody said why. When the owner asked, `via` turned out to be broken here: the index lacked most package functions even after `via index --force .`, still listed deleted files, and `--via calls` returned the queried function instead of its callers.
 **Applying it:** Try the mandated tool first. If it fails, post what failed (the exact query and result) to the chat and the backlog, then use the fallback openly.
+
+**Lesson:** A check you ran by hand is not a check — make it a test behind a make target.
+**What happened:** Through Sprints 11 and 12, behaviour was confirmed with throwaway commands (`python -c`, direct CLI runs in a scratch directory, a `diff` of two set files, `uv run --isolated` with the wheel). The owner pointed out that AGENTS.md's Automation First rule forbids it. Meanwhile the README's library example had broken during the refactor and none of those commands noticed; the smoke suite written in response would have.
+**Applying it:** Before typing a verification command, write the test for it (or add a make target) and run that. A UAT message cites the target that passed. And read a target's exit status, not the last line of its output — a lint failure was missed that way in the same sprint.
+

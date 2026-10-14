@@ -1,6 +1,34 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 11 (below). Next up: see *Owner actions* and *Queued requests*.
+**No sprint in flight.** Last sprint: 12 (below).
+
+## Sprint 12: Domain Model and Consolidated Validation
+
+**Status:** Complete — launched 2026-10-14 (13/13 pts); merged to `main`; no release (mainline)
+**Branch:** `sprint-12` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_12.diagram.md`
+**Source:** `docs/sprints/USER_STORIES_SPRINT12.md` (stories + architecture D1-D7)
+**Points:** 13 · **Tier:** 1
+
+### Phase 0: Lint report (STORY-FING-38, 2 pts) — Tank
+- [x] **0.1** `vulture`, `radon` dev deps; `make quality`; SDLC section 3. [Tank]
+- [x] **0.2** Baseline findings posted; UAT + review. [Trin, Morpheus]
+
+### Phase 1: Domain model (STORY-FING-39, 5 pts) — Neo
+- [x] **1.1** `Rule` base; Modifier and Aggregator families; Field, Aggregate, Path in `model.py`/`aggregators.py`; schema `aggregator` definition; `check_profile` loop. [Neo]
+- [x] **1.2** Tokenizer moved to `fingerling`; parked code on `Field`; docs and examples; UAT + review. [Neo, Trin, Morpheus]
+
+### Phase 2: Smells and YAGNI (STORY-FING-40, 3 pts) — Neo
+- [x] **2.1** Shims, aliases and dead API deleted; `Warehouse` → `FingerprintSet`; `_cmd_merge` and `load` split. [Neo]
+- [x] **2.2** `make quality` clean (or findings justified); UAT + review. [Neo, Trin, Morpheus]
+
+### Phase 3: Smoke suite (STORY-FING-41, 3 pts) — Trin, Tank
+- [x] **3.1** `smoke/test_smoke.py`: installed command, examples, invalid profile, README blocks. [Trin]
+- [x] **3.2** `make smoke` + SDLC gate; UAT + review. [Tank, Morpheus]
+
+### Close
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
+
 
 ## Sprint 11: Structured Modifiers and Profile Checking
 
@@ -127,10 +155,12 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 - **bob_protocol, for Trin:** a test strategy document Trin owns, laying out the project's testing practices and conventions: the test pyramid applied to the tools available in the project's ecosystem. Queued 2026-10-13 by the owner during Sprint 11; not started.
 
 ## Backlog (unscheduled)
+- **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
 - Rubrics: confirm with the owner that any Weak should block a gate (assumed); have a second reviewer apply each rubric to test agreement; add a rubric to the architecture template; write runnable checks for `state.md`, chat messages and TLDR blocks; align `docs/LESSONS.md` entries with the lesson template; revisit the existing documents the calibration found Weak (Sprint 3 and 6 lessons).
-- Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
+- Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
 - For Tank: `make test-fingerprint ARGS=test_cli` fails with ModuleNotFoundError although SDLC section 3 documents it; SDLC sections 8 and 9 still say the first CI result is unknown (it passed).
+- CI: run `make smoke` in the workflow (Sprint 12 retro).
 - Tooling (via): the index misses most project functions (e.g. `load_profile`) even after `via index --force .`, still lists deleted files, `--via calls` returns the anchor instead of callers, and the MCP tool's `--canned` queries are rejected. Found 2026-10-13 in Sprint 11; work fell back to grep.
 - Usability (fingerprint): a bare `modifier: GLOB` is reported as "'GLOB' is not one of ['DEFAULT', 'IS_PRESENT', 'IS_NULL']", which does not say GLOB needs a mapping. Smith, Sprint 11.
 - Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.

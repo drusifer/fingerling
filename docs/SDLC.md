@@ -61,8 +61,10 @@ stop with "No .venv - run 'make install' first" if it is missing. Agents invoke 
 | `test` | `test-fingerprint` then `test-fingerling` | both suites |
 | `test-fingerprint` | `unittest discover` in `packages/fingerprint-sampler` | `ARGS` is passed to `unittest` in place of `discover`; it does not currently find a single module (backlog) |
 | `test-fingerling` | `unittest discover -s tests` | parked modules + compatibility shims |
+| `smoke` | `build`, then the `packages/fingerprint-sampler/smoke` suite inside a throwaway environment holding only the built wheel | runs the installed `fingerprint` command, the shipped examples and the README's own examples |
 | `test-all` | both suites on Python 3.14 and 3.15 in throwaway uv environments | downloads interpreters on first use |
 | `lint` | `ruff check .` and `ruff format --check .` | changes nothing |
+| `quality` | extended `ruff` rules, `vulture`, `radon cc -nc` over `packages/fingerprint-sampler/src` | report only, always exits 0; Trin reads it at UAT |
 | `format` | `ruff check --select I --fix .` and `ruff format .` | rewrites files |
 | `secrets` | `gitleaks detect --source .` | git-aware: scans history and tree |
 | `build` | `uv build --package fingerprint-sampler --out-dir dist`, then runs the built wheel in a clean environment | wheel + sdist in `dist/` (gitignored) |
@@ -100,6 +102,7 @@ is a Mechanism-class change. `agents/` (BobProtocol tooling) and Markdown are ex
 |---|---|---|
 | Lint + format | `make lint` | every handoff to Trin; sprint close |
 | Tests | `make test` | every handoff to Trin; sprint close |
+| Smoke (installed wheel + README) | `make smoke` | sprint close only; keep the suite small — behaviour is tested in the unit tests |
 | Tests, all Pythons | `make test-all` | sprint close |
 | Secret scan | `make secrets` | sprint close; staged changes are scanned on every commit by the hook |
 | Package build | `make build` | sprint close; before any tag |
@@ -257,7 +260,7 @@ Run by Tank at sprint close (`*devops sdlc-check`):
 7. This sprint's changes followed section 6: made on the sprint branch, Conventional Commit
    messages, right class and approval, chat report produced with a section for every phase and
    for close, nothing pushed by agents.
-8. `.venv/bin/fingerprint merge --help` and `.venv/bin/fingerling fingerprint --help` run, and a
+8. `make smoke` passes (it runs the installed `fingerprint` command), and a
    second `make install` changes nothing.
 9. The workflows under `.github/workflows/` invoke only `make` targets that exist.
 
@@ -267,8 +270,8 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-13 at Sprint 11 close (`*devops sdlc-check`), by Tank — from-clean
-rebuild on Python 3.14; lint clean; 154 + 59 tests on 3.14 and 3.15; gitleaks clean; `make build`
-wheel (with `profile.schema.json`) runs in a clean 3.15 environment; lockfile current; one
-Makefile. Section 7 gained the owner's no-backwards-compatibility-before-1.0 rule. Section 7: releases and tags
-suspended for mainline development (owner, 2026-10-14).*
+*Last verified: 2026-10-14 at Sprint 12 close (`*devops sdlc-check`), by Tank — from-clean
+rebuild on Python 3.14; lint clean (after one formatting fix found by the check); tests and
+`make test-all` on 3.14 and 3.15; gitleaks clean; `make smoke` (installed wheel + README) green;
+lockfile current. Sections 3, 5 and conformance item 8 gained `quality` and `smoke`. Releases and
+tags suspended for mainline development (section 7).*

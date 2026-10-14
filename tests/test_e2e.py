@@ -13,8 +13,8 @@ import yaml
 
 from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
-from fingerling.tokenizer import MaskEntry, parse_jsonl, tokenize
-from fingerling.warehouse import Warehouse
+from fingerling.tokenizer import parse_jsonl, tokenize
+from fingerprint_sampler import Field, FingerprintSet
 
 TELEMETRY_JSONL = "\n".join(
     [
@@ -28,13 +28,13 @@ TELEMETRY_JSONL = "\n".join(
 )
 
 MASK_PROFILE = [
-    MaskEntry("hook_syscall", "$.process_kprobe.function_name", "DEFAULT"),
-    MaskEntry(
+    Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT"),
+    Field(
         "dest_port",
         "$.process_kprobe.args[0].sock_arg.dport",
         {"name": "ANY", "values": [80, 443, 6379]},
     ),
-    MaskEntry(
+    Field(
         "kernel_return_state",
         "$.process_kprobe.return_value",
         {"name": "IN_RANGE", "low": -999, "high": 0},
@@ -45,7 +45,7 @@ MASK_PROFILE = [
 class EndToEndPipelineTests(unittest.TestCase):
     def test_clean_trajectory_stays_below_anomaly_threshold(self):
         records = parse_jsonl(TELEMETRY_JSONL)
-        warehouse = Warehouse()
+        warehouse = FingerprintSet()
         fingerprint_ids = [
             warehouse.upsert(tokenize(record, MASK_PROFILE), record, timestamp=f"t{i}")
             for i, record in enumerate(records)
@@ -61,7 +61,7 @@ class EndToEndPipelineTests(unittest.TestCase):
 
     def test_anomalous_trajectory_triggers_policy_compilation(self):
         records = parse_jsonl(TELEMETRY_JSONL)
-        warehouse = Warehouse()
+        warehouse = FingerprintSet()
         fingerprint_ids = [
             warehouse.upsert(tokenize(record, MASK_PROFILE), record, timestamp="t")
             for record in records
@@ -92,7 +92,7 @@ class EndToEndPipelineTests(unittest.TestCase):
         # Same record processed twice end-to-end -> same fingerprint, occurrence count grows,
         # warehouse entry count does not.
         record = parse_jsonl(TELEMETRY_JSONL)[0]
-        warehouse = Warehouse()
+        warehouse = FingerprintSet()
 
         fid_1 = warehouse.upsert(tokenize(record, MASK_PROFILE), record, timestamp="t1")
         fid_2 = warehouse.upsert(tokenize(record, MASK_PROFILE), record, timestamp="t2")

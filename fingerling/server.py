@@ -13,14 +13,14 @@ from typing import Any
 
 from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
-from fingerling.tokenizer import MaskEntry, parse_jsonl, tokenize
-from fingerling.warehouse import Warehouse
+from fingerling.tokenizer import parse_jsonl, tokenize
+from fingerprint_sampler import Field, FingerprintSet
 
 
 def create_handler(
-    warehouse: Warehouse,
+    warehouse: FingerprintSet,
     matcher: SlidingWindowMatcher,
-    mask_profile: list[MaskEntry],
+    mask_profile: list[Field],
     workload_name: str,
     match_labels: dict[str, str],
     gitops_repo_path: str | None = None,
@@ -124,9 +124,9 @@ def create_handler(
 
 def run_server(
     port: int,
-    warehouse: Warehouse,
+    warehouse: FingerprintSet,
     matcher: SlidingWindowMatcher,
-    mask_profile: list[MaskEntry],
+    mask_profile: list[Field],
     workload_name: str,
     match_labels: dict[str, str],
     gitops_repo_path: str | None = None,

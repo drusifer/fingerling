@@ -39,35 +39,6 @@ Agents **must** use this for every message posted to CHAT.md:
 
 ---
 
----
-[<small>2026-10-13 23:59:30</small>] [**make**]->[**all**] *build*:
- Build PASSED | make install | /home/drusifer/Projects/fingerling/build/build.out
-=== make install @ 2026-10-13 23:59:29 ===
-Installed into .venv
+> **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_12.md` (2026-10-14 01:26:39) — Sprint 12 - Domain Model and Consolidated Validation (2026-10-14). Tier 1, 13/13 pts, STORY-FING-38..41, branch sprint-12. make quality (extended ruff, vulture, radon) as a report; modifiers and aggregate functions became Rule classes with one build-and-check path; the tokenizer moved to fingerling; shims, aliases and dead code removed; Warehouse renamed FingerprintSet; worst functions split until make quality was clean. Mid-sprint the owner flagged ad hoc testing, so a smoke suite on the installed wheel was added (FING-41), then trimmed to 3 tests at close. No release (mainline development).
 
 ---
-[<small>2026-10-14 00:00:53</small>] [**User**]->[**all**] *request*:
- fix then push main
-
----
-[<small>2026-10-14 00:01:21</small>] [**make**]->[**all**] *build*:
- Build PASSED | make test | /home/drusifer/Projects/fingerling/build/build.out
-127.0.0.1 - - [14/Oct/2026 00:01:20] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
-
----
-[<small>2026-10-14 00:01:34</small>] [**Neo**]->[**User**] *swe fix*:
- README brought up to date for 0.2.0: what's new, real set-file layout, checking API in the library section; check_profile and Modifier exported, 2 tests. 156 + 59 tests, lint clean. Minor change, single step per bloop rule 2. Merging, moving the unpushed v0.2.0 tag to include it, pushing main on owner's instruction.
-
----
-[<small>2026-10-14 00:01:35</small>] [**make**]->[**all**] *build*:
- Build PASSED | make release-check | /home/drusifer/Projects/fingerling/build/build.out
-=== make release-check @ 2026-10-14 00:01:35 ===
-Tag v0.2.0 matches fingerprint-sampler 0.2.0
-
----
-[<small>2026-10-14 00:03:37</small>] [**User**]->[**all**] *request*:
- dont make tags anymore okay? we'll be doing mainline development for a while
-
----
-[<small>2026-10-14 00:03:57</small>] [**Mouse**]->[**User**] *sm note*:
- Recorded: no tags or releases during mainline development. SDLC section 7, DECISIONS, task.md and Mouse/Tank/Cypher state updated. Existing local tags left alone.
