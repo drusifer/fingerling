@@ -19,9 +19,9 @@
 - [x] **2.3** UAT + review. [Trin, Morpheus]
 
 ### Phase 3: SDLC and lesson rubrics (STORY-FING-33, 2 pts)
-- [ ] **3.1** SDLC rubric on the three SDLC templates; lessons rubric on the lesson template. [Bob]
-- [ ] **3.2** Wire into build-env, Tank, Oracle groom and Smith's close test. [Bob]
-- [ ] **3.3** UAT + review. [Trin, Morpheus]
+- [x] **3.1** SDLC rubric on the three SDLC templates; lessons rubric on the lesson template. [Bob]
+- [x] **3.2** Wire into build-env, Tank, Oracle groom and Smith's close test. [Bob]
+- [x] **3.3** UAT + review. [Trin, Morpheus]
 
 ### Phase 4: Calibration (STORY-FING-34, 3 pts)
 - [ ] **4.1** Apply each rubric to 3+ existing artifacts; reword criteria that do not apply cleanly. [Bob]

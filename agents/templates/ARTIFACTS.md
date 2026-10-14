@@ -99,5 +99,6 @@ the usual two-attempt limit on fix loops applies.
 ## Keeping rubrics out of finished documents
 
 A rubric belongs to the template. Authors delete the block between the markers when they
-instantiate a template. Oracle's groom checks that no file outside `agents/templates/` contains
-`RUBRIC-START`.
+instantiate a template. Oracle's groom checks that no file outside `agents/templates/` has a line
+beginning `<!-- RUBRIC-START` (`grep -rn '^<!-- RUBRIC-START' --include='*.md' .`). Mentioning
+the marker in prose is fine; carrying the block is not.

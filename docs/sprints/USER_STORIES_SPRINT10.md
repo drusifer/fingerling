@@ -132,8 +132,8 @@ criterion and the fix. *Strong* is recognition, never a requirement.
 
 ### D3. Keeping rubrics out of finished artifacts
 The template's opening instructions say to delete everything between the markers when
-instantiating. Oracle's groom checks that no document outside `agents/templates/` contains
-`RUBRIC-START`.
+instantiating. Oracle's groom checks that no document outside `agents/templates/` has a line
+beginning with the start marker (prose that merely mentions it is fine).
 
 ### D4. Who applies each rubric, and when
 | Artifact | Author self-check | Independent reviewer | Step |

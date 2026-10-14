@@ -131,12 +131,22 @@ Start from a template rather than a blank page — they live with the team's oth
 | `agents/templates/_template_SDLC.javascript.md` | JavaScript / TypeScript: `package.json` + lockfile |
 | `agents/templates/_template_SDLC.md` | Any other language, or a repo with several languages |
 
-Copy the one that fits to `docs/SDLC.md` and replace every `{placeholder}`. The language
+Copy the one that fits to `docs/SDLC.md`, replace every `{placeholder}`, and delete the review
+rubric at the end of the template (from `RUBRIC-START` to `RUBRIC-END`). The language
 templates come pre-filled with that ecosystem's conventional answers; correct any line that is
 not true for the repo — the document describes this project, not the convention. For a
 multi-language repo use the base template, with one Toolchain column and one set of
 `-<lang>` targets per language. When you bootstrap a language that has no template yet and
 expect to meet it again, add `agents/templates/_template_SDLC.<language>.md` in the same shape.
+
+### Review rubric
+
+Each SDLC template ends with the **SDLC rubric**: six criteria (`TRUE`, `WHOLE`, `CLEAN`,
+`CLASS`, `CHECK`, `GAPS`) for judging whether the document is useful to its readers. Check your
+draft against it before posting, and fix anything you would call Weak. Oracle applies the same
+rubric at groom in any sprint where `docs/SDLC.md` changed and rejects on any Weak. The rubric
+judges the *document*; `*devops sdlc-check` below judges whether the *project* matches it — do
+not merge the two. How rubrics work: `agents/templates/ARTIFACTS.md`.
 
 ### `*devops sdlc` — create or update it
 

@@ -49,4 +49,12 @@ sequenceDiagram
     Note right of Trin: "UAT phase-2 PASSED. AC1<br/>template sections match<br/>Sprints 8-10 documents.<br/>AC2 rubric in the<br/>standard format between<br/>the markers, 6<br/>criteria,…"
     Morpheus->>Bob: "lead handoff"
     Note right of Morpheus: "Phase 2 review PASSED.<br/>DESIGN is the criterion<br/>I wanted most: early<br/>sprints' criteria<br/>prescribed FIFO queues<br/>and libraries, which<br/>left the…"
+    Mouse->>All: "phase 3"
+    Note right of Mouse: "SDLC and lesson rubrics<br/>(STORY-FING-33): add an<br/>SDLC rubric to the three<br/>SDLC templates and a<br/>LESSON rubric to the<br/>lesson template, each<br/>wi…"
+    Bob->>Trin: "prompt handoff"
+    Note right of Bob: "Phase 3 done (FING-33):<br/>SDLC rubric (TRUE,<br/>WHOLE, CLEAN, CLASS,<br/>CHECK, GAPS) appended<br/>identically to the three<br/>SDLC templates, LESSON<br/>rubri…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase-3 PASSED. AC1<br/>the three SDLC rubric<br/>blocks are byte-<br/>identical (compared<br/>programmatically). AC2<br/>lesson template carries<br/>LESSON. AC…"
+    Morpheus->>Bob: "lead handoff"
+    Note right of Morpheus: "Phase 3 review PASSED.<br/>TRUE and GAPS together<br/>force the SDLC to<br/>separate what exists<br/>from what is planned -<br/>the failure mode a<br/>process doc…"
 ```
