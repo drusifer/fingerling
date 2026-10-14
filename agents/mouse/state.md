@@ -34,16 +34,18 @@
 
 - 2026-10-13 GLOB/REGEX/REGSUB delivered outside a sprint on fix/glob-regex-regsub (Neo > Trin > Morpheus > Smith, 0 fix cycles). Not bumped or tagged: owner decides between 0.2.0 and moving the unpublished v0.1.0 tag.
 
+- 2026-10-13 Sprint 11 closed: 8/8 pts, 3 phases (0 Tank, 1-2 Neo), 0 fix cycles, Tier 2. Released 0.2.0 (tag v0.2.0 local). Queued for bob_protocol: Tank dependency analysis tool; Trin test strategy doc.
+
 ## Current Task
-**Status:** No sprint in flight.
+**Status:** No sprint in flight (Sprint 11 closed 2026-10-13).
 
 ## Next Steps
 Cold start:
 1. Read `task.md`, `docs/SDLC.md` and the last message in `agents/CHAT.md`.
-2. Waiting on the owner: PyPI setup then pushing tag `v0.1.0`; the rubric blocking rule. (CI results: checked 2026-10-13, green.)
-3. No request is queued. Backlog is in `task.md`; the fingerprint tool is the only active scope (next candidates: `fingerprint show`, `GLOB`/`REGEX` modifiers, event-time timestamps).
-4. Starting a sprint: confirm `docs/SDLC.md`, create `sprint-11` from clean `main` before stories (next story STORY-FING-35), write stories from `agents/templates/_template_USER_STORIES.md`, post `--cmd "phase <N>"` markers.
-5. Posting to chat: keep messages under 512 characters and check that `bobp chat` succeeded; before merging a sprint confirm the log has every marker, Smith's approvals, the retro and the launch.
+2. Waiting on the owner: PyPI setup, then pushing `main` and tag `v0.2.0` (v0.1.0 was never pushed; the owner may delete it); the rubric blocking rule.
+3. Queued (bob_protocol repo): Tank dependency analysis tool; Trin test strategy doc. Fingerprint backlog in `task.md`.
+4. Next sprint is sprint-12, next story STORY-FING-38. Create the branch from clean `main`; post phase markers.
+5. Keep chat messages under 512 characters and check every `bobp chat` result.
 
 ---
-*Last updated: 2026-10-13T23:20:00-04:00*
+*Last updated: 2026-10-13T23:55:00-04:00*

@@ -33,6 +33,8 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 
 - 2026-10-13 Reviewed GLOB/REGEX/REGSUB: approved. Decisions: REGEX = re.search, GLOB = fnmatchcase on the whole value, REGSUB missing -> NULL; modifier arguments support quoting. No ReDoS guard (profiles are trusted input).
 
+- 2026-10-13 Sprint 11 reviewed and approved (D1-D7 in docs/sprints/USER_STORIES_SPRINT11.md). Structure lives only in profile.schema.json; semantic checks in code; no oneOf. No backwards compatibility before 1.0 (owner rule, SDLC section 7).
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete
@@ -41,4 +43,4 @@ See `docs/ARCH.md` §7 Decisions Log for the full record. Summary:
 No pending reviews.
 
 ---
-*Last updated: 2026-10-13T23:20:00-04:00*
+*Last updated: 2026-10-13T23:55:00-04:00*

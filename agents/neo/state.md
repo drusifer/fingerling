@@ -81,6 +81,8 @@
 
 - 2026-10-13 GLOB/REGEX/REGSUB added (branch fix/glob-regex-regsub): tokenizer._split_args parses quoted arguments (single/double quotes, doubled quote = literal, backslashes untouched); _parse_modifier is lru_cached, returns a tuple, strips exactly one ')'. validate_modifier compiles the regex and test-runs the REGSUB replacement. Run one test module with `bobp make test-fingerprint` (the ARGS= form is broken).
 
+- 2026-10-13 Sprint 11 P1+P2 done: tokenizer.Modifier (bare name or mapping; Modifier.of validates via schema_errors(spec, 'modifier'), then _check for regex/low<=high/REGSUB replace); MaskEntry normalises in __post_init__; string parser gone. schema.py loads profile.schema.json; profile.check_profile returns (profile, problems); ProfileError.problems; cli check subcommand. via is unusable here (see LESSONS) - grep is the documented fallback until fixed.
+
 ## Current Task
 **Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
 **Status:** Sprint 9 complete
@@ -89,4 +91,4 @@
 No pending tasks.
 
 ---
-*Last updated: 2026-10-13T23:20:00-04:00*
+*Last updated: 2026-10-13T23:55:00-04:00*

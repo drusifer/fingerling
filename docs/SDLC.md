@@ -181,7 +181,7 @@ before the merge.
 ## 7. Versioning and release
 
 - **What is versioned:** one stream — the published package, `fingerprint-sampler`. Its version
-  is `[project] version` in `packages/fingerprint-sampler/pyproject.toml` (currently `0.1.0`).
+  is `[project] version` in `packages/fingerprint-sampler/pyproject.toml` (currently `0.2.0`).
   The root `fingerling` package is private (`Private :: Do Not Upload`), keeps a static version,
   and is never tagged or published.
 - **Scheme:** Semantic Versioning, bumped according to what changed in the published package
@@ -263,7 +263,7 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-13 in Sprint 11 Phase 0, by Tank — Python floor raised to 3.14 (owner's
-decision); from-clean `make install` on 3.14; lint clean; 145 + 59 tests on 3.14 and 3.15;
-`jsonschema` added to fingerprint-sampler. Section 8 now records the first CI result. Sections
-1, 3, 8, 9 and conformance item 2 updated.*
+*Last verified: 2026-10-13 at Sprint 11 close (`*devops sdlc-check`), by Tank — from-clean
+rebuild on Python 3.14; lint clean; 154 + 59 tests on 3.14 and 3.15; gitleaks clean; `make build`
+wheel (with `profile.schema.json`) runs in a clean 3.15 environment; lockfile current; one
+Makefile. Section 7 gained the owner's no-backwards-compatibility-before-1.0 rule.*

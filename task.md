@@ -1,11 +1,12 @@
 # Task Board
 
-**Sprint 11 in flight** on branch `sprint-11`.
+**No sprint in flight.** Last sprint: 11 (below). Next up: see *Owner actions* and *Queued requests*.
 
 ## Sprint 11: Structured Modifiers and Profile Checking
 
-**Status:** In progress
-**Branch:** `sprint-11`
+**Status:** Complete — launched 2026-10-13 (8/8 pts); merged to `main`; released 0.2.0 (tag `v0.2.0` local, not pushed)
+**Branch:** `sprint-11` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_11.diagram.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT11.md` (stories + architecture D1-D7)
 **Points:** 8 · **Tier:** 2 (fast-track)
 
@@ -22,7 +23,7 @@
 - [x] **2.2** `fingerprint check`; `merge` uses it; editor hint in README and examples; UAT + review. [Neo, Trin, Morpheus]
 
 ### Close
-- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge, release 0.2.0 [Tank, Oracle, Smith, All]
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge, release 0.2.0 [Tank, Oracle, Smith, All]
 
 
 ## Sprint 10: Artifact Rubrics
@@ -118,8 +119,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 
 ## Owner actions (agents do not push or publish unless told)
 - One-time PyPI setup: pending trusted publisher + GitHub `pypi` environment (`docs/SDLC.md` section 8).
-- Then `git push origin v0.1.0` — publishes fingerprint-sampler 0.1.0. The tag exists locally only.
-- Decide the release for the GLOB/REGEX/REGSUB feature: bump to 0.2.0 (SDLC section 7), or move the unpublished `v0.1.0` tag to include it. Not bumped or tagged.
+- Release 0.2.0 is tagged `v0.2.0` locally (includes GLOB/REGEX/REGSUB and Sprint 11). `v0.1.0` was never published; delete it or leave it, then push `main` and `v0.2.0` after the PyPI setup.
 - Confirm that any Weak rubric criterion should block a gate (assumed in Sprint 10).
 
 ## Queued requests (next up)
