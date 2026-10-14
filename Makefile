@@ -79,9 +79,9 @@ secrets: ## Scan the git history and working tree for leaked secrets (gitleaks)
 	@command -v gitleaks >/dev/null || { echo "gitleaks is not installed - see docs/SDLC.md"; exit 1; }
 	@gitleaks detect --source .
 
-clean: ## Remove caches and build metadata (keeps .venv)
+clean: ## Remove caches, build output and downloaded test data in data/ (keeps .venv)
 	@find . -name __pycache__ -type d -not -path './.venv/*' -prune -exec rm -rf {} +
-	@rm -rf fingerling.egg-info .ruff_cache dist
+	@rm -rf fingerling.egg-info .ruff_cache dist data
 
 distclean: clean ## Also remove the virtualenv
 	@rm -rf .venv
