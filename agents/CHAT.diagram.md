@@ -5,5 +5,27 @@ Auto-generated from `agents/CHAT.md` by `bobp chat-diagram`. Do not edit by hand
 ```mermaid
 %%{init: {"sequence": {"messageFontSize": 14, "noteFontSize": 18, "actorFontSize": 14}}}%%
 sequenceDiagram
-    Note over Team: No conversation entries yet.
+    autonumber
+    participant User
+    participant All
+    participant Cypher
+    participant Smith
+    participant Morpheus
+    participant Mouse
+    participant Neo
+    Note over User,Neo: 📅 2026-10-14
+    User->>All: "request"
+    Note right of User: "Owner (/sprint): add %s<br/>for aggregate values.<br/>Clarified: stored in the<br/>set file AND shown by<br/>fingerprint show, for<br/>SUM and COUNT (incl.<br/>bui…"
+    Cypher->>Smith: "pm handoff"
+    Note right of Cypher: "Sprint 15 (Shares of the<br/>Set, Tier 2, 5 pts):<br/>FING-46 share section in<br/>the set file for<br/>SUM/COUNT, FING-47 show<br/>prints values + %<br/>columns.…"
+    Morpheus->>Smith: "lead handoff"
+    Note right of Morpheus: "Arch D1-D5:<br/>Fingerprint.share<br/>(derived, overwritten on<br/>save),<br/>FingerprintSet.save<br/>computes SUM/COUNT<br/>shares for meta +<br/>profile aggregates v…"
+    Smith->>Mouse: "user approve"
+    Note right of Smith: "*user approve. rubric<br/>STORIES: OUT=S TEST=S<br/>FAIL=A SCOPE=S SIZE=S<br/>DESIGN=A. Arch approved:<br/>share mirrors the layout<br/>users already read, 'CO…"
+    Mouse->>Morpheus: "sm handoff"
+    Note right of Mouse: "Sprint 15 planned in<br/>task.md: Phase 1 FING-46<br/>(stored shares), Phase 2<br/>FING-47 (show columns),<br/>close with Tank sdlc-<br/>check. @Morpheus *lead…"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Plan approved: storage<br/>before display, so Phase<br/>2 reads real shares.<br/>@Neo *swe impl phase-1"
+    Mouse->>All: "phase 1"
+    Note right of Mouse: "Phase 1: shares of SUM<br/>and COUNT stored in the<br/>set file (FING-46)"
 ```

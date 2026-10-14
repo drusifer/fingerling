@@ -1,6 +1,22 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 14 (below).
+## Sprint 15: Shares of the Set
+
+**Status:** In progress
+**Branch:** `sprint-15`
+**Source:** `docs/sprints/USER_STORIES_SPRINT15.md` (stories + architecture D1-D5)
+**Points:** 5 · **Tier:** 2
+
+### Phase 1: Shares in the set file (STORY-FING-46, 3 pts) — Neo
+- [ ] **1.1** `Fingerprint.share`; `Aggregate.value`; shares computed in `save`; README. [Neo]
+- [ ] **1.2** UAT + review. [Trin, Morpheus]
+
+### Phase 2: Shares in `show` (STORY-FING-47, 2 pts) — Neo
+- [ ] **2.1** `COUNT %` and value/% columns; help and README. [Neo]
+- [ ] **2.2** UAT + review. [Trin, Morpheus]
+
+### Close
+- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 14: Weighted Aggregates
 
