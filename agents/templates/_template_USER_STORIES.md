@@ -1,6 +1,7 @@
 <!--
 Sprint stories template. Owned by Cypher — see agents/cypher/SKILL.md and the sprint skill.
 Copy to docs/sprints/USER_STORIES_SPRINT<N>.md and replace every {placeholder}.
+{KEY} is the project's short story-ID key (for example STORY-FING-31 in a project called Fingerling).
 Delete this comment AND the review rubric at the end (everything from RUBRIC-START to
 RUBRIC-END): the rubric belongs to the template, not to the document.
 Morpheus appends the architecture section after Smith approves the stories.
@@ -24,7 +25,7 @@ can confirm or overturn.} / None — every choice here was the owner's.
 
 ---
 
-## STORY-FING-{id}: {Outcome in a few words}
+## STORY-{KEY}-{id}: {Outcome in a few words}
 **Points:** {n}{ · **Owner:** {persona, if not Neo}}
 
 **As a** {who benefits},

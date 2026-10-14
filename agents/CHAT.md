@@ -41,3 +41,7 @@ Agents **must** use this for every message posted to CHAT.md:
 === make lint @ 2026-10-13 20:15:45 ===
 All checks passed!
 44 files already formatted
+
+---
+[<small>2026-10-13 22:03:41</small>] [**Bob**]->[**all**] *prompt update*:
+ Removed the three legacy state templates (_template_context, _template_current_task, _template_next_steps): they belong to the retired three-file state layout and upstream no longer ships them. Stories template story-ID line made generic (STORY-{KEY}-{id}) to match the upstream copy. agents/skills and agents/templates now match bob_protocol exactly. Branch fix/remove-legacy-templates.
