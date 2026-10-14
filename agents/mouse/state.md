@@ -24,13 +24,26 @@
 - 2026-10-12 Sprint 8 closed: 16/16 pts, 4 phases, 1 fix cycle. task.md shows it complete with the retro backlog.
 - 2026-10-12 Sprint 9 planned (task.md): P0 Tank env, P1 Neo split, P2 Tank CI/publish, P3 Neo chat-report. Post a phase marker (--cmd 'phase N') at each phase start and 'phase close' at close.
 - 2026-10-13 Sprint 9 closed: 18/18 pts, 4 phases, 0 fix cycles; phase markers posted for 0-3 and close.
+- 2026-10-13 Session close. After Sprint 9: fix/single-makefile, fix/docs-groom,
+  fix/remove-legacy-tools, fix/session-close — all merged to main with --no-ff. main is ahead of
+  origin and tagged v0.1.0; nothing pushed. Post-sprint chat archived as CHAT_POST_SPRINT_9.
 
 ## Current Task
-**Sprint:** 9 — SDLC tooling + fingerprint package split (`docs/sprints/USER_STORIES_SPRINT9.md`, board: `task.md`)
-**Status:** Sprint 9 complete
+**Status:** No sprint in flight. Sprint 9 closed; post-sprint maintenance closed.
 
 ## Next Steps
-No active sprint. Next sprint: check docs/SDLC.md, create sprint-<N> from clean main, post phase markers.
+Cold start:
+1. Read `task.md` (board), `docs/SDLC.md` (how changes are made) and the last message in
+   `agents/CHAT.md`.
+2. Waiting on the owner: PyPI one-time setup, `git push origin main`, `git push origin v0.1.0`,
+   and the bob_protocol sync (see task.md, Owner actions).
+3. Next request in the queue: **artifact rubrics** — the owner still has to choose the pilot
+   (stories alone, or stories + SDLC + lessons). Inventory and recommendation were given
+   2026-10-13; start by writing a stories template with a rubric appendix once they choose.
+4. Starting any sprint: confirm `docs/SDLC.md` exists, create `sprint-<N>` from a clean `main`
+   before Cypher writes stories (next is sprint-10, next story STORY-FING-31), post a
+   `--cmd "phase <N>"` marker at each phase start and `phase close` at close-out.
+5. Active scope is the fingerprint tool only; do not schedule work on parked modules.
 
 ---
-*Last updated: 2026-10-13T00:09:31-04:00*
+*Last updated: 2026-10-13T20:02:25-04:00*
