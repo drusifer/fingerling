@@ -77,7 +77,7 @@ A summary goes to stderr; stdout is left empty. Exit status: `0` set written and
 ```
 fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log.jsonl
   fingerprints: 4 new, 0 updated, 4 total in set
-  skipped: 0 malformed lines, 0 aggregate values
+  skipped: 0 malformed lines, 0 unusable aggregate values
   wrote web.fingerprints.yaml (profile 37087e1858c85f7cb976959311d01b65)
 ```
 
@@ -123,8 +123,8 @@ aggregates:
   | `{name: LAST, n: N}` | the `N` most recent values of the path |
 
   One function stores its value directly; several store a map by function name. Numbers and
-  numeric strings count as numbers. A value a function can't use, or an event where the path
-  matches nothing, is skipped for that aggregate and counted in the summary.
+  numeric strings count as numbers. A value a function can't use is skipped for that aggregate
+  and counted in the summary; an event where the path matches nothing is not counted.
 
 Profiles are checked before any event is read, against a JSON Schema plus the checks a schema
 cannot express (regexes, JSONPaths, ranges, duplicate keys). Every problem is listed with its

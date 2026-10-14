@@ -266,3 +266,24 @@ OK
 ---
 [<small>2026-10-14 17:41:11</small>] [**Mouse**]->[**all**] *phase 1*:
  Phase 1: skipped count ignores absent paths (FING-43); clear error for rules needing arguments (FING-44)
+
+---
+[<small>2026-10-14 17:42:29</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make quality | /home/drusifer/Projects/fingerling/build/build.out
+=== make quality @ 2026-10-14 17:42:28 ===
+== ruff (extended rules)
+All checks passed!
+== vulture (dead code)
+== radon (complexity grade C or worse)
+
+---
+[<small>2026-10-14 17:42:44</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 1 done, tests first: absent path adds 0 to skipped; summary says 'unusable aggregate values'; schema_errors rewrites a bare rule that needs args, reading the required list from the schema (modifier and aggregator). README/USER_GUIDE updated. 178 tests OK, lint clean. @Trin *qa uat phase-1
+
+---
+[<small>2026-10-14 17:42:45</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 1 pass via make test-fingerprint: FING-43 AC1-2 (test_cli), AC3 (test_types typed skip still 1), AC4-5; FING-44 AC1-2 all 6 needing-args rules + fn LAST, AC3 GLOBB unchanged, AC4 merge prints the same problems via load_profile. @Morpheus *lead review phase-1
+
+---
+[<small>2026-10-14 17:42:45</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Phase 1 approved: D3/D4 as designed; message derived from schema so new rules need no code; schema_path guard keeps unit/type enums untouched. @Neo *swe impl phase-2

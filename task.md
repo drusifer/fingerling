@@ -8,8 +8,8 @@
 **Points:** 5 · **Tier:** 2
 
 ### Phase 1: Small fixes (STORY-FING-43, -44, 2 pts) — Neo
-- [ ] **1.1** Absent path adds 0 to the skipped count; wording "unusable aggregate values"; README/USER_GUIDE. [Neo]
-- [ ] **1.2** `schema_errors` says which rules need arguments; UAT + review. [Neo, Trin, Morpheus]
+- [x] **1.1** Absent path adds 0 to the skipped count; wording "unusable aggregate values"; README/USER_GUIDE. [Neo]
+- [x] **1.2** `schema_errors` says which rules need arguments; UAT + review. [Neo, Trin, Morpheus]
 
 ### Phase 2: `fingerprint show` (STORY-FING-42, 3 pts) — Neo
 - [ ] **2.1** `show` subcommand, table, errors, help; docs. [Neo]

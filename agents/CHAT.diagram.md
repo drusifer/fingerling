@@ -89,4 +89,10 @@ sequenceDiagram
     Note right of Morpheus: "Plan approved: matches<br/>D1-D4, fixes first so<br/>show's help lands on a<br/>clean summary. @Neo *swe<br/>impl phase-1"
     Mouse->>All: "phase 1"
     Note right of Mouse: "Phase 1: skipped count<br/>ignores absent paths<br/>(FING-43), clear error<br/>for rules needing<br/>arguments (FING-44)"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Phase 1 done, tests<br/>first: absent path adds<br/>0 to skipped, summary<br/>says 'unusable aggregate<br/>values', schema_errors<br/>rewrites a bare rule<br/>that…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase 1 pass via<br/>make test-fingerprint:<br/>FING-43 AC1-2<br/>(test_cli), AC3<br/>(test_types typed skip<br/>still 1), AC4-5, FING-44<br/>AC1-2 all 6 needi…"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Phase 1 approved: D3/D4<br/>as designed, message<br/>derived from schema so<br/>new rules need no code,<br/>schema_path guard keeps<br/>unit/type enums untouch…"
 ```
