@@ -214,3 +214,18 @@ All checks passed!
 ---
 [<small>2026-10-14 17:30:12</small>] [**Morpheus**]->[**User**] *lead review*:
  Approved: types are a third Rule family; no parser options.
+
+---
+[<small>2026-10-14 17:32:49</small>] [**User**]->[**all**] *request*:
+ stay at v0 no back compat until v1 ok?
+
+---
+[<small>2026-10-14 17:33:26</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make smoke | /home/drusifer/Projects/fingerling/build/build.out
+fingerprint_sampler-0.2.0-py3-none-any.whl
+...
+----------------------------------------------------------------------
+fingerprint_sampler-0.2.0.tar.gz
+Ran 3 tests in 1.332s
+
+OK

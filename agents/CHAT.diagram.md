@@ -68,4 +68,6 @@ sequenceDiagram
     Note right of Trin: "UAT pass via make: zones<br/>normalise, non-ISO<br/>counts as<br/>missing/skipped, TRUNC<br/>units, save/load keeps<br/>datetime state, type<br/>changes profile id…"
     Morpheus->>User: "lead review"
     Note right of Morpheus: "Approved: types are a<br/>third Rule family, no<br/>parser options."
+    User->>All: "request"
+    Note right of User: "stay at v0 no back<br/>compat until v1 ok?"
 ```

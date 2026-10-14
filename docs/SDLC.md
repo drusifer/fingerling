@@ -208,8 +208,9 @@ before the merge.
   a release reaches PyPI only when the project owner pushes the tag.
 - **Artifact:** wheel + sdist from `make build`. Distribution `fingerprint-sampler`, import
   package `fingerprint_sampler`, commands `fingerprint` and `fingerprint-sampler`.
-- **Data format versions:** fingerprint set files carry `version: 1`; profiles carry
-  `version: 1`. A format change is a breaking change.
+- **Data format versions:** profiles and set files carry `version: 0` and stay there until 1.0
+  (owner, 2026-10-14). Formats may change at any time before then; a file in an older shape is
+  not migrated. At 1.0 they become `version: 1` and changes need a version bump.
 
 ## 8. CI / deploy
 

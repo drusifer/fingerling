@@ -134,7 +134,7 @@ def load_profile(path: str) -> Profile: ...   # ProfileError.problems lists ever
 
 Aggregate state is keyed by function name, so changing `LAST`'s `n` keeps collected samples.
 Numeric functions accept ints, floats and numeric strings; other values are skipped and counted
-in `FingerprintSet.skipped_values`. The set file is version 3 (`version`, `profile_id`,
+in `FingerprintSet.skipped_values`. The set file is version 0 until 1.0 (`version`, `profile_id`,
 `fingerprints`).
 
 ### 4.3 `ringbuffer.py` (STORY-FING-03)
