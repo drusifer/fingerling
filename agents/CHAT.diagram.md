@@ -52,4 +52,10 @@ sequenceDiagram
     Note right of Bob: "Fix loop updated: new<br/>step 0 - Neo diagnoses<br/>without changing code,<br/>tells the user actual vs<br/>expected, cause and<br/>proposed fix, and waits<br/>fo…"
     User->>All: "request"
     Note right of User: "yes and... (flatten<br/>single-function<br/>aggregate state,<br/>FIRST/LAST without n<br/>keep one value)"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Done: single-function<br/>aggregates store the<br/>value directly, MIN/MAX<br/>order text (ISO times)<br/>as well as numbers,<br/>built-in<br/>first_seen/last_seen…"
+    Trin->>Morpheus: "qa uat"
+    Note right of Trin: "UAT pass via make: out-<br/>of-order ISO times,<br/>numeric strings as<br/>numbers, mixed kinds<br/>skipped and counted,<br/>multi-function maps,<br/>split runs equ…"
+    Morpheus->>User: "lead review"
+    Note right of Morpheus: "Approved: accept/fold<br/>pure functions,<br/>Aggregate owns storage<br/>layout, no first/last-<br/>seen special case."
 ```

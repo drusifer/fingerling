@@ -163,3 +163,15 @@ fingerprint_sampler-0.2.0.tar.gz
 Ran 3 tests in 1.354s
 
 OK
+
+---
+[<small>2026-10-14 17:22:53</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Done: single-function aggregates store the value directly; MIN/MAX order text (ISO times) as well as numbers; built-in first_seen/last_seen = MIN/MAX of meta.seen (owner's idea); FIRST/LAST need n. Set file v3. Tests first; lint, quality, 162 + 50 tests, smoke pass. @Trin *qa uat
+
+---
+[<small>2026-10-14 17:22:53</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ UAT pass via make: out-of-order ISO times, numeric strings as numbers, mixed kinds skipped and counted, multi-function maps, split runs equal one run. @Morpheus *lead review
+
+---
+[<small>2026-10-14 17:22:53</small>] [**Morpheus**]->[**User**] *lead review*:
+ Approved: accept/fold pure functions, Aggregate owns storage layout; no first/last-seen special case.
