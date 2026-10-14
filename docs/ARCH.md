@@ -13,11 +13,12 @@ published, general-purpose tool for any JSONL event stream. **This is the active
 
 | Module | Story | Responsibility |
 |---|---|---|
-| `fingerprint_sampler/tokenizer.py` | FING-01, -07, -23 | JSONPath extraction (via `python-jsonpath`, full syntax) + modifier engine |
+| `fingerprint_sampler/tokenizer.py` | FING-01, -07, -23, -36 | JSONPath extraction (via `python-jsonpath`, full syntax) + modifier engine (`Modifier`: bare name or mapping) |
 | `fingerprint_sampler/aggregators.py` | FING-25 | Per-fingerprint `SUM`/`AVG`/`MIN`/`MAX`/`LAST(n)` state, mergeable across runs |
 | `fingerprint_sampler/warehouse.py` | FING-02, -25 | The fingerprint set: MD5 IDs, stateful upsert, versioned atomic YAML file |
-| `fingerprint_sampler/profile.py` | FING-24 | YAML profile loading + validation, `profile_id` |
-| `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28 | `fingerprint merge` — merge a stream into a set |
+| `fingerprint_sampler/profile.py` | FING-24, -37 | YAML profile loading; `check_profile` reports every problem (schema layer, then semantic layer); `profile_id` |
+| `fingerprint_sampler/schema.py`, `profile.schema.json` | FING-37 | The published profile JSON Schema (Draft 2020-12) and the `jsonschema` validator over it; also validates a single modifier for `Modifier.of` |
+| `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28, -37 | `fingerprint merge` — merge a stream into a set; `fingerprint check` — list a profile's problems |
 
 It depends only on PyYAML, python-jsonpath and jsonschema and never imports `fingerling`.
 

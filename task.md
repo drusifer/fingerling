@@ -10,16 +10,16 @@
 **Points:** 8 · **Tier:** 2 (fast-track)
 
 ### Phase 0: Current Python (STORY-FING-35, 2 pts) — Tank
-- [ ] **0.1** Floor 3.14 in both manifests, `.python-version`, `PYTHONS`, CI matrix, ruff target; `jsonschema` added and installs on 3.14/3.15. [Tank]
-- [ ] **0.2** SDLC sections 1, 3, 8 + DECISIONS entry; UAT + review. [Tank, Trin, Morpheus]
+- [x] **0.1** Floor 3.14 in both manifests, `.python-version`, `PYTHONS`, CI matrix, ruff target; `jsonschema` added and installs on 3.14/3.15. [Tank]
+- [x] **0.2** SDLC sections 1, 3, 8 + DECISIONS entry; UAT + review. [Tank, Trin, Morpheus]
 
 ### Phase 1: Modifier arguments as YAML (STORY-FING-36, 3 pts) — Neo
-- [ ] **1.1** `Modifier` object, mapping form, flags; string parser deleted; parked code and tests moved to the mapping form. [Neo]
-- [ ] **1.2** Example profiles and docs; UAT + review. [Neo, Trin, Morpheus]
+- [x] **1.1** `Modifier` object, mapping form, flags; string parser deleted; parked code and tests moved to the mapping form. [Neo]
+- [x] **1.2** Example profiles and docs; UAT + review. [Neo, Trin, Morpheus]
 
 ### Phase 2: Profile checking (STORY-FING-37, 3 pts) — Neo
-- [ ] **2.1** `profile.schema.json`, `check_profile`, hand-written structure checks deleted. [Neo]
-- [ ] **2.2** `fingerprint check`; `merge` uses it; editor hint in README and examples; UAT + review. [Neo, Trin, Morpheus]
+- [x] **2.1** `profile.schema.json`, `check_profile`, hand-written structure checks deleted. [Neo]
+- [x] **2.2** `fingerprint check`; `merge` uses it; editor hint in README and examples; UAT + review. [Neo, Trin, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge, release 0.2.0 [Tank, Oracle, Smith, All]
@@ -131,5 +131,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 - Fingerprint tool: `fingerprint show` (table/report view of a set); reword "skipped aggregate values"; event-time timestamps; set-to-set merge; rename `Warehouse` before 1.0.
 - Process: decide how chat logging between sprints should work (it modifies `agents/CHAT.md`, which the SDLC says must not be committed straight to `main`); `--svg`/mermaid lint of chat reports need Node.
 - For Tank: `make test-fingerprint ARGS=test_cli` fails with ModuleNotFoundError although SDLC section 3 documents it; SDLC sections 8 and 9 still say the first CI result is unknown (it passed).
+- Tooling (via): the index misses most project functions (e.g. `load_profile`) even after `via index --force .`, still lists deleted files, `--via calls` returns the anchor instead of callers, and the MCP tool's `--canned` queries are rejected. Found 2026-10-13 in Sprint 11; work fell back to grep.
+- Usability (fingerprint): a bare `modifier: GLOB` is reported as "'GLOB' is not one of ['DEFAULT', 'IS_PRESENT', 'IS_NULL']", which does not say GLOB needs a mapping. Smith, Sprint 11.
 - Tooling (bob_protocol): `bobp prep-tldr` is broken (imports `via` as a library), so Oracle's TLDR sweep cannot run.
 - Parked (not scheduled while the fingerprint tool is the focus): n-gram/Jaccard stage, `examples/demo.py` markup sweep and smoke test, `sudo make demo-live` verification, `tests/test_server.py` private access, USER_GUIDE GitOps/sandbox sections.

@@ -123,8 +123,11 @@ aggregates:
   Numeric functions accept numbers and numeric strings. An event where the path matches nothing,
   or a value isn't numeric, is skipped for that aggregate and counted in the summary.
 
-Profiles are validated before any event is read; an error names the file and the entry, e.g.
-`app.yaml: fields[2] (key 'port'): Unknown modifier: 'UPPER'`.
+Profiles are checked before any event is read, against a JSON Schema plus the checks a schema
+cannot express (regexes, JSONPaths, ranges, duplicate keys). Every problem is listed with its
+file and location, e.g. `app.yaml: fields[2] (key 'port') → modifier: 'values' is a required
+property`. Run `fingerprint check app.yaml` to check a profile on its own (exit 0 valid, 1 not);
+see the package README for using the schema in an editor.
 
 Two profiles ship as starting points: `packages/fingerprint-sampler/examples/access_log.yaml`
 (web access logs) and `examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../packages/fingerprint-sampler/src/fingerprint_sampler/profile.schema.json
 # Fingerprint profile for Tetragon-shaped eBPF process telemetry
 # (the event shape `python -m fingerling.capture` emits).
 version: 1

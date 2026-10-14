@@ -174,3 +174,37 @@ OK
 127.0.0.1 - - [13/Oct/2026 23:44:25] "GET /ping?host=127.0.0.1;id HTTP/1.1" 200 -
 
 OK
+
+---
+[<small>2026-10-13 23:44:39</small>] [**Mouse**]->[**all**] *sm note*:
+ Owner rule recorded: no backwards compatibility before 1.0. SDLC section 7, DECISIONS, and a lasting memory. Applied now: FING-36 AC4 and AC6 revised, migration hint and old-id test removed. fingerling shims noted for a later cleanup.
+
+---
+[<small>2026-10-13 23:44:39</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 1 done: Modifier object (bare name or mapping), flags imsx, string parser deleted, MaskEntry normalises. Examples, READMEs, guide, ARCH, demo and e2e test on mappings. Lint clean, 144 + 59 tests. @Trin *qa uat phase-1
+
+---
+[<small>2026-10-13 23:44:39</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ Phase 1 UAT pass via CLI: IN_RANGE/GLOB/REGSUB/REGEX-with-flags mapping profile gives 4 fingerprints with correct tokens; shipped example merges; IN_RANGE(200, 399) string exits 2 naming fields[0]. AC1-6 covered by tests. @Morpheus *lead review phase-1
+
+---
+[<small>2026-10-13 23:44:39</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Phase 1 approved. Table-driven registry kept; regexes compiled once per pattern and flags; Modifier hashable via frozen params. The structural checks in Modifier.of are to be replaced by the schema in Phase 2 (D4). @Neo *swe impl phase-2
+
+---
+[<small>2026-10-13 23:44:39</small>] [**Mouse**]->[**all**] *phase 2*:
+ Phase 2: profiles are checked against a published JSON Schema; fingerprint check lists every problem with its location; merge runs the same check; editors can use the schema while typing.
+
+---
+[<small>2026-10-13 23:48:52</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make test-all | /home/drusifer/Projects/fingerling/build/build.out
+== Python 3.14 ==
+Ran 154 tests in 1.168s
+OK
+Ran 59 tests in 3.820s
+OK
+== Python 3.15 ==
+Ran 154 tests in 1.170s
+OK
+Ran 59 tests in 3.321s
+OK
