@@ -148,3 +148,30 @@ All checks passed!
 ---
 [<small>2026-10-14 14:00:24</small>] [**Bob**]->[**User**] *prompt update*:
  Fix loop updated: new step 0 - Neo diagnoses without changing code, tells the user actual vs expected, cause and proposed fix, and waits for confirmation. Same rule on Neo's *swe fix. Applied here and in bob_protocol (uncommitted there).
+
+---
+[<small>2026-10-14 17:18:46</small>] [**User**]->[**all**] *request*:
+ yes and... (flatten single-function aggregate state; FIRST/LAST without n keep one value)
+
+---
+[<small>2026-10-14 17:22:35</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make smoke | /home/drusifer/Projects/fingerling/build/build.out
+fingerprint_sampler-0.2.0-py3-none-any.whl
+...
+----------------------------------------------------------------------
+fingerprint_sampler-0.2.0.tar.gz
+Ran 3 tests in 1.354s
+
+OK
+
+---
+[<small>2026-10-14 17:22:53</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Done: single-function aggregates store the value directly; MIN/MAX order text (ISO times) as well as numbers; built-in first_seen/last_seen = MIN/MAX of meta.seen (owner's idea); FIRST/LAST need n. Set file v3. Tests first; lint, quality, 162 + 50 tests, smoke pass. @Trin *qa uat
+
+---
+[<small>2026-10-14 17:22:53</small>] [**Trin**]->[**Morpheus**] *qa uat*:
+ UAT pass via make: out-of-order ISO times, numeric strings as numbers, mixed kinds skipped and counted, multi-function maps, split runs equal one run. @Morpheus *lead review
+
+---
+[<small>2026-10-14 17:22:53</small>] [**Morpheus**]->[**User**] *lead review*:
+ Approved: accept/fold pure functions, Aggregate owns storage layout; no first/last-seen special case.
