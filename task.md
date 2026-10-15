@@ -12,8 +12,8 @@
 - [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Phase 2: Drop already-merged events (STORY-FING-50, D3-D4) — Neo
-- [ ] **2.1** `_Sequencer` in the fold; path-change notice; summary, run header; help, README, USER_GUIDE. [Neo]
-- [ ] **2.2** UAT + review. [Trin, Morpheus]
+- [x] **2.1** `_Sequencer` in the fold; path-change notice; summary, run header; help, README, USER_GUIDE. [Neo]
+- [x] **2.2** UAT + review. [Trin, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]

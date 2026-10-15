@@ -128,3 +128,26 @@ All checks passed!
 ---
 [<small>2026-10-14 20:39:05</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
  Phase 1 approved: D1-D2 as designed. @Neo *swe impl phase-2
+
+---
+[<small>2026-10-14 20:39:05</small>] [**Mouse**]->[**all**] *phase 2*:
+ Phase 2: drop already-merged events (FING-50, D3-D4)
+
+---
+[<small>2026-10-14 20:40:33</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-14 20:40:33 ===
+All checks passed!
+42 files already formatted
+
+---
+[<small>2026-10-14 20:40:43</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 2 done, tests first: _Sequencer (keep/DROP/None vs run-start mark), path-change notice, set mark updated after the fold, dropped: summary line, run header sequence {min,max}, help/README/USER_GUIDE, DECISIONS. History step extracted after radon C. 218 OK, lint and quality clean. @Trin *qa uat phase-2
+
+---
+[<small>2026-10-14 20:40:43</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 2 pass: AC1 mark stored; AC2 3,5,6,8 vs 5 merges 6,8 -> max 8; AC3 dropped line (incl. no earlier mark); AC4 missing/abc/bool ids are line errors, exit 1; AC6 path change notice; AC7 header range, omitted when none merged; AC8 no-sequence profile keeps mark. AC5 at Smith's GH Archive test. @Morpheus *lead review phase-2
+
+---
+[<small>2026-10-14 20:40:43</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 2 approved: D3-D4 as designed; _Sequencer keeps the fold readable. All phases reviewed. @Tank *devops sdlc-check

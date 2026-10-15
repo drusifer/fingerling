@@ -80,6 +80,12 @@ source, counts), to `<set without extension>.history/<run id>.yaml`, where the r
 date, then a per-set number that only goes up, e.g. `261015-0003`); `fingerprint show`
 reads these files. A run with `-o` writes no history.
 
+**Duplicate protection.** A profile can name a sequence, `sequence: $.id` (a number in each
+event that only grows). The set keeps the highest one merged, and later runs drop events at or
+below it, so overlapping or repeated input is not counted twice; the summary adds
+`dropped: N events already merged (sequence ≤ M)`. An event without a usable sequence is a
+skipped line.
+
 ```
 fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log.jsonl
   fingerprints: 4 new, 0 updated, 4 total in set
