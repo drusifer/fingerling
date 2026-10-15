@@ -67,6 +67,8 @@
 - 2026-10-14 Sprint 15 (Shares of the Set) FING-46..47 and launch. Next story id STORY-FING-48. Top backlog: show --sort/--top.
 - 2026-10-14 Sprint 16 (Run History) FING-48 and launch. Next story id STORY-FING-49. Open owner calls: history size/speed, -o.
 
+- 2026-10-14 Sprint 17 (Duplicate Protection) FING-49..50 and launch. Next story id STORY-FING-51.
+
 ## Current Task
 **Sprint:** 10 — Artifact rubrics (`docs/sprints/USER_STORIES_SPRINT10.md`, board: `task.md`)
 **Status:** Sprint 10 complete

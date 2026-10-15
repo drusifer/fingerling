@@ -1,6 +1,25 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 16 (below).
+**No sprint in flight.** Last sprint: 17 (below).
+
+## Sprint 17: Duplicate Protection
+
+**Status:** Complete — launched 2026-10-14 (5/5 pts); merged to `main`; no release (mainline)
+**Branch:** `sprint-17` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_17.diagram.md`
+**Source:** `docs/sprints/USER_STORIES_SPRINT17.md` (stories + architecture D1-D4)
+**Points:** 5 · **Tier:** 2
+
+### Phase 1: Sequence in the profile and the set (STORY-FING-49, D1-D2) — Neo
+- [x] **1.1** Schema + `Profile.sequence`; `FingerprintSet.sequence` saved/loaded; GH Archive example. [Neo]
+- [x] **1.2** UAT + review. [Trin, Morpheus]
+
+### Phase 2: Drop already-merged events (STORY-FING-50, D3-D4) — Neo
+- [x] **2.1** `_Sequencer` in the fold; path-change notice; summary, run header; help, README, USER_GUIDE. [Neo]
+- [x] **2.2** UAT + review. [Trin, Morpheus]
+
+### Close
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 16: Run History
 
@@ -240,6 +259,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 ## Backlog (unscheduled)
 - **Top priority (Sprint 15 retro):** `fingerprint show --sort KEY` (any column, including `%` columns, e.g. `payload_bytes.SUM %`) and `--top N`.
 - **History weight (Sprint 16):** built-in samples cut to 1 first + 1 last (owner, 2026-10-14, `fix/one-sample`): run files 6.2 MB -> 2.1 MB on a GH Archive hour, the rest mostly the two sample events. Still open: merge ~1.7x slower (~115-119 s vs ~68 s), likely the second fold deep-copying each event for LAST; option: fold once and derive the run.
+- **Duplicate protection (Sprint 17):** confirm with the owner that an event missing its sequence is a line error (skipped, exit 1) rather than aborting the run; in-run duplicate detection if a stream needs it.
 - **`-o`:** owner may revisit (keep or drop); it writes no history.
 - Fingerprint tool: JSON Schema for set files, generated from the profile (offered 2026-10-14).
 - **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
