@@ -369,3 +369,6 @@ review should trace every AC to a literal function signature, not just a data-fl
 
 **Decision (owner, Sprint 17, 2026-10-14):** Duplicate protection by sequence: a profile may declare `sequence: <JSONPath>`; the set stores `sequence: {path, max}`; events at or below the max as of the run's start are dropped (equal counts as already merged). Declared in the profile (not a flag) so it cannot be forgotten on one run; compared with the run-start mark so out-of-order events within a run survive. With a sequence declared, an event without a usable one (missing, several values, non-numeric) is a line error: skipped, listed, exit 1 (assumed "errs" means line error, not abort).
 **Consequences:** Re-running over the same or overlapping input adds nothing twice. Duplicates inside one run are not caught. Changing the path resets the mark with a notice. Profile id unchanged.
+
+**Decision (owner, 2026-10-14, supersedes part of Sprint 17):** With a `sequence` declared, an event without a usable sequence is an ERROR, not a skipped line: "dup detection requires precision". The run stops at that line, nothing is written (set, mark and run file untouched) and the exit status is 2.
+**Consequences:** A stream with any unnumbered event cannot be merged under a sequence profile; fix the data or drop `sequence` from the profile.
