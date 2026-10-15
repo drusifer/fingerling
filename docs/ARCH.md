@@ -106,14 +106,14 @@ def fingerprint_id(tokens: dict[str, str]) -> str: ...
 class Fingerprint:
     tokens: dict[str, str]
     aggregates: dict[str, Any]      # the profile's: key -> value (one fn) or {"MIN": .., "MAX": ..}
-    meta: dict[str, Any]            # builtin.yaml: count, first_seen/last_seen (MIN/MAX), first/last
+    meta: dict[str, Any]            # builtin.yaml: count, first_seen/last_seen (MIN/MAX run id), first/last
 
 def builtin_aggregates() -> tuple[Aggregate, ...]: ...   # parsed once from builtin.yaml
 
 class FingerprintSet:
     def __init__(self, aggregates=(), profile_id=None): ...
     # upsert folds the profile's aggregates over the record, and the built-in ones over the
-    # envelope {"meta": {"seen": <wall clock>}, "record": record}: injected fields can't clash.
+    # envelope {"meta": {"run": <run id>}, "record": record}: injected fields can't clash.
     def upsert(self, tokens: dict[str, str], event: Any, timestamp: str | None = None) -> str: ...
     def load(self, path: str, *, force: bool = False) -> None: ...  # ProfileMismatchError unless force
     def save(self, path: str) -> None: ...                           # temp file + os.replace
