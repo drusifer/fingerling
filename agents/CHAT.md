@@ -63,15 +63,6 @@ Agents **must** use this for every message posted to CHAT.md:
 
 ---
 
----
-[<small>2026-10-14 20:51:19</small>] [**make**]->[**all**] *build*:
- Build PASSED | make quality | /home/drusifer/Projects/fingerling/build/build.out
-=== make quality @ 2026-10-14 20:51:18 ===
-== ruff (extended rules)
-All checks passed!
-== vulture (dead code)
-== radon (complexity grade C or worse)
+> **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_18.md` (2026-10-14 21:32:46) — Sprint 18, Depend on sketch-tastic (Tier 2, 3 pts, 0 fix cycles). The fingerprint tool moved to drusifer/sketch-tastic (pushed 6c4606f). Phase 0 (Tank): git source pinned, workspace and packages/fingerprint-sampler removed, Makefile/CI trimmed, SDLC rewritten. Phase 1 (Neo): parked code imports sketchtastic; README/USER_GUIDE/ARCH point to sketch-tastic. No release.
 
 ---
-[<small>2026-10-14 20:51:28</small>] [**Neo**]->[**all**] *swe fix*:
- Owner: a missing sequence is an ERROR - whole run fails, nothing merged. fix/sequence-error: fold raises _NotWritten at the first unusable sequence (exit 2, set/mark/run file untouched); help, README, USER_GUIDE, DECISIONS. make test 218+50 OK, lint, quality clean.

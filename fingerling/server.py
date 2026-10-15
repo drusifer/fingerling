@@ -11,14 +11,15 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 
+from sketchtastic import Field, Sketch
+
 from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.tokenizer import parse_jsonl, tokenize
-from fingerprint_sampler import Field, FingerprintSet
 
 
 def create_handler(
-    warehouse: FingerprintSet,
+    warehouse: Sketch,
     matcher: SlidingWindowMatcher,
     mask_profile: list[Field],
     workload_name: str,
@@ -124,7 +125,7 @@ def create_handler(
 
 def run_server(
     port: int,
-    warehouse: FingerprintSet,
+    warehouse: Sketch,
     matcher: SlidingWindowMatcher,
     mask_profile: list[Field],
     workload_name: str,

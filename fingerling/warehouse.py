@@ -1,13 +1,14 @@
-"""Telemetry-side helpers around the fingerprint set (which lives in `fingerprint_sampler`):
+"""Telemetry-side helpers around the sketch (from the sketch-tastic package, `sketchtastic`):
 the aggregates the telemetry pipeline tracks and the N-gram baseline helper.
 """
 
 from __future__ import annotations
 
+from sketchtastic.aggregators import Aggregate
+from sketchtastic.model import Field
+from sketchtastic.sketch import Sketch
+
 from fingerling.tokenizer import tokenize
-from fingerprint_sampler.aggregators import Aggregate
-from fingerprint_sampler.fingerprint_set import FingerprintSet
-from fingerprint_sampler.model import Field
 
 TELEMETRY_AGGREGATES: tuple[Aggregate, ...] = (
     Aggregate("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
@@ -19,11 +20,11 @@ def build_whitelist(
     records: list[dict],
     mask_profile: list[Field],
     n: int,
-    warehouse: FingerprintSet | None = None,
+    warehouse: Sketch | None = None,
 ) -> set[tuple[str, ...]]:
     """Observe a clean baseline telemetry stream and compile a whitelist of N-gram fingerprint trajectories."""
     if warehouse is None:
-        warehouse = FingerprintSet()
+        warehouse = Sketch()
     fingerprint_ids = []
     for r in records:
         tokens = tokenize(r, mask_profile)

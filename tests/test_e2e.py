@@ -10,11 +10,11 @@ one module produces not matching what the next module expects).
 import unittest
 
 import yaml
+from sketchtastic import Field, Sketch
 
 from fingerling.policy import compile_policy
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.tokenizer import parse_jsonl, tokenize
-from fingerprint_sampler import Field, FingerprintSet
 
 TELEMETRY_JSONL = "\n".join(
     [
@@ -45,7 +45,7 @@ MASK_PROFILE = [
 class EndToEndPipelineTests(unittest.TestCase):
     def test_clean_trajectory_stays_below_anomaly_threshold(self):
         records = parse_jsonl(TELEMETRY_JSONL)
-        warehouse = FingerprintSet()
+        warehouse = Sketch()
         fingerprint_ids = [
             warehouse.upsert(tokenize(record, MASK_PROFILE), record, run=f"t{i}")
             for i, record in enumerate(records)
@@ -61,7 +61,7 @@ class EndToEndPipelineTests(unittest.TestCase):
 
     def test_anomalous_trajectory_triggers_policy_compilation(self):
         records = parse_jsonl(TELEMETRY_JSONL)
-        warehouse = FingerprintSet()
+        warehouse = Sketch()
         fingerprint_ids = [
             warehouse.upsert(tokenize(record, MASK_PROFILE), record, run="t") for record in records
         ]
@@ -91,7 +91,7 @@ class EndToEndPipelineTests(unittest.TestCase):
         # Same record processed twice end-to-end -> same fingerprint, occurrence count grows,
         # warehouse entry count does not.
         record = parse_jsonl(TELEMETRY_JSONL)[0]
-        warehouse = FingerprintSet()
+        warehouse = Sketch()
 
         fid_1 = warehouse.upsert(tokenize(record, MASK_PROFILE), record, run="t1")
         fid_2 = warehouse.upsert(tokenize(record, MASK_PROFILE), record, run="t2")

@@ -24,13 +24,14 @@ import time
 import urllib.error
 import urllib.request
 
+from sketchtastic import Field, Sketch, skit_id
+
 from examples.vulnerable_app import run_app
 from fingerling.gitops import initialize_repo
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
 from fingerling.vaccine import run_vaccination
 from fingerling.warehouse import TELEMETRY_AGGREGATES
-from fingerprint_sampler import Field, FingerprintSet, fingerprint_id
 
 
 def get_free_port() -> int:
@@ -64,10 +65,10 @@ def main() -> None:
     app_thread.start()
 
     # Pre-seed whitelist with (ping, ping)
-    fid_ping = fingerprint_id({"hook_syscall": "ping"})
+    fid_ping = skit_id({"hook_syscall": "ping"})
     matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
     mask_profile = [Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
-    warehouse = FingerprintSet(aggregates=TELEMETRY_AGGREGATES)
+    warehouse = Sketch(aggregates=TELEMETRY_AGGREGATES)
 
     webhook_server = run_server(
         port=webhook_port,

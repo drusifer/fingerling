@@ -372,3 +372,6 @@ review should trace every AC to a literal function signature, not just a data-fl
 
 **Decision (owner, 2026-10-14, supersedes part of Sprint 17):** With a `sequence` declared, an event without a usable sequence is an ERROR, not a skipped line: "dup detection requires precision". The run stops at that line, nothing is written (set, mark and run file untouched) and the exit status is 2.
 **Consequences:** A stream with any unnumbered event cannot be merged under a sequence profile; fix the data or drop `sequence` from the profile.
+
+**Decision (owner, 2026-10-14, Sprint 18):** The fingerprint tool moved to its own repository, `drusifer/sketch-tastic` (history kept via `git subtree split`), renamed `sketch-tastic` / `sketchtastic` / `skt` with the sketch (set) and skit (one fingerprint) vocabulary. fingerling depends on it through git, pinned to a pushed commit; `packages/fingerprint-sampler`, its make targets and the publish workflow are removed here. New decisions about the tool are recorded in sketch-tastic.
+**Consequences:** One place to develop the tool. fingerling's parked code imports `sketchtastic`; moving the pin is a deliberate `uv lock`. `make install` needs network access to GitHub.

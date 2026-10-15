@@ -10,10 +10,11 @@ import sys
 # Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from sketchtastic import Field, Sketch, skit_id
+
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
 from fingerling.warehouse import TELEMETRY_AGGREGATES
-from fingerprint_sampler import Field, FingerprintSet, fingerprint_id
 
 
 def main() -> None:
@@ -25,10 +26,10 @@ def main() -> None:
     args = parser.parse_args()
 
     # Pre-seed whitelist with (ping, ping)
-    fid_ping = fingerprint_id({"hook_syscall": "ping"})
+    fid_ping = skit_id({"hook_syscall": "ping"})
     matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
     mask_profile = [Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
-    warehouse = FingerprintSet(aggregates=TELEMETRY_AGGREGATES)
+    warehouse = Sketch(aggregates=TELEMETRY_AGGREGATES)
 
     server = run_server(
         port=args.port,

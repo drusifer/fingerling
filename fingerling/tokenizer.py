@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from fingerprint_sampler.model import Field, tokens
+from sketchtastic.model import Field, tokens
 
 
 def tokenize(record: Any, fields: list[Field]) -> dict[str, str]:

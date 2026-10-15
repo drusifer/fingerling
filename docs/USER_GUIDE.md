@@ -1,26 +1,24 @@
 # Project Fingerling — User Guide
 
-This guide covers the fingerprint sampling CLI, the library modules behind it, and the
-detection/vaccination pipeline built on top (see `docs/ARCH.md` for the module map).
+This guide covers the parked detection/vaccination pipeline (see `docs/ARCH.md` for the module
+map). The fingerprint tool it builds on, sketch-tastic, has its own documentation:
+[drusifer/sketch-tastic](https://github.com/drusifer/sketch-tastic).
 
-The fingerprint tool and its library run fully offline. The vaccination TUI demo additionally
+The pipeline runs offline once installed. The vaccination TUI demo additionally
 needs Linux, root and `bpftrace`. There is still no live Kubernetes/KubeArmor integration —
 policy enforcement is simulated.
 
 ## Contents
 
 1. [Install](#install)
-2. [Fingerprint CLI](#fingerprint-cli)
-3. [The Pipeline at a Glance](#the-pipeline-at-a-glance)
-4. [Module Reference](#module-reference)
-   - [`fingerprint_sampler.tokenizer`](#fingerprint_samplertokenizer)
-   - [`fingerprint_sampler.fingerprint_set`](#fingerprint_samplerfingerprint_set)
+2. [The Pipeline at a Glance](#the-pipeline-at-a-glance)
+3. [Module Reference](#module-reference)
    - [`fingerling.ringbuffer`](#fingerlingringbuffer) *(parked)*
    - [`fingerling.policy`](#fingerlingpolicy) *(parked)*
-5. [End-to-End Pipeline](#end-to-end-pipeline) *(parked)*
-6. [Interactive Vaccination TUI Demo](#interactive-closed-loop-vaccination-tui-demo) *(parked)*
-7. [Known Gaps](#known-gaps-see-backlog)
-8. [Troubleshooting / FAQ](#troubleshooting--faq)
+4. [End-to-End Pipeline](#end-to-end-pipeline) *(parked)*
+5. [Interactive Vaccination TUI Demo](#interactive-closed-loop-vaccination-tui-demo) *(parked)*
+6. [Known Gaps](#known-gaps-see-backlog)
+7. [Troubleshooting / FAQ](#troubleshooting--faq)
 
 ## Install
 
@@ -33,178 +31,26 @@ make test       # full suite, offline
 `make install` builds an isolated project virtualenv; nothing is installed into the system
 Python. Dependencies are declared in `pyproject.toml` (`rich`, used only by the TUI demo, is the
 `demo` extra). Every `make` target runs inside `.venv` and tells you to run `make install` if it
-is missing. Installing also creates the `fingerprint` command at `.venv/bin/fingerprint`. `make distclean` removes the environment.
-
-## Fingerprint CLI
-
-The fingerprint tool is its own package, `fingerprint-sampler`, in
-`packages/fingerprint-sampler/` (import name `fingerprint_sampler`, command `fingerprint`). Its
-[README](../packages/fingerprint-sampler/README.md) is the reference for people installing it on
-its own; this section covers using it from a checkout.
-
-`fingerprint` is a general-purpose sampler for JSONL event streams — logs, traces, audit events,
-kernel telemetry, anything with one JSON object per line. It reduces each event to a
-**fingerprint** (a stable ID for "this shape of event") and maintains a **fingerprint set**: one
-entry per distinct fingerprint with a count, first/last seen, and whatever statistics and samples
-you ask for. The set grows across runs:
-
-```
-existing set  +  stream of events  ->  updated set
-```
-
-```sh
-# first run creates the set; every later run merges into it
-make fingerprint ARGS="-p packages/fingerprint-sampler/examples/access_log.yaml -s web.fingerprints.yaml packages/fingerprint-sampler/examples/access_log.jsonl"
-
-# read from a pipe ('-' or no EVENTS argument means stdin)
-tail -n 1000 app.jsonl | .venv/bin/fingerprint merge -p app.yaml -s app.fingerprints.yaml -
-
-# trial run: write the merged result elsewhere and leave the set untouched
-.venv/bin/fingerprint merge -p app.yaml -s app.fingerprints.yaml -o /tmp/preview.yaml new.jsonl
-```
-
-| Option | Meaning |
-|---|---|
-| `-p`, `--profile PROFILE` | YAML profile (below). Required. |
-| `-s`, `--set SET` | Fingerprint set to merge into. Created if missing, **updated in place**. Required. |
-| `EVENTS` | JSONL file; `-` or omitted reads stdin. |
-| `-o`, `--output OUTPUT` | Write the merged set here instead; `SET` is left unchanged. |
-| `--force-profile` | Merge even though `SET` was built with a different profile. |
-
-A summary goes to stderr; stdout is left empty. Exit status: `0` set written and every line used ·
-`1` set written but some lines were skipped · `2` nothing written · `3` set written but its
-history file was not.
-
-Each run that updates the set also writes just its own fingerprints, with a `run:` header (times,
-source, counts), to `<set without extension>.history/<run id>.yaml`, where the run id is `YYMMDD-SEQ` (UTC
-date, then a per-set number that only goes up, e.g. `261015-0003`); `fingerprint show`
-reads these files. A run with `-o` writes no history.
-
-**Duplicate protection.** A profile can name a sequence, `sequence: $.id` (a number in each
-event that only grows). The set keeps the highest one merged, and later runs drop events at or
-below it, so overlapping or repeated input is not counted twice; the summary adds
-`dropped: N events already merged (sequence ≤ M)`. An event without a usable sequence is an
-error: the run fails, nothing is written, exit status 2.
-
-```
-fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log.jsonl
-  fingerprints: 4 new, 0 updated, 4 total in set
-  skipped: 0 malformed lines, 0 unusable aggregate values
-  wrote web.fingerprints.yaml (profile 37087e1858c85f7cb976959311d01b65)
-  history: web.fingerprints.history/261014-0001.yaml
-```
-
-### Profiles
-
-A profile says how to fingerprint one kind of event:
-
-```yaml
-version: 0
-
-# fields define identity: events with the same tokens share one fingerprint
-fields:
-  - key: method
-    path: "$.request.method"                 # modifier defaults to DEFAULT
-  - key: status_class
-    path: "$.response.status"
-    modifier: {name: IN_RANGE, low: 200, high: 399}
-  - key: slow_upstreams
-    path: "$.upstreams[?(@.ms > 500)].name"  # full JSONPath, including filters
-
-# aggregates are tracked per fingerprint and never affect identity
-aggregates:
-  - key: latency_ms
-    path: "$.response.ms"
-    fn: [MIN, MAX, AVG]
-  - key: recent_paths
-    path: "$.request.path"
-    fn: {name: LAST, n: 3}
-```
-
-- **`fields`** — each entry extracts values with a JSONPath and turns them into one token with a
-  modifier (see [`fingerling.tokenizer`](#fingerlingtokenizer)). Choose modifiers that collapse
-  high-cardinality values (IDs, timestamps, sizes) so that similar events share a fingerprint.
-- **`aggregates`** — computed across every event that lands on the same fingerprint, over all runs:
-
-  | Function | Keeps |
-  |---|---|
-  | `SUM` | running sum of numbers |
-  | `MIN`, `MAX` | smallest / largest — numbers, dates and times (`type: DATETIME`/`DATE`), or text |
-  | `AVG` | the average, plus the sum and count that make it mergeable |
-  | `COUNT` | how many values the path selected |
-  | `{name: FIRST, n: N}` | the `N` earliest values of the path |
-  | `{name: LAST, n: N}` | the `N` most recent values of the path |
-
-  One function stores its value directly; several store a map by function name. Numbers and
-  numeric strings count as numbers. A value a function can't use is skipped for that aggregate
-  and counted in the summary; an event where the path matches nothing is not counted.
-
-  `op: SIZE` aggregates each value's size in bytes instead (UTF-8 for text, compact JSON
-  otherwise), e.g. `{key: payload_bytes, path: $.payload, op: SIZE, fn: [SUM, AVG, MAX]}` for
-  data volume per fingerprint. It cannot be combined with `type`.
-
-Profiles are checked before any event is read, against a JSON Schema plus the checks a schema
-cannot express (regexes, JSONPaths, ranges, duplicate keys). Every problem is listed with its
-file and location, e.g. `app.yaml: fields[2] (key 'port') → modifier: 'values' is a required
-property`. Run `fingerprint check app.yaml` to check a profile on its own (exit 0 valid, 1 not);
-see the package README for using the schema in an editor.
-
-Run `fingerprint show app.fingerprints.yaml` to read a set as a table: one row per fingerprint,
-most frequent first, with its count, first and last run, and tokens.
-
-Two profiles ship as starting points: `packages/fingerprint-sampler/examples/access_log.yaml`
-(web access logs) and `examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).
-
-### The fingerprint set file
-
-```yaml
-version: 0
-profile_id: 37087e1858c85f7cb976959311d01b65
-fingerprints:
-  cc986aed647e7d173dcc791d402d3e89:
-    tokens: {method: GET, route: "/items/{id}", status_class: 'TRUE'}
-    aggregates:                             # from your profile
-      latency_ms: {MIN: 9.0, MAX: 12.5, AVG: {avg: 10.83, sum: 32.5, count: 3}}
-      recent_paths: [/items/17, /items/42, /items/3]     # one function: its value directly
-    meta:                                   # built in, for every fingerprint
-      count: 3
-      first_seen: 261013-0001               # first and last run that saw it
-      last_seen: 261013-0001
-      first: [{meta: {run: 261013-0001}, record: {...}}]
-      last: [{meta: {run: 261013-0001}, record: {...}}]
-```
-
-- `tokens` shows what the ID stands for.
-- **`aggregates`** is what your profile asked for; **`meta`** is built in for every fingerprint:
-  `count`, `first_seen` / `last_seen` (run ids) and the first and last record (one each). `meta` comes from a
-  built-in profile (`builtin.yaml` in the package) that reads each record wrapped as
-  `{meta: {run: <run id>}, record: <the parsed record>}`, so injected fields never clash with the
-  record's own. Run times are in the run files; a time field inside the records belongs in
-  `aggregates`.
-- `profile_id` is derived from the profile's `fields`. A set can only be merged under the profile
-  that built it, because fingerprints from different field definitions aren't comparable. Changing
-  `aggregates` is always allowed: a new aggregate starts accumulating from that run, and changing
-  `n` of `LAST` keeps the samples already collected.
-- Splitting a stream over several runs gives the same set as one run over all of it.
-- The file is replaced atomically; a failed or interrupted run leaves the previous set intact.
+is missing. `make install` also fetches sketch-tastic from GitHub at the pinned commit, so it
+needs network access. `make distclean` removes the environment.
 
 ## The Pipeline at a Glance
 
-The first two stages are the `fingerprint-sampler` package and are under active development.
-The last two belong to the parked `fingerling` pipeline: they work and are tested, but are not
-being developed while the fingerprint tool is finished (see `docs/SDLC.md`, Active scope).
+The first two stages are sketch-tastic (an external dependency). The last two belong to the
+parked `fingerling` pipeline: they work and are tested, but are not being developed (see
+`docs/SDLC.md`, Active scope).
 
 ```
 raw JSONL telemetry
         │
         ▼
-fingerprint_sampler.model       — extract fields via JSONPath, collapse to stable string tokens
+sketchtastic (Field, tokens)    — extract fields via JSONPath, collapse to stable string tokens
         │
         ▼
-fingerprint_sampler.fingerprint_set — hash tokens into a fingerprint ID, upsert into the set
+sketchtastic.Sketch — hash tokens into a skit id, upsert into the sketch
         │
         ▼
-fingerling.ringbuffer  — feed the fingerprint ID stream into a sliding-window matcher
+fingerling.ringbuffer  — feed the skit id stream into a sliding-window matcher
         │
         ▼           (score 1.0 = anomalous trajectory)
 fingerling.policy      — compile a KubeArmorPolicy manifest for the anomaly
@@ -215,91 +61,8 @@ Full architectural rationale (including why each interface looks the way it does
 
 ## Module Reference
 
-### `fingerprint_sampler.model`
-
-The profile's building blocks. A `Field` turns one event into one token: a JSONPath selects
-values and a modifier collapses them. `tokens(event, fields)` applies a list of fields.
-
-```python
-from fingerprint_sampler.model import Field, tokens
-
-fields = [
-    Field("hook_syscall", "$.process_kprobe.function_name"),           # modifier: DEFAULT
-    Field("dest_port", "$.process_kprobe.args[0].sock_arg.dport",
-          {"name": "ANY", "values": [80, 443, 6379]}),
-]
-tokens(event, fields)    # {"hook_syscall": "sys_connect", "dest_port": "TRUE"}
-```
-
-For telemetry, `fingerling.tokenizer` adds `parse_jsonl(text)` and `tokenize(record, fields)`.
-
-**Modifiers** (the third part of a `Field`): a bare name such as `"IS_PRESENT"`, or a mapping
-with `name` and the modifier's arguments, e.g. `{"name": "IN_RANGE", "low": -999, "high": 0}`.
-Each modifier is a `Rule` subclass, built and checked when the `Field` is created (`ValueError`
-if wrong) — the same way aggregate functions are.
-
-| Modifier | Arguments | Token |
-|---|---|---|
-| `DEFAULT` | — | the value as a string; `"NULL"` if absent |
-| `IS_PRESENT` | — | `"TRUE"` if the key exists, even when its value is `null` |
-| `IS_NULL` | — | `"TRUE"` only if the key exists and is set to `null` (a missing key is `"FALSE"`) |
-| `IN_RANGE` | `low`, `high` (numbers) | `"TRUE"` if `low <= value <= high` |
-| `ANY` | `values` (a list) | `"TRUE"` if the value is one of those listed |
-| `GLOB` | `pattern` | `"TRUE"` if the whole value matches the shell-style pattern (`*`, `?`, `[a-z]`), case-sensitive |
-| `REGEX` | `pattern`, optional `flags` | `"TRUE"` if the regular expression matches anywhere in the value; anchor with `^` and `$` |
-| `REGSUB` | `pattern`, `replace`, optional `flags` | the value with every match replaced (`\1` refers to a group); `"NULL"` if absent |
-| `TRUNC` | `unit` | a `DATE`/`DATETIME` value cut to `year` … `second` (the field needs `type`) |
-
-A field or aggregate can declare `type: DATETIME` or `type: DATE` for ISO-8601 values: they are
-compared as real times in UTC; a value that is not valid ISO-8601 counts as missing.
-
-In a YAML profile, write patterns in single quotes; see the package README for examples and flags.
-
-A missing key and a key set to `null` are different, and `IS_PRESENT` / `IS_NULL` tell them
-apart. No modifier ever raises on either: the others give a stable `"FALSE"`/`"NULL"` token.
-
-**Paths** are full JSONPath, resolved by the `python-jsonpath` library: dot and bracket access,
-`[*]`, slices (`[0:2]`), negative indexes, unions (`['a','b']`), recursive descent (`..`) and
-filters (`[?(@.type == 'sock')]`). The token depends on how many values the path selects: none is
-treated as missing; one is tokenized as-is; several are tokenized individually, deduplicated,
-sorted and comma-joined, so array order can't change a fingerprint. An invalid path raises
-`ValueError` when the `Path` (or the `Field`) is created.
-
-### `fingerprint_sampler.fingerprint_set`
-
-The fingerprint set as a library: hashes a token dict into a stable fingerprint ID and tracks
-each one, with the aggregators you declare.
-
-```python
-from fingerprint_sampler.aggregators import Aggregate
-from fingerprint_sampler.fingerprint_set import FingerprintSet
-
-fingerprints = FingerprintSet(aggregates=[
-    Aggregate("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
-])
-fingerprint_id = fingerprints.upsert(tokens, records[0], run="261015-0001")
-
-record = fingerprints.get(fingerprint_id)
-record.tokens                               # the tokens behind the ID
-record.meta["count"]                        # {"COUNT": n}: grows each time the tokens recur
-record.aggregates["duration_ms"]["MAX"]
-record.meta["last"]                         # the latest record, as [{meta: {run}, record}]
-
-fingerprints.save("fingerprints.yaml")         # atomic
-fingerprints.load("fingerprints.yaml")         # continue folding from stored state
-```
-
-Two calls with the same tokens produce the same `fingerprint_id` and reuse one record (a
-"match"); different tokens create a new record (a "drift"). `FingerprintSet()` with no aggregates
-keeps only the count, first/last run and first/last record.
-`fingerling.warehouse.TELEMETRY_AGGREGATES` is the duration-bounds-plus-last-3-events set the
-parked telemetry pipeline uses. To load a profile file
-instead of building entries in Python, use `fingerprint_sampler.profile.load_profile(path)` and pass its
-`.aggregates` and `.profile_id` to `FingerprintSet`.
-
-> **Changed in Sprint 8:** `upsert(tokens, duration_ms=..., raw_record=...)` is now
-> `upsert(tokens, record)`, and `record.min_duration_ms` / `max_duration_ms` / `samples` moved
-> under `record.aggregates`. Set files written before this change are not readable.
+The `Field`, `tokens`, `Aggregate`, `Sketch` and `skit_id` the pipeline uses are documented in
+[sketch-tastic](https://github.com/drusifer/sketch-tastic).
 
 ### `fingerling.ringbuffer`
 
@@ -440,8 +203,6 @@ These are known limits, not bugs. Planned work is listed in the backlog in `task
   Fixable later via `buf()` + Python-side byte parsing of the sockaddr layout, or by rebuilding
   the kernel with `CONFIG_DEBUG_INFO_BTF=y` (a multi-hour undertaking on a Pi, not attempted).
   Not a blocker: `examples/demo.py`'s anomaly signal is entirely execve-based.
-- **No event-time timestamps by default.** `meta` times are when the tool read the record; add a
-  time field from the records to `aggregates` if you need event time.
 - **Mock/Simulated cgroup limitations** — while cgroup assignments are attempted, full cgroup-level container runtime policies (like namespace restrictions or root filesystem mounts) are deferred.
 
 ## Troubleshooting / FAQ
@@ -453,16 +214,8 @@ architecture doc. Continuous Jaccard-based scoring is on the backlog but parked 
 the sequence-analysis stage.
 
 **"`fingerling: the python-jsonpath package is not installed for this Python`".**
-You ran the system `python3`. Run `make install` once, then use `make fingerprint ARGS="..."` or
-`.venv/bin/fingerprint merge ...`.
-
-**"`... was built with profile X, but the current profile is Y`".**
-The set file belongs to a different profile (its `fields` differ). Keep one set file per profile.
-`--force-profile` merges anyway and stamps the set with the new profile, but the old and new
-fingerprints in it will not be comparable.
-
-**The command exits 1 but wrote the set.**
-Some input lines weren't valid JSON objects; they are listed on stderr by line number and skipped.
+You ran the system `python3`. Run `make install` once, then run the pipeline through `make`
+targets or `.venv/bin/python`.
 
 **"`ValueError: Unknown modifier"` when calling `tokenize()`.**
 The modifier's `name` isn't one of `DEFAULT`, `IS_PRESENT`, `IS_NULL`, `IN_RANGE`, `ANY`,

@@ -10,12 +10,13 @@ import threading
 import unittest
 import urllib.request
 
+from sketchtastic import Field, Sketch
+
 from examples.vulnerable_app import run_app
 from fingerling.gitops import initialize_repo
 from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
 from fingerling.vaccine import run_vaccination
-from fingerprint_sampler import Field, FingerprintSet
 
 
 def get_free_port() -> int:
@@ -40,11 +41,11 @@ class E2EVaccinationTests(unittest.TestCase):
         self.app_thread.start()
 
         self.webhook_port = get_free_port()
-        self.warehouse = FingerprintSet()
+        self.warehouse = Sketch()
         # Seed whitelist with the baseline transition: (fid_ping, fid_ping)
-        from fingerprint_sampler import fingerprint_id
+        from sketchtastic import skit_id
 
-        fid_ping = fingerprint_id({"hook_syscall": "ping"})
+        fid_ping = skit_id({"hook_syscall": "ping"})
         self.matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
         self.mask_profile = [Field("hook_syscall", "$.process_kprobe.function_name", "DEFAULT")]
         self.webhook_server = run_server(

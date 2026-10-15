@@ -32,6 +32,7 @@ from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
+from sketchtastic import Field, Sketch, skit_id
 
 from fingerling.capture import parse_stream, run_capture, stop_capture, wait_ready
 
@@ -42,7 +43,6 @@ from fingerling.ringbuffer import SlidingWindowMatcher
 from fingerling.server import run_server
 from fingerling.tokenizer import tokenize
 from fingerling.warehouse import TELEMETRY_AGGREGATES
-from fingerprint_sampler import Field, FingerprintSet, fingerprint_id
 
 # Constant vulnerable code snippet shown in TUI Code pane
 VULNERABLE_CODE_SNIPPET = """def handle_ping(host: str) -> str:
@@ -577,7 +577,7 @@ class TUIDemo:
         )
 
         status_text.append("📊 Analytics:\n", style="bold")
-        status_text.append(f"   ├─ FingerprintSet Size: {len(self.webhook_warehouse)} tokens\n")
+        status_text.append(f"   ├─ Sketch Size: {len(self.webhook_warehouse)} tokens\n")
         status_text.append(f"   ├─ Matcher Window: {self.webhook_matcher._window}\n")
         if self.current_score > 0.05:
             status_text.append("   └─ Anomaly Score: ", style="dim")
@@ -788,7 +788,7 @@ class TUIDemo:
             self.app_stderr_thread.start()
 
             # 4. Start Webhook Ingestion Server
-            fid_ping = fingerprint_id(
+            fid_ping = skit_id(
                 {"hook_syscall": "sys_execve", "args": [{"exec_arg": {"filename": "/bin/ping"}}]}
             )
             matcher = SlidingWindowMatcher(n=2, whitelist={(fid_ping, fid_ping)})
@@ -804,7 +804,7 @@ class TUIDemo:
 
             self.webhook_matcher = matcher
             self.webhook_mask_profile = mask_profile
-            self.webhook_warehouse = FingerprintSet(aggregates=TELEMETRY_AGGREGATES)
+            self.webhook_warehouse = Sketch(aggregates=TELEMETRY_AGGREGATES)
 
             # Define a custom log writer to route Webhook logs to daemon_logs instead of raw_traces
             class WebhookLogWriter:
