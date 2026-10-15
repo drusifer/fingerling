@@ -63,8 +63,7 @@ class EndToEndPipelineTests(unittest.TestCase):
         records = parse_jsonl(TELEMETRY_JSONL)
         warehouse = FingerprintSet()
         fingerprint_ids = [
-            warehouse.upsert(tokenize(record, MASK_PROFILE), record, run="t")
-            for record in records
+            warehouse.upsert(tokenize(record, MASK_PROFILE), record, run="t") for record in records
         ]
 
         # Whitelist only knows a *different* trajectory than what was observed.
