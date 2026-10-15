@@ -224,7 +224,7 @@ None. Everything decided on 2026-10-12 was built in Sprint 9. New decisions that
 not yet built are listed here until they land.
 
 ---
-*Last verified: 2026-10-14 at Sprint 17 close (`*devops sdlc-check`), by Tank — from-clean
-rebuild on Python 3.14; lint clean; tests and `make test-all` on 3.14 and 3.15 (after one fix:
-`tests/test_e2e.py` still used `upsert(timestamp=)`, broken by `fix/run-id`); gitleaks clean;
-`make smoke` green; lockfile current; no mechanism change.*
+*Last verified: 2026-10-14 at Sprint 18 close (`*devops sdlc-check`), by Tank — from-clean
+`make distclean install lint test secrets` and `make test-all` (3.14, 3.15) green with sketch-tastic
+installed from GitHub at the pinned commit; lockfile current; venv isolated; hooks set; a second
+install changes nothing; `ci.yml` calls existing targets only.*

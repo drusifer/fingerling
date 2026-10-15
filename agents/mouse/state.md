@@ -43,6 +43,7 @@
 - 2026-10-14 Sprint 15 closed: Shares of the Set, 5/5 pts (FING-46..47), Tier 2, 2 phases, 0 fix cycles. Merged to main, not pushed.
 - 2026-10-14 Sprint 16 closed: Run History (<set>.history/), 3/3 pts (FING-48), Tier 2, 2 phases, 0 fix cycles. Merged to main, not pushed.
 - 2026-10-14 Sprint 17 closed: Duplicate Protection (sequence), 5/5 pts (FING-49..50), Tier 2, 2 phases, 1 close fix (test_e2e broken by fix/run-id, already pushed). Merged to main, not pushed.
+- 2026-10-14 Sprint 18 closed: fingerling depends on sketch-tastic (git, pinned 6c4606f); packages/fingerprint-sampler, its targets and publish.yml removed; parked code imports sketchtastic. 3/3 pts. Merged to main, not pushed.
 
 ## Current Task
 **Status:** No sprint in flight (Sprint 11 closed 2026-10-13).
@@ -53,7 +54,7 @@ Cold start:
 2. Owner rules in force: no backwards compatibility and formats at `version: 0` until 1.0; mainline development (no tags or releases); CI runs by hand only — never poll it; KISS; no ad hoc testing (tests and `bobp make` only, smoke sparingly at close); no `rm` (use `bobp make clean`); `*fix` diagnoses and asks before changing code.
 3. State of the tool: profiles = fields (with modifiers and optional `type: DATE/DATETIME`) + aggregates; built-in `meta` from `builtin.yaml`; try it with `bobp make gharchive` (downloads one GH Archive hour).
 4. Queued (bob_protocol repo): Tank dependency analysis tool; Trin test strategy doc. Backlog in `task.md`.
-5. Next sprint is sprint-18, next story STORY-FING-51. Keep chat messages under 512 characters and check every `bobp chat` result.
+5. Next sprint is sprint-19, next story STORY-FING-52. Tool work happens in ../sketch-tastic (its own agents/ and task.md). Keep chat messages under 512 characters and check every `bobp chat` result.
 
 ---
 *Last updated: 2026-10-14T17:40:00-04:00*

@@ -1,9 +1,12 @@
 # Task Board
 
+**No sprint in flight.** Last sprint: 18 (below). The fingerprint tool is now developed in [sketch-tastic](https://github.com/drusifer/sketch-tastic); its backlog moved there.
+
 ## Sprint 18: Depend on sketch-tastic
 
-**Status:** In progress
-**Branch:** `sprint-18`
+**Status:** Complete — launched 2026-10-14 (3/3 pts); merged to `main`; no release
+**Branch:** `sprint-18` (merged and deleted)
+**Record:** `agents/chat_archive/CHAT_SPRINT_18.diagram.md`
 **Source:** `docs/sprints/USER_STORIES_SPRINT18.md` (story + architecture D1-D3)
 **Points:** 3 · **Tier:** 2
 
@@ -14,7 +17,7 @@
 - [x] **1.1** Imports renamed to `sketchtastic`; README/USER_GUIDE/ARCH point to sketch-tastic; UAT + review. [Neo, Trin, Morpheus]
 
 ### Close
-- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
+- [x] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 17: Duplicate Protection
 
@@ -271,6 +274,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 - **bob_protocol, for Trin:** a test strategy document Trin owns, laying out the project's testing practices and conventions: the test pyramid applied to the tools available in the project's ecosystem. Queued 2026-10-13 by the owner during Sprint 11; not started.
 
 ## Backlog (unscheduled)
+> Items about the fingerprint tool moved to sketch-tastic's `task.md` (2026-10-14) and are kept below only as history.
 - **Top priority (Sprint 15 retro):** `fingerprint show --sort KEY` (any column, including `%` columns, e.g. `payload_bytes.SUM %`) and `--top N`.
 - **History weight (Sprint 16):** built-in samples cut to 1 first + 1 last (owner, 2026-10-14, `fix/one-sample`): run files 6.2 MB -> 2.1 MB on a GH Archive hour, the rest mostly the two sample events. Still open: merge ~1.7x slower (~115-119 s vs ~68 s), likely the second fold deep-copying each event for LAST; option: fold once and derive the run.
 - **Duplicate protection (Sprint 17):** in-run duplicate detection if a stream needs it. (Missing-sequence policy settled 2026-10-14: an error that fails the run, `fix/sequence-error`.)
