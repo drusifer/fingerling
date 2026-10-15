@@ -58,3 +58,13 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_16.md` (2026-10-14 19:55:43) — Sprint 16, Run History (Tier 2, 3 pts, 0 fix cycles). Owner asked for lightweight history; clarified: <set>.history/ beside the set, always on, -o kept without history. FING-48: each merge also writes that run's own set with a run: header to <set>.history/<UTC start>.yaml; same-second runs get _2 (UAT caught -2 sorting first); exit 3 if the history write fails. Findings: run files ~6 MB on GH Archive, merge ~1.7x slower. No release (mainline).
 
 ---
+
+---
+[<small>2026-10-14 20:05:59</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make gharchive | /home/drusifer/Projects/fingerling/build/build.out
+updated data/gharchive/gh.fingerprints.yaml (profile 1db067a46a15e0ab287cd8c8e3321c22)
+history: data/gharchive/gh.fingerprints.history/2026-10-15T000358Z.yaml
+
+---
+[<small>2026-10-14 20:06:11</small>] [**Neo**]->[**all**] *swe fix*:
+ Owner: built-in samples 1 first + 1 last (was 3 each). Done on fix/one-sample: builtin.yaml, test, README/USER_GUIDE, DECISIONS. GH Archive run file 6.2 MB -> 2.1 MB; merge time unchanged (~119 s). 204 tests OK, lint clean.

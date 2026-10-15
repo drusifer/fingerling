@@ -360,3 +360,6 @@ review should trace every AC to a literal function signature, not just a data-fl
 
 **Decision (owner, Sprint 16, 2026-10-14):** Lightweight history: every merge that updates the set also writes just that run's fingerprints (a set file with a `run:` header) to `<set without extension>.history/<UTC start>.yaml`. Always on, no flag; `-o` (kept for now, may be revisited) writes none. Same-second runs get `_2`, `_3` (`-2` was rejected in UAT: it sorts before `.yaml`, breaking run order). The set is saved first; a failed history write exits 3.
 **Consequences:** History needs no new reader: `fingerprint show` reads run files. Nothing is pruned, so history grows by one file per run. Set-to-set merge (backlog) would let runs be recombined.
+
+**Decision (owner, 2026-10-14):** The built-in metadata keeps one sample record each for `first` and `last` (was 3 each), to keep sets and run files small (Sprint 16 found ~6.2 MB run files on a GH Archive hour, dominated by samples).
+**Consequences:** Profiles that want more samples add their own `FIRST`/`LAST` aggregates. An existing set keeps its 3 stored `first` records (`FIRST` never drops samples it already has); `last` trims to 1 on the next merge. No migration (0.x).
