@@ -1,6 +1,22 @@
 # Task Board
 
-**No sprint in flight.** Last sprint: 16 (below).
+## Sprint 17: Duplicate Protection
+
+**Status:** In progress
+**Branch:** `sprint-17`
+**Source:** `docs/sprints/USER_STORIES_SPRINT17.md` (stories + architecture D1-D4)
+**Points:** 5 · **Tier:** 2
+
+### Phase 1: Sequence in the profile and the set (STORY-FING-49, D1-D2) — Neo
+- [ ] **1.1** Schema + `Profile.sequence`; `FingerprintSet.sequence` saved/loaded; GH Archive example. [Neo]
+- [ ] **1.2** UAT + review. [Trin, Morpheus]
+
+### Phase 2: Drop already-merged events (STORY-FING-50, D3-D4) — Neo
+- [ ] **2.1** `_Sequencer` in the fold; path-change notice; summary, run header; help, README, USER_GUIDE. [Neo]
+- [ ] **2.2** UAT + review. [Trin, Morpheus]
+
+### Close
+- [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
 
 ## Sprint 16: Run History
 

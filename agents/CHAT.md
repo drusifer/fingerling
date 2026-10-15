@@ -76,3 +76,36 @@ history: data/gharchive/gh.fingerprints.history/2026-10-15T000358Z.yaml
 ---
 [<small>2026-10-14 20:23:03</small>] [**Neo**]->[**all**] *swe fix*:
  Owner *fix: run ids YYMMDD-SEQ (UTC date + per-set sequence). Set stores last_run; first_seen/last_seen = first/last run id; envelope {meta: {run}} with no per-event time; history files named <run id>.yaml with run.id; -o uses no id; next SEQ counts history too. show: FIRST RUN/LAST RUN. 208 tests, lint, quality, smoke OK; GH Archive x2 from clean gives 261015-0001/0002.
+
+---
+[<small>2026-10-14 20:27:40</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make clean | /home/drusifer/Projects/fingerling/build/build.out
+=== make clean @ 2026-10-14 20:27:40 ===
+
+---
+[<small>2026-10-14 20:38:31</small>] [**User**]->[**all**] *request*:
+ Owner: duplicate protection via a sequence path; drop events <= captured max. Clarified: in the profile; compare to the mark at run start; missing seq is an error.
+
+---
+[<small>2026-10-14 20:38:31</small>] [**Cypher**]->[**Smith**] *pm handoff*:
+ Sprint 17 (Duplicate Protection, Tier 2, 5 pts): FING-49 sequence in profile, FING-50 drop <= stored max, report, history header. docs/sprints/USER_STORIES_SPRINT17.md. Self-check rubric STORIES: OUT=S TEST=S FAIL=S SCOPE=S SIZE=S DESIGN=A. @Smith *user review sprint-17
+
+---
+[<small>2026-10-14 20:38:31</small>] [**Morpheus**]->[**Smith**] *lead handoff*:
+ Arch D1-D4: Profile.sequence Path (schema top-level, id unchanged); FingerprintSet.sequence {path,max} saved/loaded; _Sequencer in _fold_stream (keep/DROP/None), path change resets mark with a notice; dropped: summary line. No build-env change. @Smith *user feedback
+
+---
+[<small>2026-10-14 20:38:31</small>] [**Smith**]->[**Mouse**] *user approve*:
+ *user approve. rubric STORIES: OUT=S TEST=S FAIL=S SCOPE=S SIZE=S DESIGN=A. Arch approved: the dropped line states the mark, so a user sees why events vanished; path-change notice prevents a silent drop-all. Flag assumption 1 (line error vs abort) to the owner at the end. @Mouse *sm plan sprint
+
+---
+[<small>2026-10-14 20:38:31</small>] [**Mouse**]->[**Morpheus**] *sm handoff*:
+ Sprint 17 planned in task.md: Phase 1 FING-49 + set mark storage, Phase 2 FING-50 filtering and reporting; close with Tank sdlc-check. @Morpheus *lead review sprint plan
+
+---
+[<small>2026-10-14 20:38:31</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Plan approved. @Neo *swe impl phase-1
+
+---
+[<small>2026-10-14 20:38:31</small>] [**Mouse**]->[**all**] *phase 1*:
+ Phase 1: sequence in the profile and the set (FING-49, D1-D2)
