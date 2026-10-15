@@ -2,12 +2,6 @@ version = 1
 revision = 5
 requires-python = ">=3.14"
 
-[manifest]
-members = [
-    "fingerling",
-    "fingerprint-sampler",
-]
-
 [[package]]
 name = "attrs"
 version = "26.1.0"
@@ -31,8 +25,8 @@ name = "fingerling"
 version = "0.8.0"
 source = { editable = "." }
 dependencies = [
-    { name = "fingerprint-sampler" },
     { name = "pyyaml" },
+    { name = "sketch-tastic" },
 ]
 
 [package.optional-dependencies]
@@ -49,9 +43,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fingerprint-sampler", editable = "packages/fingerprint-sampler" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "rich", marker = "extra == 'demo'", specifier = ">=13" },
+    { name = "sketch-tastic", git = "https://github.com/drusifer/sketch-tastic?rev=6c4606ffe2a750470a8a29b4750e5ef8df3ec79a" },
 ]
 provides-extras = ["demo"]
 
@@ -60,23 +54,6 @@ dev = [
     { name = "radon", specifier = ">=6.0.1" },
     { name = "ruff", specifier = ">=0.6" },
     { name = "vulture", specifier = ">=2.16" },
-]
-
-[[package]]
-name = "fingerprint-sampler"
-version = "0.2.0"
-source = { editable = "packages/fingerprint-sampler" }
-dependencies = [
-    { name = "jsonschema" },
-    { name = "python-jsonpath" },
-    { name = "pyyaml" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "jsonschema", specifier = ">=4.23" },
-    { name = "python-jsonpath", specifier = ">=2.0" },
-    { name = "pyyaml", specifier = ">=6.0" },
 ]
 
 [[package]]
@@ -320,6 +297,16 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81", size = 34031, upload-time = "2024-12-04T17:35:28.174Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274", size = 11050, upload-time = "2024-12-04T17:35:26.475Z" },
+]
+
+[[package]]
+name = "sketch-tastic"
+version = "0.2.0"
+source = { git = "https://github.com/drusifer/sketch-tastic?rev=6c4606ffe2a750470a8a29b4750e5ef8df3ec79a#6c4606ffe2a750470a8a29b4750e5ef8df3ec79a" }
+dependencies = [
+    { name = "jsonschema" },
+    { name = "python-jsonpath" },
+    { name = "pyyaml" },
 ]
 
 [[package]]

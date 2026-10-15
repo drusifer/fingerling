@@ -3,17 +3,17 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 # The parked "immune system" pipeline (n-gram matcher, policy compiler, webhook server, GitOps,
-# sandbox, eBPF capture, demo). Not published: the published package is
-# packages/fingerprint-sampler. See docs/SDLC.md.
+# sandbox, eBPF capture, demo). Not published. The fingerprint tool it builds on is
+# sketch-tastic (https://github.com/drusifer/sketch-tastic). See docs/SDLC.md.
 [project]
 name = "fingerling"
 version = "0.8.0"
-description = "Adaptive software immune system built on fingerprint-sampler (parked; not published)."
+description = "Adaptive software immune system built on sketch-tastic (parked; not published)."
 readme = "README.md"
 requires-python = ">=3.14"
 classifiers = ["Private :: Do Not Upload"]
 dependencies = [
-    "fingerprint-sampler",
+    "sketch-tastic",
     "PyYAML>=6.0",
 ]
 
@@ -29,11 +29,9 @@ dev = [
     "vulture>=2.16",
 ]
 
-[tool.uv.workspace]
-members = ["packages/*"]
-
 [tool.uv.sources]
-fingerprint-sampler = { workspace = true }
+# Pinned to a pushed commit; to move to a newer sketch-tastic, change rev and run `uv lock`.
+sketch-tastic = { git = "https://github.com/drusifer/sketch-tastic", rev = "6c4606ffe2a750470a8a29b4750e5ef8df3ec79a" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["fingerling"]
@@ -41,7 +39,6 @@ packages = ["fingerling"]
 [tool.ruff]
 line-length = 100
 target-version = "py314"
-src = [".", "packages/fingerprint-sampler/src"]
 # agents/ is BobProtocol tooling, maintained in its own repository. Markdown is excluded so
 # hand-aligned code sketches in the docs are left alone.
 extend-exclude = ["agents", "*.md"]

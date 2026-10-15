@@ -4,10 +4,12 @@ How this project is built, tested, changed and released — the source of truth 
 management across the whole project. **Owned by Tank**; to change anything here, ask
 `@Tank *devops sdlc <what and why>` — the mechanism and this document change together.
 
-**Active scope:** only the fingerprint tool (tokenizer, aggregators, fingerprint set, profiles,
-CLI) is under active development. The rest of the project — n-gram matcher, policy compiler,
+**Active scope:** none in this repository. The fingerprint tool moved to its own repository,
+[drusifer/sketch-tastic](https://github.com/drusifer/sketch-tastic), on 2026-10-14 (Sprint 18);
+it is developed, tested and released there. What remains here — n-gram matcher, policy compiler,
 webhook server, GitOps, sandbox/vaccine, eBPF capture, TUI demo — is parked: it must keep
-importing and its existing tests must keep passing, but it gets no new gates or manual checks.
+importing against sketch-tastic and its existing tests must keep passing, but it gets no new
+gates or manual checks.
 
 Process decisions below were made by the project owner on 2026-10-12. Tooling decisions that
 are agreed but not yet built are listed in section 11.
@@ -16,10 +18,10 @@ are agreed but not yet built are listed in section 11.
 
 | | Python |
 |---|---|
-| Runtime version | 3.14 and later — `requires-python = ">=3.14"` in both manifests; 3.14 and 3.15 are tested; development uses 3.14 (`.python-version`) |
-| Manifest | root `pyproject.toml` (the parked `fingerling` package, the uv workspace, dev tools in `[dependency-groups] dev`, tool config) and `packages/fingerprint-sampler/pyproject.toml` (the published package) |
-| Lockfile | `uv.lock` (committed; one for the whole workspace) |
-| Package manager | `uv` (workspace: root + `packages/*`); build backend `hatchling` |
+| Runtime version | 3.14 and later — `requires-python = ">=3.14"`; 3.14 and 3.15 are tested; development uses 3.14 (`.python-version`) |
+| Manifest | `pyproject.toml` at the root: the parked `fingerling` package, its dependencies (including `sketch-tastic` from git, section 4), dev tools in `[dependency-groups] dev`, tool config |
+| Lockfile | `uv.lock` (committed) |
+| Package manager | `uv`; build backend `hatchling` |
 | Local environment | `.venv/` (gitignored, isolated from system site-packages) |
 
 Other required tools:
@@ -27,11 +29,11 @@ Other required tools:
 - `make`.
 - `uv` — install once per machine with `pipx install uv` (no sudo). It also supplies the
   interpreters for `make test-all`.
+- `git` with network access to GitHub — `make install` fetches sketch-tastic at the pinned commit.
 - `gitleaks` — on `PATH`; needed by `make secrets` and the pre-commit hook.
 - `sudo` + `bpftrace` — only for `make demo-live` (parked).
 - `bobp` — team tooling (`bobp make`, `bobp chat`, `bobp tldr`); wraps this Makefile but adds
-  no targets to it. `via` — behind `make via_index`, and used by `bobp tldr` to list files.
-  Neither is a project dependency.
+  no targets to it. `via` — behind `make via_index`. Neither is a project dependency.
 
 ## 2. Setup
 
@@ -50,52 +52,43 @@ path (`sudo .venv/bin/python ...`), never `sudo python3`.
 ## 3. Make targets
 
 There is exactly one Makefile, at the repository root, and it is the only entry point: no
-included or generated make files, no wrapper scripts. Environment-using recipes run tools from `.venv/bin/` and
-stop with "No .venv - run 'make install' first" if it is missing. Agents invoke targets as
-`bobp make <target>`.
+included or generated make files, no wrapper scripts. Environment-using recipes run tools from
+`.venv/bin/` and stop with "No .venv - run 'make install' first" if it is missing. Agents invoke
+targets as `bobp make <target>`.
 
 | Target | Runs | Notes |
 |---|---|---|
-| `install` | `uv sync --all-packages --all-extras` + `install-hooks` | exact install from `uv.lock`; idempotent |
+| `install` | `uv sync --all-extras` + `install-hooks` | exact install from `uv.lock`, including sketch-tastic from git; idempotent |
 | `install-hooks` | `git config core.hooksPath .githooks` | enables the gitleaks pre-commit hook |
-| `test` | `test-fingerprint` then `test-fingerling` | both suites |
-| `test-fingerprint` | `unittest discover` in `packages/fingerprint-sampler` | `ARGS` is passed to `unittest` in place of `discover`; it does not currently find a single module (backlog) |
-| `test-fingerling` | `unittest discover -s tests` | parked modules + compatibility shims |
-| `smoke` | `build`, then the `packages/fingerprint-sampler/smoke` suite inside a throwaway environment holding only the built wheel | runs the installed `fingerprint` command, the shipped examples and the README's own examples |
-| `test-all` | both suites on Python 3.14 and 3.15 in throwaway uv environments | downloads interpreters on first use |
+| `test` | `unittest discover -s tests` | the parked modules, against the installed sketch-tastic |
+| `test-all` | the tests on Python 3.14 and 3.15 in throwaway uv environments | downloads interpreters on first use |
 | `lint` | `ruff check .` and `ruff format --check .` | changes nothing |
-| `quality` | extended `ruff` rules, `vulture`, `radon cc -nc` over `packages/fingerprint-sampler/src` | report only, always exits 0; Trin reads it at UAT |
 | `format` | `ruff check --select I --fix .` and `ruff format .` | rewrites files |
 | `secrets` | `gitleaks detect --source .` | git-aware: scans history and tree |
-| `build` | `uv build --package fingerprint-sampler --out-dir dist`, then runs the built wheel in a clean environment | wheel + sdist in `dist/` (gitignored) |
-| `release-check` | compares `TAG=v<x.y.z>` with the fingerprint-sampler version | used by the publish workflow |
-| `check` | `python -m compileall -q` over all sources | syntax check only |
-| `run` | `.venv/bin/fingerprint $(ARGS)` | the CLI |
-| `fingerprint` | `.venv/bin/fingerprint merge $(ARGS)` | project-specific |
-| `gharchive` | downloads one GH Archive hour (`GH_HOUR`) into `data/` once, then `fingerprint merge` with `examples/gharchive.yaml` into `data/gharchive/gh.fingerprints.yaml` | example at scale; needs network and `curl` |
+| `check` | `python -m compileall -q` over `fingerling`, `examples`, `tests` | syntax check only |
 | `demo`, `demo-live` | `examples/demo.py` (the latter under `sudo`) | parked |
-| `clean` | removes `__pycache__`, `*.egg-info`, `.ruff_cache`, `dist`, `data` (downloaded test data) | keeps `.venv` |
+| `clean` | removes `__pycache__`, `*.egg-info`, `.ruff_cache`, `dist`, `data`, then directories left empty | keeps `.venv` |
 | `distclean` | `clean` + removes `.venv/` | |
 | `help` | lists targets | default goal |
-| `via_index` | `via index .` | builds the code index for the `via` tool; uses the system `via` |
+| `via_index` | `via index .` | builds the code index for the `via` tool |
 
-Standard targets deliberately absent: none.
-
-Lint rules are pinned in `[tool.ruff.lint] select` (`E4`, `E7`, `E9`, `F`, `I`); widening them
-is a Mechanism-class change. `agents/` (BobProtocol tooling) and Markdown are excluded.
+The tool's own targets (`build`, `smoke`, `quality`, `run`, `gharchive`, `release-check`) moved
+to sketch-tastic with it. Lint rules are pinned in `[tool.ruff.lint] select` (`E4`, `E7`, `E9`,
+`F`, `I`); widening them is a Mechanism-class change. `agents/` and Markdown are excluded.
 
 ## 4. Dependencies
 
-- **Add a runtime dependency:** `uv add --package fingerprint-sampler <package>` for the
-  published package, or `uv add <package>` for the parked `fingerling` package. Anything added to
-  fingerprint-sampler becomes an install requirement for PyPI users — keep it minimal.
-- **Add a dev tool:** `uv add --dev <package>` (the `dev` dependency group).
+- **sketch-tastic** is a git dependency pinned to one commit:
+  `[tool.uv.sources] sketch-tastic = { git = "https://github.com/drusifer/sketch-tastic", rev = "<sha>" }`.
+  To move to a newer version, set `rev` to a pushed commit, run `uv lock`, then `make install`
+  and `make test`. The pin only moves on purpose — never to an unpushed commit.
+- **Add a dependency:** `uv add <package>`; a dev tool: `uv add --dev <package>`.
 - **Optional features:** `demo` extra = `rich`, needed only by `examples/demo.py`.
 - **Upgrade / remove:** `uv lock --upgrade-package <package>` / `uv remove <package>`, then
   `make install`.
 - **Commit afterwards:** `pyproject.toml` **and** `uv.lock`, together. Never hand-edit `uv.lock`.
-- **Who:** Neo adds and bumps dependencies. A new package manager, language or Python version is
-  a mechanism change — Tank's.
+- **Who:** Neo adds and bumps dependencies, including the sketch-tastic pin. A new package
+  manager, language or Python version is a mechanism change — Tank's.
 
 ## 5. Quality gates
 
@@ -103,10 +96,8 @@ is a Mechanism-class change. `agents/` (BobProtocol tooling) and Markdown are ex
 |---|---|---|
 | Lint + format | `make lint` | every handoff to Trin; sprint close |
 | Tests | `make test` | every handoff to Trin; sprint close |
-| Smoke (installed wheel + README) | `make smoke` | sprint close only; keep the suite small — behaviour is tested in the unit tests |
 | Tests, all Pythons | `make test-all` | sprint close |
 | Secret scan | `make secrets` | sprint close; staged changes are scanned on every commit by the hook |
-| Package build | `make build` | sprint close; before any tag |
 
 ## 6. Change management
 
@@ -184,87 +175,48 @@ before the merge.
 
 ## 7. Versioning and release
 
-- **What is versioned:** one stream — the published package, `fingerprint-sampler`. Its version
-  is `[project] version` in `packages/fingerprint-sampler/pyproject.toml` (currently `0.2.0`).
-  The root `fingerling` package is private (`Private :: Do Not Upload`), keeps a static version,
-  and is never tagged or published.
-- **Scheme:** Semantic Versioning, bumped according to what changed in the published package
-  since the last tag: breaking change → major, new feature → minor, fixes only → patch. While the
-  version is `0.x`, a breaking change bumps the minor instead. The Conventional Commit types on
-  the sprint branch determine the bump; Cypher states it in the launch message. A sprint that
-  changes nothing in the published package makes no release.
-- **No backwards compatibility before 1.0** (owner, 2026-10-13): while the version is `0.x`, no
-  effort goes into compatibility — no shims, aliases, deprecation paths, migration messages or
-  tests that pin old behaviour. Old forms are deleted outright; the minor bump and a line in
-  `docs/DECISIONS.md` are the whole cost of a breaking change.
-- **Currently suspended — mainline development** (owner, 2026-10-14): agents create no tags,
-  make no version bumps and no release commits until the owner says otherwise. Sprints still
-  merge to `main`; the version stays `0.2.0`. Existing local tags `v0.1.0` and `v0.2.0` were
-  never pushed and are left as they are. The rules below apply again when releases resume.
-- **Bumped and tagged:** by Tank on `main` as part of the sprint merge — a
-  `build: release v<version>` commit (version field + `uv lock`) and an annotated tag
-  `v<version>`. `make release-check TAG=v<version>` must pass.
-- **Published:** pushing the tag triggers the publish workflow (section 8). Agents never push, so
-  a release reaches PyPI only when the project owner pushes the tag.
-- **Artifact:** wheel + sdist from `make build`. Distribution `fingerprint-sampler`, import
-  package `fingerprint_sampler`, commands `fingerprint` and `fingerprint-sampler`.
-- **Data format versions:** profiles and set files carry `version: 0` and stay there until 1.0
-  (owner, 2026-10-14). Formats may change at any time before then; a file in an older shape is
-  not migrated. At 1.0 they become `version: 1` and changes need a version bump.
+- **Nothing is released from this repository.** The `fingerling` package is private
+  (`Private :: Do Not Upload`) and keeps a static version. The tool it builds on is versioned and
+  released in sketch-tastic.
+- **No backwards compatibility before 1.0** and **mainline development** (owner, 2026-10-13/14)
+  still apply: no tags, version bumps or release commits. Existing local tags `v0.1.0` and
+  `v0.2.0` belong to the moved package's history and are left as they are.
 
 ## 8. CI / deploy
-
-Both workflows call only `make` targets, so CI cannot drift from the local gates.
 
 | Workflow | Trigger | Does |
 |---|---|---|
 | `.github/workflows/ci.yml` | by hand only (`workflow_dispatch`); push and pull-request triggers disabled by the owner on 2026-10-14 | Matrix over Python 3.14 and 3.15: `make install`, `make lint`, `make test`. Separate job: `make secrets` over the full history. |
-| `.github/workflows/publish.yml` | push of a tag `v*` | Reruns the CI gates; `make release-check`; `make build`; publishes `dist/` to PyPI by trusted publishing (no stored token). |
 
-**Exercised so far:** the CI workflow ran on the pushes of `main` on 2026-10-13 and passed
-(Python 3.10-3.13 at the time, and the secret scan). The publish workflow has never run: no
-version tag has been pushed.
-
-**One-time setup by the project owner, before the first tag is pushed:**
-
-1. On pypi.org → *Publishing* → add a **pending trusted publisher**: PyPI project name
-   `fingerprint-sampler`, owner `drusifer`, repository `fingerling`, workflow `publish.yml`,
-   environment `pypi`.
-2. On GitHub → repository *Settings → Environments* → create an environment named `pypi`
-   (optionally with yourself as a required reviewer, so each publish needs a click).
-
-There is no deploy target; KubeArmor enforcement in the demo is simulated.
+The publish workflow moved to sketch-tastic. There is no deploy target; KubeArmor enforcement in
+the demo is simulated.
 
 ## 9. Known deviations
 
-- **Publishing is unexercised** (section 8).
-- **`uv` and `gitleaks` are machine prerequisites**, not installed by `make install`.
+- **`uv`, `gitleaks` and network access to GitHub are machine prerequisites**, not installed by
+  `make install`.
 - **Parked modules are outside the manual gates.** `make demo-live` needs a terminal, root and
   `bpftrace` and has not been run since before Sprint 8; by the owner's decision no process is
-  built around it while the fingerprint tool is the focus.
+  built around it.
 
 ## 10. Conformance check
 
 Run by Tank at sprint close (`*devops sdlc-check`):
 
-1. `make distclean && make install && make lint && make test && make secrets && make build`
-   passes, and `make test-all` passes on every supported Python.
-2. Every third-party import is declared in the manifest of the package that uses it —
-   `fingerprint_sampler` imports only PyYAML, python-jsonpath and jsonschema, and never imports `fingerling` —
-   and `uv lock --check` reports the lockfile is up to date.
+1. `make distclean && make install && make lint && make test && make secrets` passes, and
+   `make test-all` passes on every supported Python.
+2. Every third-party import is declared in `pyproject.toml`; `fingerling` gets the tool only
+   through the `sketch-tastic` dependency (no `fingerprint_sampler`, no vendored copy), pinned to a
+   pushed commit; `uv lock --check` reports the lockfile is up to date.
 3. `.venv/pyvenv.cfg` still says `include-system-site-packages = false`.
-4. Every target in section 3 exists and still does what the table says; new targets are listed;
-   there is still only one Makefile, with no included make files and no team-tooling targets
-   (`bobp chat` and `bobp tldr` replace `make chat` and `make tldr`).
+4. Every target in section 3 exists and still does what the table says; there is still only one
+   Makefile, with no team-tooling targets.
 5. No doc or script tells people to run bare `python3`/`pip` against the project.
-6. `.venv/` and `*.egg-info/` are ignored; `requires-python` unchanged or deliberately bumped;
-   `git config core.hooksPath` is `.githooks`.
-7. This sprint's changes followed section 6: made on the sprint branch, Conventional Commit
-   messages, right class and approval, chat report produced with a section for every phase and
-   for close, nothing pushed by agents.
-8. `make smoke` passes (it runs the installed `fingerprint` command), and a
-   second `make install` changes nothing.
-9. The workflows under `.github/workflows/` invoke only `make` targets that exist.
+6. `.venv/` and `*.egg-info/` are ignored; `git config core.hooksPath` is `.githooks`.
+7. This sprint's changes followed section 6: on the sprint branch, Conventional Commits, chat
+   report with a section for every phase and for close, nothing pushed without the owner.
+8. A second `make install` changes nothing.
+9. The workflow invokes only `make` targets that exist.
 
 ## 11. Agreed changes not yet built
 
