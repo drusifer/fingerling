@@ -76,7 +76,8 @@ A summary goes to stderr; stdout is left empty. Exit status: `0` set written and
 history file was not.
 
 Each run that updates the set also writes just its own fingerprints, with a `run:` header (times,
-source, counts), to `<set without extension>.history/<UTC start time>.yaml`; `fingerprint show`
+source, counts), to `<set without extension>.history/<run id>.yaml`, where the run id is `YYMMDD-SEQ` (UTC
+date, then a per-set number that only goes up, e.g. `261015-0003`); `fingerprint show`
 reads these files. A run with `-o` writes no history.
 
 ```
@@ -84,7 +85,7 @@ fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log
   fingerprints: 4 new, 0 updated, 4 total in set
   skipped: 0 malformed lines, 0 unusable aggregate values
   wrote web.fingerprints.yaml (profile 37087e1858c85f7cb976959311d01b65)
-  history: web.fingerprints.history/2026-10-14T193005Z.yaml
+  history: web.fingerprints.history/261014-0001.yaml
 ```
 
 ### Profiles
@@ -143,7 +144,7 @@ property`. Run `fingerprint check app.yaml` to check a profile on its own (exit 
 see the package README for using the schema in an editor.
 
 Run `fingerprint show app.fingerprints.yaml` to read a set as a table: one row per fingerprint,
-most frequent first, with its count, first and last seen (UTC) and tokens.
+most frequent first, with its count, first and last run, and tokens.
 
 Two profiles ship as starting points: `packages/fingerprint-sampler/examples/access_log.yaml`
 (web access logs) and `examples/profiles/ebpf_telemetry.yaml` (the event shape `python -m fingerling.capture` emits).
@@ -161,18 +162,19 @@ fingerprints:
       recent_paths: [/items/17, /items/42, /items/3]     # one function: its value directly
     meta:                                   # built in, for every fingerprint
       count: 3
-      first_seen: 2026-10-13 01:25:42.821783+00:00
-      last_seen: 2026-10-13 01:25:42.822552+00:00
-      first: [{meta: {seen: '2026-10-13T01:25:42.821783+00:00'}, record: {...}}, ...]
-      last: [..., {meta: {seen: '2026-10-13T01:25:42.822552+00:00'}, record: {...}}]
+      first_seen: 261013-0001               # first and last run that saw it
+      last_seen: 261013-0001
+      first: [{meta: {run: 261013-0001}, record: {...}}]
+      last: [{meta: {run: 261013-0001}, record: {...}}]
 ```
 
 - `tokens` shows what the ID stands for.
 - **`aggregates`** is what your profile asked for; **`meta`** is built in for every fingerprint:
-  `count`, `first_seen` / `last_seen` and the first and last record (one each). `meta` comes from a
+  `count`, `first_seen` / `last_seen` (run ids) and the first and last record (one each). `meta` comes from a
   built-in profile (`builtin.yaml` in the package) that reads each record wrapped as
-  `{meta: {seen: <time read>}, record: <the parsed record>}`, so injected fields never clash with the
-  record's own. Times are wall clock; a time field inside the records belongs in `aggregates`.
+  `{meta: {run: <run id>}, record: <the parsed record>}`, so injected fields never clash with the
+  record's own. Run times are in the run files; a time field inside the records belongs in
+  `aggregates`.
 - `profile_id` is derived from the profile's `fields`. A set can only be merged under the profile
   that built it, because fingerprints from different field definitions aren't comparable. Changing
   `aggregates` is always allowed: a new aggregate starts accumulating from that run, and changing
@@ -269,13 +271,13 @@ from fingerprint_sampler.fingerprint_set import FingerprintSet
 fingerprints = FingerprintSet(aggregates=[
     Aggregate("duration_ms", "$.duration_ms", ["MIN", "MAX"]),
 ])
-fingerprint_id = fingerprints.upsert(tokens, records[0])
+fingerprint_id = fingerprints.upsert(tokens, records[0], run="261015-0001")
 
 record = fingerprints.get(fingerprint_id)
 record.tokens                               # the tokens behind the ID
 record.meta["count"]                        # {"COUNT": n}: grows each time the tokens recur
 record.aggregates["duration_ms"]["MAX"]
-record.meta["last"]["LAST"]                 # up to 3 latest records, each {meta: {seen}, record}
+record.meta["last"]                         # the latest record, as [{meta: {run}, record}]
 
 fingerprints.save("fingerprints.yaml")         # atomic
 fingerprints.load("fingerprints.yaml")         # continue folding from stored state
@@ -283,7 +285,7 @@ fingerprints.load("fingerprints.yaml")         # continue folding from stored st
 
 Two calls with the same tokens produce the same `fingerprint_id` and reuse one record (a
 "match"); different tokens create a new record (a "drift"). `FingerprintSet()` with no aggregates
-keeps only the count and first/last seen.
+keeps only the count, first/last run and first/last record.
 `fingerling.warehouse.TELEMETRY_AGGREGATES` is the duration-bounds-plus-last-3-events set the
 parked telemetry pipeline uses. To load a profile file
 instead of building entries in Python, use `fingerprint_sampler.profile.load_profile(path)` and pass its

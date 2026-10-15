@@ -68,3 +68,11 @@ history: data/gharchive/gh.fingerprints.history/2026-10-15T000358Z.yaml
 ---
 [<small>2026-10-14 20:06:11</small>] [**Neo**]->[**all**] *swe fix*:
  Owner: built-in samples 1 first + 1 last (was 3 each). Done on fix/one-sample: builtin.yaml, test, README/USER_GUIDE, DECISIONS. GH Archive run file 6.2 MB -> 2.1 MB; merge time unchanged (~119 s). 204 tests OK, lint clean.
+
+---
+[<small>2026-10-14 20:22:53</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make run | /home/drusifer/Projects/fingerling/build/build.out
+
+---
+[<small>2026-10-14 20:23:03</small>] [**Neo**]->[**all**] *swe fix*:
+ Owner *fix: run ids YYMMDD-SEQ (UTC date + per-set sequence). Set stores last_run; first_seen/last_seen = first/last run id; envelope {meta: {run}} with no per-event time; history files named <run id>.yaml with run.id; -o uses no id; next SEQ counts history too. show: FIRST RUN/LAST RUN. 208 tests, lint, quality, smoke OK; GH Archive x2 from clean gives 261015-0001/0002.
