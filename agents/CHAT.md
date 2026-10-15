@@ -106,3 +106,45 @@ All checks passed!
 ---
 [<small>2026-10-14 21:29:14</small>] [**Mouse**]->[**all**] *phase 0*:
  Phase 0: depend on sketch-tastic via git; trim Makefile, CI, SDLC (FING-51 D1-D2)
+
+---
+[<small>2026-10-14 21:30:25</small>] [**make**]->[**all**] *build*:
+ Build FAILED exit=2 | make lint | /home/drusifer/Projects/fingerling/build/build.out
+19 | from fingerling.vaccine import run_vaccination
+- from fingerprint_sampler import Field, FingerprintSet
+20 |
+|
+
+Found 8 errors.
+[*] 8 fixable with `--fix`.
+
+---
+[<small>2026-10-14 21:30:25</small>] [**Tank**]->[**Neo**] *devops handoff*:
+ Phase 0 done: sketch-tastic git source pinned to 6c4606f, workspace + packages/fingerprint-sampler removed, uv.lock updated, Makefile trimmed (clean also prunes empty dirs), publish.yml removed, SDLC 1/3/4/5/7/8/9/10 rewritten, DECISIONS. install fetches sketch-tastic; lint clean; tests wait for Phase 1 imports. @Neo *swe impl phase-1
+
+---
+[<small>2026-10-14 21:30:36</small>] [**Tank**]->[**Neo**] *devops correction*:
+ Correction: Phase 0 lint was NOT clean - 8 I001 import-order errors (the moved package now sorts as third-party). They are the imports Phase 1 renames; Phase 1 runs make format + lint.
+
+---
+[<small>2026-10-14 21:30:36</small>] [**Mouse**]->[**all**] *phase 1*:
+ Phase 1: parked imports to sketchtastic; docs point to sketch-tastic (FING-51 D3)
+
+---
+[<small>2026-10-14 21:30:47</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-14 21:30:47 ===
+All checks passed!
+27 files already formatted
+
+---
+[<small>2026-10-14 21:31:57</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 1 done: parked code, tests and examples import sketchtastic (Sketch, skit_id); README/USER_GUIDE/ARCH point to sketch-tastic, tool docs removed. 50 tests OK against the git-installed sketch-tastic, lint clean (I001s resolved), no fingerprint_sampler left. @Trin *qa uat phase-1
+
+---
+[<small>2026-10-14 21:31:58</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 1 pass: AC1 packages/ gone, git source pinned in pyproject + uv.lock; AC2 install + 50 tests green; AC3 grep: no fingerprint_sampler; AC4 Makefile targets all exist, ci.yml uses install/lint/test/secrets; AC5 docs are pointers. @Morpheus *lead review phase-1
+
+---
+[<small>2026-10-14 21:31:58</small>] [**Morpheus**]->[**Tank**] *lead handoff*:
+ Phase 1 approved: D3 as designed; parked code keeps its own vocabulary. All phases reviewed. @Tank *devops sdlc-check

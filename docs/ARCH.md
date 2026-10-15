@@ -6,21 +6,11 @@ the project is built, changed and released is in `docs/SDLC.md`.
 
 ## 1. System Overview
 
-The repository is a uv workspace with two Python packages.
-
-**`fingerprint-sampler`** (`packages/fingerprint-sampler/`, import `fingerprint_sampler`) — the
-published, general-purpose tool for any JSONL event stream. **This is the active scope.**
-
-| Module | Story | Responsibility |
-|---|---|---|
-| `fingerprint_sampler/model.py` | FING-01, -23, -36, -39 | `Path`, the `Rule` base, the `Modifier` classes, `Field` |
-| `fingerprint_sampler/aggregators.py` | FING-25, -45 | Per-fingerprint `SUM`/`AVG`/`MIN`/`MAX`/`COUNT`/`FIRST(n)`/`LAST(n)` state, mergeable across runs; `op` rules (`SIZE`) applied to values first |
-| `fingerprint_sampler/fingerprint_set.py` | FING-02, -25, -40 (shares: FING-46) | `FingerprintSet`: MD5 IDs, stateful upsert, versioned atomic YAML file |
-| `fingerprint_sampler/profile.py` | FING-24, -37 | YAML profile loading; `check_profile` reports every problem (schema layer, then semantic layer); `profile_id` |
-| `fingerprint_sampler/schema.py`, `profile.schema.json` | FING-37 | The published profile JSON Schema (Draft 2020-12) and the `jsonschema` validator over it; also validates a single modifier for `Modifier.of` |
-| `fingerprint_sampler/cli.py`, `__main__.py` | FING-26, -28, -37, -42, -48 | `fingerprint merge` — merge a stream into a set and write the run to `<set>.history/`; `fingerprint check` — list a profile's problems; `fingerprint show` — a set as a table |
-
-It depends only on PyYAML, python-jsonpath and jsonschema and never imports `fingerling`.
+The repository holds one Python package, `fingerling`. The fingerprint tool it builds on is
+**sketch-tastic** (`sketchtastic`), developed in its own repository,
+[drusifer/sketch-tastic](https://github.com/drusifer/sketch-tastic), and installed here as a git
+dependency (Sprint 18). Its architecture and decisions are documented there; this document
+covers only how `fingerling` uses it.
 
 **`fingerling`** (`fingerling/`, repository root) — the detection-and-response pipeline built on
 fingerprint IDs. **Parked** and unpublished: kept importable and tested, not developed.
@@ -37,7 +27,7 @@ fingerprint IDs. **Parked** and unpublished: kept importable and tested, not dev
 | `fingerling/capture.py` | — | bpftrace `execve` capture → Tetragon-shaped JSONL |
 
 N-gram analysis is deliberately a later stage: it sees only the fingerprint IDs
-`FingerprintSet.upsert()` returns.
+`sketchtastic.Sketch.upsert()` returns (skit ids).
 
 ## 2. Architectural Principles
 
@@ -53,8 +43,8 @@ flowchart TD
     A[Raw JSONL telemetry] --> B[Webhook Server: POST /telemetry]
     B --> C[fingerling.tokenizer.tokenize]
     C -- Mask Profile --> D[dict: key -> token]
-    D --> E[FingerprintSet.upsert]
-    E -- fingerprint_id --> F[ringbuffer.push]
+    D --> E[sketchtastic.Sketch.upsert]
+    E -- skit_id --> F[ringbuffer.push]
     F -- anomaly score --> G{score == 1.0 and warm?}
     G -- yes --> H[policy.compile_policy]
     H --> I[KubeArmorPolicy YAML returned in HTTP response]
@@ -63,79 +53,11 @@ flowchart TD
 
 ## 4. Class & Data Structures
 
-### 4.1 `fingerprint_sampler/model.py` and `aggregators.py` (STORY-FING-01, -23, -25, -36, -39)
+### 4.1 sketch-tastic (external)
 
-```python
-class Path:                      # frozen; compiled once; ValueError if empty/invalid
-    text: str
-    def values(self, event) -> list: ...
-
-class Rule:                      # base of every named, configurable behaviour
-    family: ClassVar[str]        # "modifier" | "aggregator": the schema definition that checks it
-    name: ClassVar[str]          # registers the subclass in its family's registry
-    @classmethod
-    def build(cls, spec: str | dict) -> Self: ...   # schema, then construct, then check()
-    def check(self) -> None: ...                     # what a schema cannot express
-    spec: str                    # bare name or sorted compact JSON; feeds profile_id
-
-class Modifier(Rule):            # token(value) -> str; absent token for missing/null
-    # Default, IsPresent, IsNull, InRange(low, high), AnyOf(values), Glob(pattern),
-    # Regex(pattern, flags), RegSub(pattern, replace, flags)
-
-class Aggregator(Rule):          # accept(state, value) -> value | SKIP; fold(state, value) -> new state
-    # Sum, Min, Max, Avg, Count, First(n), Last(n)
-
-@dataclass(frozen=True)
-class Field:                     # key, path, modifier (text/specs are built on creation)
-    def token(self, event) -> str: ...   # none -> missing; several -> sorted, de-duplicated, joined
-
-@dataclass(frozen=True)
-class Aggregate:                 # key, path, fn (one spec or a list)
-    def update(self, state: dict, event) -> int: ...   # returns values skipped
-```
-
-Field and Aggregate take the YAML keys as arguments, so the profile loader builds every section
-the same way. Adding a modifier or aggregate function is one class plus its schema definition.
-
-### 4.2 `fingerprint_sampler/fingerprint_set.py` and `profile.py` (STORY-FING-02, -24, -37, -40)
-
-```python
-def fingerprint_id(tokens: dict[str, str]) -> str: ...
-
-@dataclass
-class Fingerprint:
-    tokens: dict[str, str]
-    aggregates: dict[str, Any]      # the profile's: key -> value (one fn) or {"MIN": .., "MAX": ..}
-    meta: dict[str, Any]            # builtin.yaml: count, first_seen/last_seen (MIN/MAX run id), first/last
-
-def builtin_aggregates() -> tuple[Aggregate, ...]: ...   # parsed once from builtin.yaml
-
-class FingerprintSet:
-    def __init__(self, aggregates=(), profile_id=None): ...
-    # upsert folds the profile's aggregates over the record, and the built-in ones over the
-    # envelope {"meta": {"run": <run id>}, "record": record}: injected fields can't clash.
-    def upsert(self, tokens: dict[str, str], event: Any, timestamp: str | None = None) -> str: ...
-    def load(self, path: str, *, force: bool = False) -> None: ...  # ProfileMismatchError unless force
-    def save(self, path: str) -> None: ...                           # temp file + os.replace
-
-@dataclass(frozen=True)
-class Profile:
-    fields: tuple[Field, ...]
-    aggregates: tuple[Aggregate, ...]
-    profile_id: str                 # property; MD5 over fields only
-    def tokens(self, event) -> dict[str, str]: ...
-
-def check_profile(data, source) -> tuple[Profile | None, list[str]]: ...  # schema, then build
-def load_profile(path: str) -> Profile: ...   # ProfileError.problems lists every problem
-```
-
-`fingerling` keeps the eBPF side: `fingerling.tokenizer` (`tokenize(record, fields)`,
-`parse_jsonl`) and `fingerling.warehouse` (`TELEMETRY_AGGREGATES`, `build_whitelist`).
-
-Aggregate state is keyed by function name, so changing `LAST`'s `n` keeps collected samples.
-Numeric functions accept ints, floats and numeric strings; other values are skipped and counted
-in `FingerprintSet.skipped_values`. The set file is version 0 until 1.0 (`version`, `profile_id`,
-`fingerprints`).
+`Field`, `tokens`, `Aggregate`, `Sketch` and `skit_id` come from `sketchtastic`; see the
+sketch-tastic README and `docs/` for their design. (Sections 4.1 and 4.2 described them while
+they lived here, up to Sprint 17.)
 
 ### 4.3 `ringbuffer.py` (STORY-FING-03)
 
@@ -196,7 +118,7 @@ class TelemetryHTTPRequestHandler(BaseHTTPRequestHandler):
 
 ## 8. Decisions Log (Sprint 9 additions)
 
-16. **Two packages, one repository**: the fingerprint tool is `fingerprint-sampler`, a uv workspace member published on its own; `fingerling` is private and depends on it.
+16. *(Superseded in Sprint 18: the tool moved to drusifer/sketch-tastic.)* **Two packages, one repository**: the fingerprint tool is `fingerprint-sampler`, a uv workspace member published on its own; `fingerling` is private and depends on it.
 17. **Move behind shims**: parked modules import the old `fingerling.*` paths, which re-export the same objects, so the split changed no parked code.
 18. **`fingerprint merge`**: a subcommand, so later commands (`check`, `show`) sit beside it. (The `fingerling fingerprint` alias was removed in Sprint 12.)
-19. **One version stream**: only `fingerprint-sampler` is versioned, tagged (`v<version>`) and published.
+19. *(Superseded in Sprint 18.)* **One version stream**: only `fingerprint-sampler` is versioned, tagged (`v<version>`) and published.

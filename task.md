@@ -8,10 +8,10 @@
 **Points:** 3 · **Tier:** 2
 
 ### Phase 0: Dependency, Makefile, CI, SDLC (STORY-FING-51, D1-D2) — Tank
-- [ ] **0.1** Git source pinned to sketch-tastic `6c4606f`; remove the package and workspace; trim Makefile and workflows; SDLC. [Tank]
+- [x] **0.1** Git source pinned to sketch-tastic `6c4606f`; remove the package and workspace; trim Makefile and workflows; SDLC. [Tank]
 
 ### Phase 1: Parked code and docs (STORY-FING-51, D3) — Neo
-- [ ] **1.1** Imports renamed to `sketchtastic`; README/USER_GUIDE/ARCH point to sketch-tastic; UAT + review. [Neo, Trin, Morpheus]
+- [x] **1.1** Imports renamed to `sketchtastic`; README/USER_GUIDE/ARCH point to sketch-tastic; UAT + review. [Neo, Trin, Morpheus]
 
 ### Close
 - [ ] Tank `*devops sdlc-check` · Oracle groom · Smith user test · retro + launch · chat report · merge (no release) [Tank, Oracle, Smith, All]
