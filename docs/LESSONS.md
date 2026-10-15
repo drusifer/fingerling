@@ -161,3 +161,9 @@ TUI step rather than renumbering.
 **What happened:** Through Sprints 11 and 12, behaviour was confirmed with throwaway commands (`python -c`, direct CLI runs in a scratch directory, a `diff` of two set files, `uv run --isolated` with the wheel). The owner pointed out that AGENTS.md's Automation First rule forbids it. Meanwhile the README's library example had broken during the refactor and none of those commands noticed; the smoke suite written in response would have.
 **Applying it:** Before typing a verification command, write the test for it (or add a make target) and run that. A UAT message cites the target that passed. And read a target's exit status, not the last line of its output — a lint failure was missed that way in the same sprint.
 
+
+## 2026-10-14 — Sprint 17: Duplicate Protection
+
+**Lesson:** When a change alters a public signature, run the whole `bobp make test`, not just the suite of the package you changed.
+**What happened:** `fix/run-id` renamed `FingerprintSet.upsert`'s `timestamp=` to `run=` and was verified with `bobp make test-fingerprint` only. The parked `tests/test_e2e.py` still passed `timestamp=`, so `make test-fingerling` broke with three `TypeError`s. The fix was merged and pushed to `origin/main` broken; Tank's from-clean check at the Sprint 17 close found it.
+**Applying it:** On any branch that renames or removes a parameter, function or class, run `bobp make test` (both suites) before merging. Before renaming, search for callers across the whole repository, including `tests/`, not only the package being edited.
