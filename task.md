@@ -239,7 +239,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 
 ## Backlog (unscheduled)
 - **Top priority (Sprint 15 retro):** `fingerprint show --sort KEY` (any column, including `%` columns, e.g. `payload_bytes.SUM %`) and `--top N`.
-- **History weight (Sprint 16, owner decision):** run files are ~6.2 MB on a GH Archive hour (as large as the set; sample records dominate), and merge is ~1.7x slower (~115 s vs ~68 s, likely the second fold copying samples). Options: run files without sample records; fold once and derive the run.
+- **History weight (Sprint 16):** built-in samples cut to 1 first + 1 last (owner, 2026-10-14, `fix/one-sample`): run files 6.2 MB -> 2.1 MB on a GH Archive hour, the rest mostly the two sample events. Still open: merge ~1.7x slower (~115-119 s vs ~68 s), likely the second fold deep-copying each event for LAST; option: fold once and derive the run.
 - **`-o`:** owner may revisit (keep or drop); it writes no history.
 - Fingerprint tool: JSON Schema for set files, generated from the profile (offered 2026-10-14).
 - **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.

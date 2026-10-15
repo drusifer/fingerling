@@ -169,7 +169,7 @@ fingerprints:
 
 - `tokens` shows what the ID stands for.
 - **`aggregates`** is what your profile asked for; **`meta`** is built in for every fingerprint:
-  `count`, `first_seen` / `last_seen` and the first and last 3 records. `meta` comes from a
+  `count`, `first_seen` / `last_seen` and the first and last record (one each). `meta` comes from a
   built-in profile (`builtin.yaml` in the package) that reads each record wrapped as
   `{meta: {seen: <time read>}, record: <the parsed record>}`, so injected fields never clash with the
   record's own. Times are wall clock; a time field inside the records belongs in `aggregates`.
