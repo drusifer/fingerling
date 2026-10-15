@@ -13,7 +13,8 @@ sequenceDiagram
     participant Smith
     participant Morpheus
     participant Mouse
-    Note over Neo,Mouse: 📅 2026-10-14
+    participant Trin
+    Note over Neo,Trin: 📅 2026-10-14
     Neo->>All: "swe fix"
     Note right of Neo: "Owner: built-in samples<br/>1 first + 1 last (was 3<br/>each). Done on fix/one-<br/>sample: builtin.yaml,<br/>test, README/USER_GUIDE,<br/>DECISIONS. GH Archive…"
     Neo->>All: "swe fix"
@@ -32,4 +33,10 @@ sequenceDiagram
     Note right of Morpheus: "Plan approved. @Neo *swe<br/>impl phase-1"
     Mouse->>All: "phase 1"
     Note right of Mouse: "Phase 1: sequence in the<br/>profile and the set<br/>(FING-49, D1-D2)"
+    Neo->>Trin: "swe handoff"
+    Note right of Neo: "Phase 1 done, tests<br/>first: schema top-level<br/>sequence,<br/>Profile.sequence (Path,<br/>problem 'sequence:<br/><reason>'),<br/>FingerprintSet.sequence<br/>{path,…"
+    Trin->>Morpheus: "qa handoff"
+    Note right of Trin: "UAT phase 1 pass:<br/>FING-49 AC1 optional<br/>path, AC2 invalid<br/>JSONPath located under<br/>sequence, AC3 profile id<br/>unchanged, AC4 example<br/>passes sche…"
+    Morpheus->>Neo: "lead handoff"
+    Note right of Morpheus: "Phase 1 approved: D1-D2<br/>as designed. @Neo *swe<br/>impl phase-2"
 ```

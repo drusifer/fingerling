@@ -8,8 +8,8 @@
 **Points:** 5 · **Tier:** 2
 
 ### Phase 1: Sequence in the profile and the set (STORY-FING-49, D1-D2) — Neo
-- [ ] **1.1** Schema + `Profile.sequence`; `FingerprintSet.sequence` saved/loaded; GH Archive example. [Neo]
-- [ ] **1.2** UAT + review. [Trin, Morpheus]
+- [x] **1.1** Schema + `Profile.sequence`; `FingerprintSet.sequence` saved/loaded; GH Archive example. [Neo]
+- [x] **1.2** UAT + review. [Trin, Morpheus]
 
 ### Phase 2: Drop already-merged events (STORY-FING-50, D3-D4) — Neo
 - [ ] **2.1** `_Sequencer` in the fold; path-change notice; summary, run header; help, README, USER_GUIDE. [Neo]

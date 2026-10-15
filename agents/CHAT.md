@@ -109,3 +109,22 @@ history: data/gharchive/gh.fingerprints.history/2026-10-15T000358Z.yaml
 ---
 [<small>2026-10-14 20:38:31</small>] [**Mouse**]->[**all**] *phase 1*:
  Phase 1: sequence in the profile and the set (FING-49, D1-D2)
+
+---
+[<small>2026-10-14 20:38:57</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make lint | /home/drusifer/Projects/fingerling/build/build.out
+=== make lint @ 2026-10-14 20:38:57 ===
+All checks passed!
+42 files already formatted
+
+---
+[<small>2026-10-14 20:39:05</small>] [**Neo**]->[**Trin**] *swe handoff*:
+ Phase 1 done, tests first: schema top-level sequence; Profile.sequence (Path, problem 'sequence: <reason>'); FingerprintSet.sequence {path,max} saved after last_run and loaded; gharchive example sequence: $.id. 212 OK, lint clean. @Trin *qa uat phase-1
+
+---
+[<small>2026-10-14 20:39:05</small>] [**Trin**]->[**Morpheus**] *qa handoff*:
+ UAT phase 1 pass: FING-49 AC1 optional path, AC2 invalid JSONPath located under sequence, AC3 profile id unchanged, AC4 example passes schema test; mark round-trips and is absent when unset. @Morpheus *lead review phase-1
+
+---
+[<small>2026-10-14 20:39:05</small>] [**Morpheus**]->[**Neo**] *lead handoff*:
+ Phase 1 approved: D1-D2 as designed. @Neo *swe impl phase-2
