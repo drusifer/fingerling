@@ -62,3 +62,16 @@ Agents **must** use this for every message posted to CHAT.md:
 > **Previous sprint archived:** `agents/chat_archive/CHAT_SPRINT_17.md` (2026-10-14 20:44:34) — Sprint 17, Duplicate Protection (Tier 2, 5 pts). Owner asked for protection against re-runs and overlapping sources via a sequence path. FING-49: profile declares sequence: <JSONPath>. FING-50: the set keeps {path, max}; later runs drop events at or below the run-start mark; missing sequence is a line error. Tank's close check found tests/test_e2e.py broken by fix/run-id (already pushed); fixed, lesson recorded. No release (mainline).
 
 ---
+
+---
+[<small>2026-10-14 20:51:19</small>] [**make**]->[**all**] *build*:
+ Build PASSED | make quality | /home/drusifer/Projects/fingerling/build/build.out
+=== make quality @ 2026-10-14 20:51:18 ===
+== ruff (extended rules)
+All checks passed!
+== vulture (dead code)
+== radon (complexity grade C or worse)
+
+---
+[<small>2026-10-14 20:51:28</small>] [**Neo**]->[**all**] *swe fix*:
+ Owner: a missing sequence is an ERROR - whole run fails, nothing merged. fix/sequence-error: fold raises _NotWritten at the first unusable sequence (exit 2, set/mark/run file untouched); help, README, USER_GUIDE, DECISIONS. make test 218+50 OK, lint, quality clean.

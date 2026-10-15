@@ -83,8 +83,8 @@ reads these files. A run with `-o` writes no history.
 **Duplicate protection.** A profile can name a sequence, `sequence: $.id` (a number in each
 event that only grows). The set keeps the highest one merged, and later runs drop events at or
 below it, so overlapping or repeated input is not counted twice; the summary adds
-`dropped: N events already merged (sequence ≤ M)`. An event without a usable sequence is a
-skipped line.
+`dropped: N events already merged (sequence ≤ M)`. An event without a usable sequence is an
+error: the run fails, nothing is written, exit status 2.
 
 ```
 fingerprint: 8 events read from packages/fingerprint-sampler/examples/access_log.jsonl

@@ -259,7 +259,7 @@ Record: `agents/chat_archive/CHAT_POST_SPRINT_9.md`. No release: the published p
 ## Backlog (unscheduled)
 - **Top priority (Sprint 15 retro):** `fingerprint show --sort KEY` (any column, including `%` columns, e.g. `payload_bytes.SUM %`) and `--top N`.
 - **History weight (Sprint 16):** built-in samples cut to 1 first + 1 last (owner, 2026-10-14, `fix/one-sample`): run files 6.2 MB -> 2.1 MB on a GH Archive hour, the rest mostly the two sample events. Still open: merge ~1.7x slower (~115-119 s vs ~68 s), likely the second fold deep-copying each event for LAST; option: fold once and derive the run.
-- **Duplicate protection (Sprint 17):** confirm with the owner that an event missing its sequence is a line error (skipped, exit 1) rather than aborting the run; in-run duplicate detection if a stream needs it.
+- **Duplicate protection (Sprint 17):** in-run duplicate detection if a stream needs it. (Missing-sequence policy settled 2026-10-14: an error that fails the run, `fix/sequence-error`.)
 - **`-o`:** owner may revisit (keep or drop); it writes no history.
 - Fingerprint tool: JSON Schema for set files, generated from the profile (offered 2026-10-14).
 - **Move fingerprint-sampler to its own project** (its own repository, out of the fingerling workspace). Owner, 2026-10-14; the owner wrote "fingerprint-scanner", read as fingerprint-sampler.
